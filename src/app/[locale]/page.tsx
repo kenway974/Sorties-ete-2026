@@ -1,16 +1,15 @@
 "use client";
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { useTranslations } from "next-intl";
-import { useLocale } from "next-intl";
-import { List, Map, Crosshair } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { List, Map as MapIcon, Crosshair, ChevronUp, ChevronDown } from "lucide-react";
 import { useActivities } from "@/lib/hooks/useActivities";
 import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import CategoryFilter from "@/components/filters/CategoryFilter";
 import SearchBar from "@/components/filters/SearchBar";
 import FilterPanel from "@/components/filters/FilterPanel";
 import ActivityCard from "@/components/activities/ActivityCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { ActivitySkeleton } from "@/components/activities/ActivitySkeleton";
 import type { Activity, ActivityCategory, ActivityFilters } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
@@ -30,19 +29,20 @@ export default function HomePage() {
   const locale = useLocale();
   const [view, setView] = useState<"map" | "list">("map");
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
   const [filters, setFilters] = useState<ActivityFilters>({ sortBy: "date" });
-  const { lat, lng, locate } = useGeolocation();
-
+  const { lat, lng, locate, loading: locating } = useGeolocation();
   const { activities, loading } = useActivities(filters);
 
   const handleActivityClick = useCallback((a: Activity) => {
     setSelectedActivity(a);
+    setBottomSheetExpanded(false);
   }, []);
 
   return (
     <div className="flex flex-col" style={{ height: "calc(100vh - 56px)" }}>
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 space-y-3">
+      <div className="bg-white border-b border-gray-100 px-3 py-2.5 space-y-2 z-10">
         <div className="flex items-center gap-2">
           <div className="flex-1">
             <SearchBar
@@ -51,68 +51,59 @@ export default function HomePage() {
             />
           </div>
           <FilterPanel filters={filters} onChange={setFilters} />
-          {/* View toggle (mobile) */}
           <div className="flex rounded-xl border border-gray-200 overflow-hidden md:hidden">
             <button
               onClick={() => setView("map")}
-              className={`p-2 transition-colors ${
-                view === "map" ? "bg-brand-navy text-white" : "bg-white text-gray-600"
-              }`}
+              className={`p-2 transition-colors ${view === "map" ? "bg-brand-navy text-white" : "bg-white text-gray-600"}`}
             >
-              <Map className="w-4 h-4" />
+              <MapIcon className="w-4 h-4" />
             </button>
             <button
               onClick={() => setView("list")}
-              className={`p-2 transition-colors ${
-                view === "list" ? "bg-brand-navy text-white" : "bg-white text-gray-600"
-              }`}
+              className={`p-2 transition-colors ${view === "list" ? "bg-brand-navy text-white" : "bg-white text-gray-600"}`}
             >
               <List className="w-4 h-4" />
             </button>
           </div>
         </div>
-        <CategoryFilter
-          selected={filters.category || null}
-          onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))}
-        />
+        <div className="overflow-x-auto scrollbar-none">
+          <CategoryFilter
+            selected={filters.category || null}
+            onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))}
+          />
+        </div>
       </div>
 
-      {/* Main content */}
+      {/* Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar (desktop) / List view (mobile when list) */}
-        <aside
-          className={`${
-            view === "list" ? "flex" : "hidden"
-          } md:flex flex-col w-full md:w-96 bg-brand-cream border-r border-gray-200 overflow-y-auto`}
-        >
+        {/* Desktop sidebar */}
+        <aside className="hidden md:flex flex-col w-96 bg-brand-cream border-r border-gray-200 overflow-y-auto shrink-0">
           <div className="p-3 space-y-3">
             {loading ? (
-              <LoadingSpinner />
+              Array.from({ length: 4 }).map((_, i) => <ActivitySkeleton key={i} />)
             ) : activities.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
+              <div className="text-center py-16 text-gray-400">
                 <p className="text-4xl mb-3">🔍</p>
-                <p>{t("home.no_results")}</p>
+                <p className="text-sm">{t("home.no_results")}</p>
               </div>
             ) : (
               activities.map((a) => (
                 <div
                   key={a.id}
-                  onClick={() => { handleActivityClick(a); setView("map"); }}
-                  className="cursor-pointer"
+                  onClick={() => handleActivityClick(a)}
+                  className={`cursor-pointer rounded-2xl transition-all ${
+                    selectedActivity?.id === a.id ? "ring-2 ring-brand-navy" : ""
+                  }`}
                 >
-                  <ActivityCard activity={a} compact={false} />
+                  <ActivityCard activity={a} />
                 </div>
               ))
             )}
           </div>
         </aside>
 
-        {/* Map */}
-        <div
-          className={`${
-            view === "list" ? "hidden" : "flex"
-          } md:flex flex-1 relative`}
-        >
+        {/* Map area */}
+        <div className={`${view === "list" ? "hidden" : "flex"} md:flex flex-1 relative`}>
           <MapView
             activities={activities}
             userLat={lat}
@@ -121,24 +112,69 @@ export default function HomePage() {
             selectedId={selectedActivity?.id}
           />
 
-          {/* Locate me button */}
+          {/* Locate button */}
           <button
             onClick={locate}
-            className="absolute top-3 right-3 z-10 bg-white shadow-md rounded-xl p-2.5 hover:bg-gray-50 transition-colors"
+            disabled={locating}
+            className="absolute top-3 right-3 z-10 bg-white shadow-md rounded-xl p-2.5 hover:bg-gray-50 transition-colors disabled:opacity-60"
             title={t("map.locate_me")}
           >
-            <Crosshair className="w-5 h-5 text-brand-navy" />
+            <Crosshair className={`w-5 h-5 text-brand-navy ${locating ? "animate-spin" : ""}`} />
           </button>
 
-          {/* Selected activity popup (mobile) */}
-          {selectedActivity && (
-            <div className="absolute bottom-4 left-4 right-4 md:hidden z-10 animate-slide-up">
-              <div className="bg-white rounded-2xl shadow-xl p-4 border border-gray-100">
-                <ActivityCard activity={selectedActivity} compact />
-              </div>
+          {/* Mobile: Selected activity card */}
+          {selectedActivity && !bottomSheetExpanded && (
+            <div className="absolute bottom-20 left-3 right-3 md:hidden z-10 animate-slide-up">
+              <ActivityCard activity={selectedActivity} compact />
             </div>
           )}
+
+          {/* Mobile: Bottom sheet */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 md:hidden z-20 bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ${
+              bottomSheetExpanded ? "h-[60vh]" : "h-14"
+            }`}
+          >
+            <button
+              onClick={() => setBottomSheetExpanded(!bottomSheetExpanded)}
+              className="w-full flex items-center justify-between px-4 py-4"
+            >
+              <span className="font-semibold text-sm text-gray-900">
+                {loading ? "..." : `${activities.length} activité(s)`}
+              </span>
+              {bottomSheetExpanded ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronUp className="w-5 h-5 text-gray-400" />}
+            </button>
+            {bottomSheetExpanded && (
+              <div className="overflow-y-auto h-[calc(100%-56px)] px-3 pb-4 space-y-3">
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => <ActivitySkeleton key={i} />)
+                ) : (
+                  activities.map((a) => (
+                    <div key={a.id} onClick={() => { handleActivityClick(a); setBottomSheetExpanded(false); }}>
+                      <ActivityCard activity={a} />
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Mobile list view */}
+        {view === "list" && (
+          <div className="flex-1 overflow-y-auto md:hidden px-3 py-3 space-y-3">
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => <ActivitySkeleton key={i} />)
+            ) : activities.length === 0 ? (
+              <div className="text-center py-16 text-gray-400">
+                <p className="text-4xl mb-3">🔍</p>
+                <p>{t("home.no_results")}</p>
+              </div>
+            ) : (
+              activities.map((a) => <ActivityCard key={a.id} activity={a} />)
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

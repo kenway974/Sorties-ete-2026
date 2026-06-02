@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useActivities } from "@/lib/hooks/useActivities";
 import ActivityCard from "@/components/activities/ActivityCard";
+import { ActivitySkeletonGrid } from "@/components/activities/ActivitySkeleton";
 import SearchBar from "@/components/filters/SearchBar";
 import CategoryFilter from "@/components/filters/CategoryFilter";
 import FilterPanel from "@/components/filters/FilterPanel";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { ActivityFilters } from "@/types";
 
 export default function ActivitiesPage() {
@@ -21,32 +21,27 @@ export default function ActivitiesPage() {
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex gap-2">
           <div className="flex-1">
-            <SearchBar
-              value={filters.search || ""}
-              onChange={(v) => setFilters((f) => ({ ...f, search: v }))}
-            />
+            <SearchBar value={filters.search || ""} onChange={(v) => setFilters((f) => ({ ...f, search: v }))} />
           </div>
           <FilterPanel filters={filters} onChange={setFilters} />
         </div>
-        <CategoryFilter
-          selected={filters.category || null}
-          onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))}
-        />
+        <CategoryFilter selected={filters.category || null} onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))} />
       </div>
 
       {loading ? (
-        <LoadingSpinner />
+        <ActivitySkeletonGrid />
       ) : activities.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-20 text-gray-400">
           <p className="text-5xl mb-4">🔍</p>
           <p className="text-lg">{t("activities.no_results")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {activities.map((a) => (
-            <ActivityCard key={a.id} activity={a} />
-          ))}
-        </div>
+        <>
+          <p className="text-sm text-gray-500 mb-4">{activities.length} résultat(s)</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {activities.map((a) => <ActivityCard key={a.id} activity={a} />)}
+          </div>
+        </>
       )}
     </div>
   );

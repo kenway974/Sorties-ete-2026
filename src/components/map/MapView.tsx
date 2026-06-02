@@ -26,9 +26,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   loisirs: "#ec4899",
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MapView({ activities, userLat, userLng, onActivityClick, selectedId }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<any[]>([]);
 
   useEffect(() => {
@@ -36,7 +39,6 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
 
     const init = async () => {
       const L = (await import("leaflet")).default;
-      await import("leaflet/dist/leaflet.css");
 
       if (mapInstanceRef.current) return;
 

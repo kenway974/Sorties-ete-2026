@@ -1,0 +1,218 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "activities": "Activités",
+    "map": "Carte",
+    "favorites": "Favoris",
+    "propose": "Proposer",
+    "profile": "Mon profil",
+    "admin": "Administration",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Se déconnecter",
+    "notifications": "Notifications"
+  },
+  "home": {
+    "hero_title": "Découvrez Paris",
+    "hero_subtitle": "Activités, événements et sorties autour de vous",
+    "search_placeholder": "Rechercher une activité, un lieu...",
+    "popular_title": "Événements populaires",
+    "upcoming_title": "À venir cette semaine",
+    "no_results": "Aucun événement trouvé"
+  },
+  "categories": {
+    "all": "Tout",
+    "soirees": "Soirées",
+    "concerts": "Concerts",
+    "expositions": "Expositions",
+    "restaurants": "Restaurants",
+    "bars": "Bars",
+    "sport": "Sport",
+    "culture": "Culture",
+    "famille": "Famille",
+    "etudiants": "Étudiants",
+    "networking": "Networking",
+    "loisirs": "Loisirs"
+  },
+  "activities": {
+    "title": "Activités",
+    "no_results": "Aucune activité trouvée",
+    "load_more": "Charger plus",
+    "participants": "{count} participant(s)",
+    "spots_left": "{count} place(s) restante(s)",
+    "spots_full": "Complet",
+    "unlimited": "Places illimitées",
+    "free": "Gratuit",
+    "register": "S'inscrire",
+    "unregister": "Se désinscrire",
+    "registered": "Inscrit ✓",
+    "add_favorite": "Ajouter aux favoris",
+    "remove_favorite": "Retirer des favoris",
+    "report": "Signaler",
+    "external_link": "Réserver / Plus d'infos",
+    "organized_by": "Organisé par",
+    "location": "Lieu",
+    "distance": "{distance} km",
+    "photos": "Photos",
+    "reviews": "Avis",
+    "avg_rating": "Note moyenne",
+    "status": {
+      "pending": "En attente de validation",
+      "approved": "Publié",
+      "rejected": "Refusé"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "category": "Catégorie",
+    "date": "Date",
+    "distance": "Distance",
+    "price": "Prix",
+    "sort_by": "Trier par",
+    "sort": {
+      "distance": "Distance",
+      "date": "Date",
+      "popularity": "Popularité",
+      "rating": "Note",
+      "price": "Prix"
+    },
+    "date_options": {
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "this_week": "Cette semaine",
+      "this_weekend": "Ce week-end",
+      "this_month": "Ce mois"
+    },
+    "price_options": {
+      "free": "Gratuit",
+      "paid": "Payant",
+      "all": "Tous"
+    },
+    "apply": "Appliquer",
+    "reset": "Réinitialiser"
+  },
+  "map": {
+    "loading": "Chargement de la carte...",
+    "locate_me": "Me localiser",
+    "list_view": "Vue liste",
+    "map_view": "Vue carte"
+  },
+  "auth": {
+    "login": {
+      "title": "Se connecter",
+      "email": "Email",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "forgot_password": "Mot de passe oublié ?",
+      "no_account": "Pas encore de compte ?",
+      "register_link": "S'inscrire"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "username": "Pseudonyme",
+      "submit": "Créer mon compte",
+      "already_account": "Déjà un compte ?",
+      "login_link": "Se connecter",
+      "verify_email": "Vérifiez votre email pour confirmer votre inscription."
+    },
+    "errors": {
+      "invalid_credentials": "Email ou mot de passe incorrect",
+      "email_taken": "Cet email est déjà utilisé",
+      "weak_password": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwords_dont_match": "Les mots de passe ne correspondent pas",
+      "required": "Ce champ est obligatoire"
+    }
+  },
+  "profile": {
+    "title": "Mon profil",
+    "edit": "Modifier le profil",
+    "username": "Pseudonyme",
+    "bio": "Description",
+    "preferred_language": "Langue préférée",
+    "preferences": "Mes préférences",
+    "my_activities": "Mes activités proposées",
+    "my_registrations": "Mes inscriptions",
+    "save": "Enregistrer",
+    "change_photo": "Changer la photo"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "empty": "Vous n'avez pas encore de favoris.",
+    "browse": "Découvrir des activités"
+  },
+  "propose": {
+    "title": "Proposer une activité",
+    "subtitle": "Partagez votre événement avec la communauté parisienne",
+    "login_required": "Vous devez être connecté et avoir confirmé votre email.",
+    "form": {
+      "title": "Titre *",
+      "description": "Description *",
+      "category": "Catégorie *",
+      "tags": "Tags (séparés par des virgules)",
+      "address": "Adresse *",
+      "date": "Date *",
+      "time": "Heure *",
+      "max_participants": "Nombre de places (vide = illimité)",
+      "price": "Prix (vide = gratuit)",
+      "external_url": "Lien de réservation / site web",
+      "photos": "Photos",
+      "submit": "Soumettre pour validation",
+      "success": "Votre activité a été soumise. Elle sera examinée par notre équipe avant publication.",
+      "error": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "stats": {
+      "total_users": "Utilisateurs",
+      "total_activities": "Activités",
+      "pending_activities": "En attente",
+      "pending_reports": "Signalements"
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "delete": "Supprimer",
+      "view": "Voir"
+    },
+    "moderation_queue": "File de modération",
+    "empty_queue": "Aucun contenu en attente"
+  },
+  "reviews": {
+    "write": "Écrire un avis",
+    "rating": "Note",
+    "comment": "Votre avis",
+    "submit": "Publier",
+    "no_reviews": "Aucun avis pour le moment."
+  },
+  "report": {
+    "title": "Signaler",
+    "reason": "Motif",
+    "reasons": {
+      "spam": "Spam",
+      "offensive": "Contenu offensant",
+      "wrong_info": "Information erronée",
+      "advertising": "Publicité abusive"
+    },
+    "description": "Détails (optionnel)",
+    "submit": "Envoyer",
+    "success": "Signalement envoyé. Merci."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "back": "Retour",
+    "search": "Rechercher",
+    "see_all": "Voir tout",
+    "share": "Partager"
+  }
+}

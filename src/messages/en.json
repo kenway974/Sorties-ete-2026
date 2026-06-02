@@ -1,0 +1,218 @@
+{
+  "nav": {
+    "home": "Home",
+    "activities": "Activities",
+    "map": "Map",
+    "favorites": "Favorites",
+    "propose": "Suggest",
+    "profile": "My profile",
+    "admin": "Admin",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "notifications": "Notifications"
+  },
+  "home": {
+    "hero_title": "Discover Paris",
+    "hero_subtitle": "Activities, events and outings near you",
+    "search_placeholder": "Search for an activity, a place...",
+    "popular_title": "Popular events",
+    "upcoming_title": "Coming up this week",
+    "no_results": "No events found"
+  },
+  "categories": {
+    "all": "All",
+    "soirees": "Parties",
+    "concerts": "Concerts",
+    "expositions": "Exhibitions",
+    "restaurants": "Restaurants",
+    "bars": "Bars",
+    "sport": "Sports",
+    "culture": "Culture",
+    "famille": "Family",
+    "etudiants": "Students",
+    "networking": "Networking",
+    "loisirs": "Leisure"
+  },
+  "activities": {
+    "title": "Activities",
+    "no_results": "No activities found",
+    "load_more": "Load more",
+    "participants": "{count} participant(s)",
+    "spots_left": "{count} spot(s) left",
+    "spots_full": "Full",
+    "unlimited": "Unlimited spots",
+    "free": "Free",
+    "register": "Join",
+    "unregister": "Leave",
+    "registered": "Joined ✓",
+    "add_favorite": "Add to favorites",
+    "remove_favorite": "Remove from favorites",
+    "report": "Report",
+    "external_link": "Book / More info",
+    "organized_by": "Organized by",
+    "location": "Location",
+    "distance": "{distance} km",
+    "photos": "Photos",
+    "reviews": "Reviews",
+    "avg_rating": "Average rating",
+    "status": {
+      "pending": "Pending validation",
+      "approved": "Published",
+      "rejected": "Rejected"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "category": "Category",
+    "date": "Date",
+    "distance": "Distance",
+    "price": "Price",
+    "sort_by": "Sort by",
+    "sort": {
+      "distance": "Distance",
+      "date": "Date",
+      "popularity": "Popularity",
+      "rating": "Rating",
+      "price": "Price"
+    },
+    "date_options": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this_week": "This week",
+      "this_weekend": "This weekend",
+      "this_month": "This month"
+    },
+    "price_options": {
+      "free": "Free",
+      "paid": "Paid",
+      "all": "All"
+    },
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "map": {
+    "loading": "Loading map...",
+    "locate_me": "Locate me",
+    "list_view": "List view",
+    "map_view": "Map view"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "forgot_password": "Forgot password?",
+      "no_account": "No account yet?",
+      "register_link": "Sign up"
+    },
+    "register": {
+      "title": "Create an account",
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm password",
+      "username": "Username",
+      "submit": "Create account",
+      "already_account": "Already have an account?",
+      "login_link": "Log in",
+      "verify_email": "Check your email to confirm your registration."
+    },
+    "errors": {
+      "invalid_credentials": "Invalid email or password",
+      "email_taken": "This email is already in use",
+      "weak_password": "Password must be at least 8 characters",
+      "passwords_dont_match": "Passwords do not match",
+      "required": "This field is required"
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "edit": "Edit profile",
+    "username": "Username",
+    "bio": "Bio",
+    "preferred_language": "Preferred language",
+    "preferences": "My preferences",
+    "my_activities": "My submitted activities",
+    "my_registrations": "My registrations",
+    "save": "Save",
+    "change_photo": "Change photo"
+  },
+  "favorites": {
+    "title": "My favorites",
+    "empty": "You have no favorites yet.",
+    "browse": "Discover activities"
+  },
+  "propose": {
+    "title": "Suggest an activity",
+    "subtitle": "Share your event with the Parisian community",
+    "login_required": "You must be logged in with a verified email.",
+    "form": {
+      "title": "Title *",
+      "description": "Description *",
+      "category": "Category *",
+      "tags": "Tags (comma-separated)",
+      "address": "Address *",
+      "date": "Date *",
+      "time": "Time *",
+      "max_participants": "Max spots (leave empty for unlimited)",
+      "price": "Price (leave empty for free)",
+      "external_url": "Booking link / website",
+      "photos": "Photos",
+      "submit": "Submit for review",
+      "success": "Your activity has been submitted and will be reviewed by our team.",
+      "error": "An error occurred. Please try again."
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "stats": {
+      "total_users": "Users",
+      "total_activities": "Activities",
+      "pending_activities": "Pending",
+      "pending_reports": "Reports"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "delete": "Delete",
+      "view": "View"
+    },
+    "moderation_queue": "Moderation queue",
+    "empty_queue": "No content pending"
+  },
+  "reviews": {
+    "write": "Write a review",
+    "rating": "Rating",
+    "comment": "Your review",
+    "submit": "Publish",
+    "no_reviews": "No reviews yet."
+  },
+  "report": {
+    "title": "Report",
+    "reason": "Reason",
+    "reasons": {
+      "spam": "Spam",
+      "offensive": "Offensive content",
+      "wrong_info": "Wrong information",
+      "advertising": "Excessive advertising"
+    },
+    "description": "Details (optional)",
+    "submit": "Send",
+    "success": "Report sent. Thank you."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "search": "Search",
+    "see_all": "See all",
+    "share": "Share"
+  }
+}

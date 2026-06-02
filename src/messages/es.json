@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "activities": "Actividades",
+    "map": "Mapa",
+    "favorites": "Favoritos",
+    "propose": "Proponer",
+    "profile": "Mi perfil",
+    "admin": "Administración",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones"
+  },
+  "home": {
+    "hero_title": "Descubre París",
+    "hero_subtitle": "Actividades, eventos y salidas cerca de ti",
+    "search_placeholder": "Buscar una actividad, un lugar...",
+    "popular_title": "Eventos populares",
+    "upcoming_title": "Esta semana",
+    "no_results": "No se encontraron eventos"
+  },
+  "categories": {
+    "all": "Todo",
+    "soirees": "Fiestas",
+    "concerts": "Conciertos",
+    "expositions": "Exposiciones",
+    "restaurants": "Restaurantes",
+    "bars": "Bares",
+    "sport": "Deporte",
+    "culture": "Cultura",
+    "famille": "Familia",
+    "etudiants": "Estudiantes",
+    "networking": "Networking",
+    "loisirs": "Ocio"
+  },
+  "activities": {
+    "title": "Actividades",
+    "no_results": "No se encontraron actividades",
+    "load_more": "Cargar más",
+    "participants": "{count} participante(s)",
+    "spots_left": "{count} plaza(s) disponible(s)",
+    "spots_full": "Completo",
+    "unlimited": "Plazas ilimitadas",
+    "free": "Gratis",
+    "register": "Unirse",
+    "unregister": "Salir",
+    "registered": "Inscrito ✓",
+    "add_favorite": "Añadir a favoritos",
+    "remove_favorite": "Quitar de favoritos",
+    "report": "Reportar",
+    "external_link": "Reservar / Más info",
+    "organized_by": "Organizado por",
+    "location": "Lugar",
+    "distance": "{distance} km",
+    "photos": "Fotos",
+    "reviews": "Opiniones",
+    "avg_rating": "Nota media",
+    "status": { "pending": "Pendiente", "approved": "Publicado", "rejected": "Rechazado" }
+  },
+  "filters": {
+    "title": "Filtros",
+    "category": "Categoría",
+    "date": "Fecha",
+    "distance": "Distancia",
+    "price": "Precio",
+    "sort_by": "Ordenar por",
+    "sort": { "distance": "Distancia", "date": "Fecha", "popularity": "Popularidad", "rating": "Nota", "price": "Precio" },
+    "date_options": { "today": "Hoy", "tomorrow": "Mañana", "this_week": "Esta semana", "this_weekend": "Este fin de semana", "this_month": "Este mes" },
+    "price_options": { "free": "Gratis", "paid": "De pago", "all": "Todos" },
+    "apply": "Aplicar",
+    "reset": "Reiniciar"
+  },
+  "map": { "loading": "Cargando mapa...", "locate_me": "Localizarme", "list_view": "Vista lista", "map_view": "Vista mapa" },
+  "auth": {
+    "login": { "title": "Iniciar sesión", "email": "Email", "password": "Contraseña", "submit": "Iniciar sesión", "forgot_password": "¿Olvidaste tu contraseña?", "no_account": "¿No tienes cuenta?", "register_link": "Registrarse" },
+    "register": { "title": "Crear cuenta", "email": "Email", "password": "Contraseña", "confirm_password": "Confirmar contraseña", "username": "Nombre de usuario", "submit": "Crear cuenta", "already_account": "¿Ya tienes cuenta?", "login_link": "Iniciar sesión", "verify_email": "Revisa tu email para confirmar tu registro." },
+    "errors": { "invalid_credentials": "Email o contraseña incorrectos", "email_taken": "Este email ya está en uso", "weak_password": "La contraseña debe tener al menos 8 caracteres", "passwords_dont_match": "Las contraseñas no coinciden", "required": "Este campo es obligatorio" }
+  },
+  "profile": { "title": "Mi perfil", "edit": "Editar perfil", "username": "Nombre de usuario", "bio": "Descripción", "preferred_language": "Idioma preferido", "preferences": "Mis preferencias", "my_activities": "Mis actividades", "my_registrations": "Mis inscripciones", "save": "Guardar", "change_photo": "Cambiar foto" },
+  "favorites": { "title": "Mis favoritos", "empty": "Aún no tienes favoritos.", "browse": "Descubrir actividades" },
+  "propose": {
+    "title": "Proponer una actividad", "subtitle": "Comparte tu evento con la comunidad parisina", "login_required": "Debes estar conectado con email verificado.",
+    "form": { "title": "Título *", "description": "Descripción *", "category": "Categoría *", "tags": "Etiquetas (separadas por comas)", "address": "Dirección *", "date": "Fecha *", "time": "Hora *", "max_participants": "Plazas máximas (vacío = ilimitado)", "price": "Precio (vacío = gratis)", "external_url": "Enlace de reserva / web", "photos": "Fotos", "submit": "Enviar para revisión", "success": "Tu actividad ha sido enviada y será revisada por nuestro equipo.", "error": "Se produjo un error. Por favor inténtalo de nuevo." }
+  },
+  "admin": { "title": "Administración", "stats": { "total_users": "Usuarios", "total_activities": "Actividades", "pending_activities": "Pendientes", "pending_reports": "Reportes" }, "actions": { "approve": "Aprobar", "reject": "Rechazar", "delete": "Eliminar", "view": "Ver" }, "moderation_queue": "Cola de moderación", "empty_queue": "Sin contenido pendiente" },
+  "reviews": { "write": "Escribir opinión", "rating": "Nota", "comment": "Tu opinión", "submit": "Publicar", "no_reviews": "Sin opiniones aún." },
+  "report": { "title": "Reportar", "reason": "Motivo", "reasons": { "spam": "Spam", "offensive": "Contenido ofensivo", "wrong_info": "Información errónea", "advertising": "Publicidad excesiva" }, "description": "Detalles (opcional)", "submit": "Enviar", "success": "Reporte enviado. Gracias." },
+  "common": { "loading": "Cargando...", "error": "Se produjo un error", "retry": "Reintentar", "save": "Guardar", "cancel": "Cancelar", "delete": "Eliminar", "edit": "Editar", "close": "Cerrar", "back": "Volver", "search": "Buscar", "see_all": "Ver todo", "share": "Compartir" }
+}

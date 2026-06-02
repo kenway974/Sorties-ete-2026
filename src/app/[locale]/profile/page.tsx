@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "use";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -8,7 +8,10 @@ import Input from "@/components/ui/Input";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { Profile, ActivityCategory } from "@/types";
 
-const PREFS: ActivityCategory[] = ["soirees", "concerts", "expositions", "restaurants", "bars", "sport", "culture", "famille", "etudiants", "networking", "loisirs"];
+const PREFS: ActivityCategory[] = [
+  "soirees", "concerts", "expositions", "restaurants", "bars",
+  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
+];
 
 export default function ProfilePage() {
   const params = useParams();
@@ -19,6 +22,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({ username: "", bio: "", preferred_language: locale });
   const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
 
@@ -40,21 +44,29 @@ export default function ProfilePage() {
     if (!profile) return;
     setSaving(true);
     const supabase = createClient();
-    await supabase.from("profiles").update({ ...form, preferences: prefs, updated_at: new Date().toISOString() }).eq("id", profile.id);
+    await supabase
+      .from("profiles")
+      .update({ ...form, preferences: prefs, updated_at: new Date().toISOString() })
+      .eq("id", profile.id);
     setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
-  const togglePref = (cat: ActivityCategory) => {
-    setPrefs((p) => p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]);
-  };
+  const togglePref = (cat: ActivityCategory) =>
+    setPrefs((p) => (p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]));
 
   if (loading) return <LoadingSpinner />;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <Input label={t("username")} value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} />
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+        <Input
+          label={t("username")}
+          value={form.username}
+          onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+        />
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">{t("bio")}</label>
           <textarea
@@ -83,7 +95,9 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
-        <Button onClick={save} loading={saving} className="w-full">{t("save")}</Button>
+        <Button onClick={save} loading={saving} className="w-full">
+          {saved ? "✓ Enregistré !" : t("save")}
+        </Button>
       </div>
     </div>
   );

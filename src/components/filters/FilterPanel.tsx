@@ -1,0 +1,119 @@
+"use client";
+import { useState } from "react";
+import { SlidersHorizontal, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Button from "@/components/ui/Button";
+import type { ActivityFilters } from "@/types";
+
+interface FilterPanelProps {
+  filters: ActivityFilters;
+  onChange: (f: ActivityFilters) => void;
+}
+
+const DATE_OPTIONS = ["today", "tomorrow", "this_week", "this_weekend", "this_month"] as const;
+const SORT_OPTIONS = ["date", "distance", "popularity", "rating", "price"] as const;
+
+export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
+  const t = useTranslations("filters");
+  const [open, setOpen] = useState(false);
+
+  const hasFilters = filters.dateFilter || filters.priceFilter || filters.sortBy;
+
+  const reset = () => onChange({ ...filters, dateFilter: null, priceFilter: null, sortBy: "date" });
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors ${
+          hasFilters
+            ? "bg-brand-navy text-white border-brand-navy"
+            : "bg-white border-gray-200 text-gray-600 hover:border-brand-navy"
+        }`}
+      >
+        <SlidersHorizontal className="w-4 h-4" />
+        {t("title")}
+        {hasFilters && (
+          <span className="bg-white/20 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+            !
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full mt-2 z-40 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-72 animate-fade-in">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900">{t("title")}</h3>
+              <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Date */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("date")}</label>
+                <div className="flex flex-wrap gap-2">
+                  {DATE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => onChange({ ...filters, dateFilter: filters.dateFilter === opt ? null : opt })}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                        filters.dateFilter === opt
+                          ? "bg-brand-navy text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {t(`date_options.${opt}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("price")}</label>
+                <div className="flex gap-2">
+                  {(["free", "paid"] as const).map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => onChange({ ...filters, priceFilter: filters.priceFilter === opt ? null : opt })}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                        filters.priceFilter === opt
+                          ? "bg-brand-navy text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {t(`price_options.${opt}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sort */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("sort_by")}</label>
+                <select
+                  value={filters.sortBy || "date"}
+                  onChange={(e) => onChange({ ...filters, sortBy: e.target.value as ActivityFilters["sortBy"] })}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{t(`sort.${opt}`)}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+              <Button variant="outline" size="sm" onClick={reset} className="flex-1">{t("reset")}</Button>
+              <Button size="sm" onClick={() => setOpen(false)} className="flex-1">{t("apply")}</Button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

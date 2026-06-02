@@ -1,190 +1,163 @@
-"use client";
-import { useState, useCallback } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Crosshair, Search, ChevronUp, ChevronDown, ArrowRight } from "lucide-react";
-import { useActivities } from "@/lib/hooks/useActivities";
-import { useGeolocation } from "@/lib/hooks/useGeolocation";
-import CategoryFilter from "@/components/filters/CategoryFilter";
+import { createClient } from "@/lib/supabase/server";
+import { MapPin, Calendar, ArrowRight, Zap, Users, Star } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
-import { ActivitySkeleton } from "@/components/activities/ActivitySkeleton";
-import type { Activity, ActivityFilters } from "@/types";
 
-const MapView = dynamic(() => import("@/components/map/MapView"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-brand-navy-mid">
-      <div className="text-center text-white/50">
-        <div className="w-8 h-8 border-4 border-white/20 border-t-brand-gold rounded-full animate-spin mx-auto mb-2" />
-        <span className="text-sm">Chargement de la carte...</span>
-      </div>
-    </div>
-  ),
-});
+const CATEGORIES = [
+  { key: "soirees", emoji: "🎉", label: "Soirées" },
+  { key: "concerts", emoji: "🎵", label: "Concerts" },
+  { key: "expositions", emoji: "🎨", label: "Expositions" },
+  { key: "restaurants", emoji: "🍽️", label: "Restaurants" },
+  { key: "bars", emoji: "🍻", label: "Bars" },
+  { key: "sport", emoji: "⚽", label: "Sport" },
+  { key: "culture", emoji: "🏛️", label: "Culture" },
+  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
+  { key: "etudiants", emoji: "🎓", label: "Étudiants" },
+  { key: "networking", emoji: "🤝", label: "Networking" },
+  { key: "loisirs", emoji: "🎮", label: "Loisirs" },
+];
 
-export default function HomePage() {
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
-  const [filters, setFilters] = useState<ActivityFilters>({ sortBy: "date" });
-  const [searchInput, setSearchInput] = useState("");
-  const { lat, lng, locate, loading: locating } = useGeolocation();
-  const { activities, loading } = useActivities(filters);
+export default async function HomePage() {
+  const supabase = await createClient();
 
-  const handleActivityClick = useCallback((a: Activity) => {
-    setSelectedActivity(a);
-    setBottomSheetExpanded(false);
-  }, []);
+  const { data: featured } = await supabase
+    .from("activities")
+    .select("*, photos:activity_photos(id, url)")
+    .eq("status", "approved")
+    .gte("date", new Date().toISOString().split("T")[0])
+    .order("date", { ascending: true })
+    .limit(4);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchInput.trim()) {
-      window.location.href = `/fr/activities?q=${encodeURIComponent(searchInput.trim())}`;
-    }
-  };
+  const activities = featured || [];
 
   return (
-    <div className="flex flex-col">
+    <div>
       {/* Hero */}
-      <div className="bg-brand-navy relative overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-gold rounded-full -translate-y-1/2" />
-          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-red rounded-full translate-y-1/2" />
+      <section className="relative bg-brand-navy overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none select-none">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-brand-gold rounded-full" />
+          <div className="absolute -bottom-20 -right-10 w-72 h-72 bg-brand-red rounded-full" />
         </div>
-
-        <div className="relative max-w-4xl mx-auto px-4 pt-10 pb-8 text-center">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">
-            Paris<span className="text-brand-gold">Sorties</span>
+        <div className="relative max-w-4xl mx-auto px-4 py-20 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 text-brand-gold text-xs font-semibold px-3 py-1.5 rounded-full mb-6 border border-brand-gold/30">
+            <Zap className="w-3.5 h-3.5" />
+            Paris en temps réel
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight">
+            Trouvez votre prochaine<br />
+            <span className="text-brand-gold">sortie à Paris</span>
           </h1>
-          <p className="text-white/70 text-base md:text-lg mb-6 max-w-xl mx-auto">
-            Découvrez les meilleures activités, concerts, expos et soirées à Paris
+          <p className="text-white/60 text-lg mb-10 max-w-xl mx-auto">
+            Concerts, expos, soirées, restaurants — tout ce qui se passe dans la capitale, au bon moment.
           </p>
-
-          {/* Search bar */}
-          <form onSubmit={handleSearch} className="relative max-w-xl mx-auto mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Concert, expo, soirée..."
-              className="w-full pl-12 pr-32 py-3.5 rounded-2xl bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold shadow-lg"
-            />
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-brand-gold text-brand-navy px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-gold-dark transition-colors"
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/fr/activities"
+              className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-8 py-3.5 rounded-2xl hover:bg-brand-gold-dark transition-colors text-base shadow-lg"
             >
-              Chercher
-            </button>
-          </form>
+              Explorer les activités
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/fr/propose"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-medium px-8 py-3.5 rounded-2xl hover:bg-white/20 transition-colors text-base border border-white/20"
+            >
+              Proposer un événement
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          {/* Category pills */}
-          <div className="overflow-x-auto scrollbar-none -mx-4 px-4">
-            <CategoryFilter
-              selected={filters.category || null}
-              onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))}
-            />
+      {/* Stats bar */}
+      <div className="bg-brand-navy-mid border-b border-white/10">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-center gap-8 md:gap-16 text-white/70 text-sm">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-brand-gold" />
+            <span>Mis à jour chaque jour</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-brand-gold" />
+            <span>Toute l&apos;Île-de-France</span>
+          </div>
+          <div className="hidden md:flex items-center gap-2">
+            <Users className="w-4 h-4 text-brand-gold" />
+            <span>Communauté active</span>
           </div>
         </div>
       </div>
 
-      {/* Map section */}
-      <div className="relative" style={{ height: "calc(100vh - 360px)", minHeight: "400px" }}>
-        <MapView
-          activities={activities}
-          userLat={lat}
-          userLng={lng}
-          onActivityClick={handleActivityClick}
-          selectedId={selectedActivity?.id}
-        />
-
-        {/* Locate button */}
-        <button
-          onClick={locate}
-          disabled={locating}
-          className="absolute top-3 right-3 z-10 bg-white shadow-md rounded-xl p-2.5 hover:bg-gray-50 transition-colors disabled:opacity-60"
-          title="Me localiser"
-        >
-          <Crosshair className={`w-5 h-5 text-brand-navy ${locating ? "animate-spin" : ""}`} />
-        </button>
-
-        {/* Mobile: Selected activity card */}
-        {selectedActivity && !bottomSheetExpanded && (
-          <div className="absolute bottom-16 left-3 right-3 md:hidden z-10 animate-slide-up">
-            <ActivityCard activity={selectedActivity} compact />
+      {/* Categories */}
+      <section className="bg-white py-12">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Explorez par catégorie</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {CATEGORIES.map(({ key, emoji, label }) => (
+              <Link
+                key={key}
+                href={`/fr/activities?category=${key}`}
+                className="flex flex-col items-center gap-2 p-3 rounded-2xl border border-gray-100 hover:border-brand-navy hover:bg-brand-navy/5 transition-all group"
+              >
+                <span className="text-2xl">{emoji}</span>
+                <span className="text-xs font-medium text-gray-600 group-hover:text-brand-navy transition-colors text-center leading-tight">
+                  {label}
+                </span>
+              </Link>
+            ))}
           </div>
-        )}
+        </div>
+      </section>
 
-        {/* Mobile bottom sheet */}
-        <div
-          className={`absolute bottom-0 left-0 right-0 md:hidden z-20 bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ${
-            bottomSheetExpanded ? "h-[55vh]" : "h-12"
-          }`}
-        >
-          <button
-            onClick={() => setBottomSheetExpanded(!bottomSheetExpanded)}
-            className="w-full flex items-center justify-between px-4 py-3"
-          >
-            <span className="font-semibold text-sm text-gray-900">
-              {loading ? "..." : `${activities.length} activité(s) sur la carte`}
-            </span>
-            {bottomSheetExpanded ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronUp className="w-5 h-5 text-gray-400" />}
-          </button>
-          {bottomSheetExpanded && (
-            <div className="overflow-y-auto h-[calc(100%-48px)] px-3 pb-4 space-y-3">
-              {loading ? (
-                Array.from({ length: 3 }).map((_, i) => <ActivitySkeleton key={i} />)
-              ) : (
-                activities.map((a) => (
-                  <div key={a.id} onClick={() => { handleActivityClick(a); setBottomSheetExpanded(false); }}>
-                    <ActivityCard activity={a} />
-                  </div>
-                ))
-              )}
+      {/* Featured activities */}
+      <section className="bg-brand-cream py-12">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Prochainement à Paris</h2>
+              <p className="text-sm text-gray-500 mt-1">Les événements qui arrivent bientôt</p>
+            </div>
+            <Link
+              href="/fr/activities"
+              className="flex items-center gap-1.5 text-sm font-semibold text-brand-navy hover:underline"
+            >
+              Tout voir <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {activities.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <Calendar className="w-10 h-10 mx-auto mb-3 opacity-40" />
+              <p>Aucun événement à venir pour le moment.</p>
+              <Link href="/fr/propose" className="mt-3 inline-block text-brand-navy font-medium hover:underline text-sm">
+                Soyez le premier à proposer un événement →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {activities.map((a) => (
+                <ActivityCard key={a.id} activity={a} />
+              ))}
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Desktop: Featured activities strip */}
-      <div className="hidden md:block bg-brand-cream border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-gray-900">
-              {loading ? "Activités à venir" : `${activities.length} activité(s) disponible(s)`}
-            </h2>
-            <Link
-              href="/fr/activities"
-              className="flex items-center gap-1 text-sm font-medium text-brand-navy hover:underline"
-            >
-              Voir tout <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="shrink-0 w-64">
-                  <ActivitySkeleton />
-                </div>
-              ))
-            ) : activities.length === 0 ? (
-              <p className="text-gray-400 text-sm py-4">Aucune activité pour le moment.</p>
-            ) : (
-              activities.slice(0, 8).map((a) => (
-                <div
-                  key={a.id}
-                  className={`shrink-0 w-64 cursor-pointer rounded-2xl transition-all ${
-                    selectedActivity?.id === a.id ? "ring-2 ring-brand-navy" : ""
-                  }`}
-                  onClick={() => handleActivityClick(a)}
-                >
-                  <ActivityCard activity={a} />
-                </div>
-              ))
-            )}
-          </div>
+      {/* CTA banner */}
+      <section className="bg-brand-navy py-12">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <Star className="w-8 h-8 text-brand-gold mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-3">Vous organisez un événement à Paris ?</h2>
+          <p className="text-white/60 mb-6">
+            Proposez votre événement et touchez une communauté passionnée par la vie parisienne.
+          </p>
+          <Link
+            href="/fr/propose"
+            className="inline-flex items-center gap-2 bg-brand-gold text-brand-navy font-bold px-8 py-3.5 rounded-2xl hover:bg-brand-gold-dark transition-colors"
+          >
+            Proposer un événement
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

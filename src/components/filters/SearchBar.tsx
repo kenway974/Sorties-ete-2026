@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Search, X, Clock } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useSearchHistory } from "@/lib/hooks/useSearchHistory";
 
 interface SearchBarProps {
@@ -10,7 +9,6 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ value, onChange }: SearchBarProps) {
-  const t = useTranslations();
   const [local, setLocal] = useState(value);
   const [focused, setFocused] = useState(false);
   const { history, add, clear } = useSearchHistory();
@@ -38,7 +36,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
         onChange={(e) => setLocal(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setTimeout(() => setFocused(false), 150)}
-        placeholder={t("home.search_placeholder")}
+        placeholder="Rechercher une activité, un lieu..."
         className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy shadow-sm"
       />
       {local && (
@@ -50,7 +48,6 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
         </button>
       )}
 
-      {/* Search history dropdown */}
       {showHistory && (
         <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in">
           <div className="flex items-center justify-between px-3 py-2 border-b border-gray-50">

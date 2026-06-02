@@ -1,13 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import ActivityCard from "@/components/activities/ActivityCard";
 import Button from "@/components/ui/Button";
 
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations();
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -23,13 +21,13 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("favorites.title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Mes favoris</h1>
       {activities.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-5xl mb-4">♥️</p>
-          <p className="text-gray-500 mb-4">{t("favorites.empty")}</p>
+          <p className="text-gray-500 mb-4">Vous n&apos;avez pas encore de favoris.</p>
           <Link href={`/${locale}/activities`}>
-            <Button>{t("favorites.browse")}</Button>
+            <Button>Découvrir des activités</Button>
           </Link>
         </div>
       ) : (

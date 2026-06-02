@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -13,17 +12,21 @@ const PREFS: ActivityCategory[] = [
   "sport", "culture", "famille", "etudiants", "networking", "loisirs",
 ];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
+  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+};
+
 export default function ProfilePage() {
   const params = useParams();
   const locale = params.locale as string;
   const router = useRouter();
-  const t = useTranslations("profile");
-  const tc = useTranslations("categories");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState({ username: "", bio: "", preferred_language: locale });
+  const [form, setForm] = useState({ username: "", bio: "", preferred_language: "fr" });
   const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function ProfilePage() {
       const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       if (data) {
         setProfile(data);
-        setForm({ username: data.username || "", bio: data.bio || "", preferred_language: data.preferred_language || locale });
+        setForm({ username: data.username || "", bio: data.bio || "", preferred_language: "fr" });
         setPrefs(data.preferences || []);
       }
       setLoading(false);
@@ -60,15 +63,15 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Mon profil</h1>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
         <Input
-          label={t("username")}
+          label="Pseudo"
           value={form.username}
           onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
         />
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">{t("bio")}</label>
+          <label className="text-sm font-medium text-gray-700">Description</label>
           <textarea
             value={form.bio}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
@@ -77,7 +80,7 @@ export default function ProfilePage() {
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">{t("preferences")}</label>
+          <label className="text-sm font-medium text-gray-700 mb-2 block">Mes préférences</label>
           <div className="flex flex-wrap gap-2">
             {PREFS.map((cat) => (
               <button
@@ -90,13 +93,13 @@ export default function ProfilePage() {
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                {tc(cat)}
+                {CATEGORY_LABELS[cat]}
               </button>
             ))}
           </div>
         </div>
         <Button onClick={save} loading={saving} className="w-full">
-          {saved ? "✓ Enregistré !" : t("save")}
+          {saved ? "✓ Enregistré !" : "Enregistrer"}
         </Button>
       </div>
     </div>

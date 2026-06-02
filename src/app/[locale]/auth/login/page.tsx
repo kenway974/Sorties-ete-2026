@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
 

@@ -1,14 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { MapPin, CheckCircle } from "lucide-react";
 import RegisterForm from "@/components/auth/RegisterForm";
 
 export default function RegisterPage() {
   const params = useParams();
   const locale = params.locale as string;
-  const t = useTranslations("auth.register");
   const [done, setDone] = useState(false);
 
   return (
@@ -24,8 +22,8 @@ export default function RegisterPage() {
           {done ? (
             <div className="text-center py-4">
               <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-              <p className="font-semibold text-gray-900 mb-2">{t("title")}</p>
-              <p className="text-sm text-gray-500">{t("verify_email")}</p>
+              <p className="font-semibold text-gray-900 mb-2">Compte créé !</p>
+              <p className="text-sm text-gray-500">Vérifiez votre email pour confirmer votre compte.</p>
             </div>
           ) : (
             <RegisterForm locale={locale} onSuccess={() => setDone(true)} />

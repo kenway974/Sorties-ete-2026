@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import AdminClient from "./AdminClient";
 
 export default async function AdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations("admin");
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();

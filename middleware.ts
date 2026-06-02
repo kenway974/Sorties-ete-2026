@@ -1,11 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
-import { routing } from "./src/i18n/routing";
-
-const intlMiddleware = createIntlMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/fr", request.url));
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -29,17 +29,9 @@ export async function middleware(request: NextRequest) {
 
   await supabase.auth.getUser();
 
-  const intlResponse = intlMiddleware(request);
-
-  supabaseResponse.cookies.getAll().forEach((cookie) => {
-    intlResponse.cookies.set(cookie.name, cookie.value);
-  });
-
-  return intlResponse;
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next|_vercel|.*\\..*).*)",
-  ],
+  matcher: ["/((?!_next|_vercel|.*\\..*).*)",],
 };

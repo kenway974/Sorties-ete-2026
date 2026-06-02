@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Check, X, Eye } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import type { Report } from "@/types";
@@ -9,7 +8,6 @@ import type { Report } from "@/types";
 interface Props { reports: Report[]; }
 
 export default function ModerationClient({ reports: initial }: Props) {
-  const t = useTranslations("admin");
   const [reports, setReports] = useState(initial);
   const [processing, setProcessing] = useState<string | null>(null);
 
@@ -34,7 +32,7 @@ export default function ModerationClient({ reports: initial }: Props) {
       {reports.length === 0 ? (
         <div className="bg-white rounded-2xl p-8 text-center border border-gray-100">
           <Check className="w-12 h-12 text-green-400 mx-auto mb-3" />
-          <p className="text-gray-500">{t("empty_queue")}</p>
+          <p className="text-gray-500">Aucun contenu en attente</p>
         </div>
       ) : (
         <div className="space-y-3">

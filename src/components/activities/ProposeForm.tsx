@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -11,14 +10,18 @@ const CATEGORIES: ActivityCategory[] = [
   "sport", "culture", "famille", "etudiants", "networking", "loisirs",
 ];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
+  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+};
+
 interface ProposeFormProps {
   userId: string;
   onSuccess: () => void;
 }
 
 export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
-  const t = useTranslations("propose.form");
-  const tc = useTranslations("categories");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
@@ -40,7 +43,6 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     setError("");
     try {
       const supabase = createClient();
-      // Geocode address via Nominatim
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(form.address + ", Paris, France")}&format=json&limit=1`
       );
@@ -75,10 +77,10 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input label={t("title")} value={form.title} onChange={set("title")} required />
+      <Input label="Titre" value={form.title} onChange={set("title")} required />
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">{t("description")}</label>
+        <label className="text-sm font-medium text-gray-700">Description</label>
         <textarea
           value={form.description}
           onChange={set("description") as any}
@@ -89,7 +91,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">{t("category")}</label>
+        <label className="text-sm font-medium text-gray-700">Catégorie</label>
         <select
           value={form.category}
           onChange={set("category") as any}
@@ -98,30 +100,30 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         >
           <option value="">--</option>
           {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{tc(c)}</option>
+            <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
           ))}
         </select>
       </div>
 
-      <Input label={t("tags")} value={form.tags} onChange={set("tags")} placeholder="musique, dj, électro" />
-      <Input label={t("address")} value={form.address} onChange={set("address")} required placeholder="10 rue de Rivoli, Paris" />
+      <Input label="Tags" value={form.tags} onChange={set("tags")} placeholder="musique, dj, électro" />
+      <Input label="Adresse" value={form.address} onChange={set("address")} required placeholder="10 rue de Rivoli, Paris" />
 
       <div className="grid grid-cols-2 gap-3">
-        <Input label={t("date")} type="date" value={form.date} onChange={set("date")} required min={new Date().toISOString().split("T")[0]} />
-        <Input label={t("time")} type="time" value={form.time} onChange={set("time")} required />
+        <Input label="Date" type="date" value={form.date} onChange={set("date")} required min={new Date().toISOString().split("T")[0]} />
+        <Input label="Heure" type="time" value={form.time} onChange={set("time")} required />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Input label={t("max_participants")} type="number" min="1" value={form.max_participants} onChange={set("max_participants")} />
-        <Input label={t("price")} type="number" min="0" step="0.01" value={form.price} onChange={set("price")} />
+        <Input label="Places max" type="number" min="1" value={form.max_participants} onChange={set("max_participants")} />
+        <Input label="Prix (€)" type="number" min="0" step="0.01" value={form.price} onChange={set("price")} />
       </div>
 
-      <Input label={t("external_url")} type="url" value={form.external_url} onChange={set("external_url")} placeholder="https://..." />
+      <Input label="Lien externe" type="url" value={form.external_url} onChange={set("external_url")} placeholder="https://..." />
 
       {error && <p className="text-sm text-brand-red">{error}</p>}
 
       <Button type="submit" loading={loading} className="w-full" size="lg">
-        {t("submit")}
+        Proposer l&apos;activité
       </Button>
     </form>
   );

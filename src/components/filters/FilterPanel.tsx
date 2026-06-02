@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import type { ActivityFilters } from "@/types";
 
@@ -10,11 +9,26 @@ interface FilterPanelProps {
   onChange: (f: ActivityFilters) => void;
 }
 
+const DATE_LABELS: Record<string, string> = {
+  today: "Aujourd'hui",
+  tomorrow: "Demain",
+  this_week: "Cette semaine",
+  this_weekend: "Ce week-end",
+  this_month: "Ce mois",
+};
+
+const SORT_LABELS: Record<string, string> = {
+  date: "Date",
+  distance: "Distance",
+  popularity: "Popularité",
+  rating: "Note",
+  price: "Prix",
+};
+
 const DATE_OPTIONS = ["today", "tomorrow", "this_week", "this_weekend", "this_month"] as const;
 const SORT_OPTIONS = ["date", "distance", "popularity", "rating", "price"] as const;
 
 export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
-  const t = useTranslations("filters");
   const [open, setOpen] = useState(false);
 
   const hasFilters = filters.dateFilter || filters.priceFilter || filters.sortBy;
@@ -32,7 +46,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         }`}
       >
         <SlidersHorizontal className="w-4 h-4" />
-        {t("title")}
+        Filtres
         {hasFilters && (
           <span className="bg-white/20 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
             !
@@ -45,16 +59,15 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
           <div className="absolute left-0 top-full mt-2 z-40 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-72 animate-fade-in">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">{t("title")}</h3>
+              <h3 className="font-semibold text-gray-900">Filtres</h3>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-4">
-              {/* Date */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("date")}</label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Date</label>
                 <div className="flex flex-wrap gap-2">
                   {DATE_OPTIONS.map((opt) => (
                     <button
@@ -66,15 +79,14 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
-                      {t(`date_options.${opt}`)}
+                      {DATE_LABELS[opt]}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Price */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("price")}</label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Prix</label>
                 <div className="flex gap-2">
                   {(["free", "paid"] as const).map((opt) => (
                     <button
@@ -86,30 +98,29 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
-                      {t(`price_options.${opt}`)}
+                      {opt === "free" ? "Gratuit" : "Payant"}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Sort */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">{t("sort_by")}</label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Trier par</label>
                 <select
                   value={filters.sortBy || "date"}
                   onChange={(e) => onChange({ ...filters, sortBy: e.target.value as ActivityFilters["sortBy"] })}
                   className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 >
                   {SORT_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>{t(`sort.${opt}`)}</option>
+                    <option key={opt} value={opt}>{SORT_LABELS[opt]}</option>
                   ))}
                 </select>
               </div>
             </div>
 
             <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-              <Button variant="outline" size="sm" onClick={reset} className="flex-1">{t("reset")}</Button>
-              <Button size="sm" onClick={() => setOpen(false)} className="flex-1">{t("apply")}</Button>
+              <Button variant="outline" size="sm" onClick={reset} className="flex-1">Réinitialiser</Button>
+              <Button size="sm" onClick={() => setOpen(false)} className="flex-1">Appliquer</Button>
             </div>
           </div>
         </>

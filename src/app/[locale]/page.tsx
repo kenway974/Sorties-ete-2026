@@ -1,7 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { useTranslations, useLocale } from "next-intl";
 import { List, Map as MapIcon, Crosshair, ChevronUp, ChevronDown } from "lucide-react";
 import { useActivities } from "@/lib/hooks/useActivities";
 import { useGeolocation } from "@/lib/hooks/useGeolocation";
@@ -10,7 +9,7 @@ import SearchBar from "@/components/filters/SearchBar";
 import FilterPanel from "@/components/filters/FilterPanel";
 import ActivityCard from "@/components/activities/ActivityCard";
 import { ActivitySkeleton } from "@/components/activities/ActivitySkeleton";
-import type { Activity, ActivityCategory, ActivityFilters } from "@/types";
+import type { Activity, ActivityFilters } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
   ssr: false,
@@ -25,8 +24,6 @@ const MapView = dynamic(() => import("@/components/map/MapView"), {
 });
 
 export default function HomePage() {
-  const t = useTranslations();
-  const locale = useLocale();
   const [view, setView] = useState<"map" | "list">("map");
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
@@ -84,7 +81,7 @@ export default function HomePage() {
             ) : activities.length === 0 ? (
               <div className="text-center py-16 text-gray-400">
                 <p className="text-4xl mb-3">🔍</p>
-                <p className="text-sm">{t("home.no_results")}</p>
+                <p className="text-sm">Aucune activité trouvée</p>
               </div>
             ) : (
               activities.map((a) => (
@@ -117,7 +114,7 @@ export default function HomePage() {
             onClick={locate}
             disabled={locating}
             className="absolute top-3 right-3 z-10 bg-white shadow-md rounded-xl p-2.5 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            title={t("map.locate_me")}
+            title="Me localiser"
           >
             <Crosshair className={`w-5 h-5 text-brand-navy ${locating ? "animate-spin" : ""}`} />
           </button>
@@ -168,7 +165,7 @@ export default function HomePage() {
             ) : activities.length === 0 ? (
               <div className="text-center py-16 text-gray-400">
                 <p className="text-4xl mb-3">🔍</p>
-                <p>{t("home.no_results")}</p>
+                <p>Aucune activité trouvée</p>
               </div>
             ) : (
               activities.map((a) => <ActivityCard key={a.id} activity={a} />)

@@ -15,7 +15,7 @@ export default function HeaderClient({ locale, profile }: HeaderClientProps) {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push(`/${locale}`);
+    router.push("/fr");
     router.refresh();
   };
 

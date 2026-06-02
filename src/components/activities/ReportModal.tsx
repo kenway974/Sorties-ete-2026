@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import type { ContentType, ReportReason } from "@/types";
@@ -14,8 +13,14 @@ interface ReportModalProps {
 
 const REASONS: ReportReason[] = ["spam", "offensive", "wrong_info", "advertising"];
 
+const REASON_LABELS: Record<ReportReason, string> = {
+  spam: "Spam",
+  offensive: "Contenu offensant",
+  wrong_info: "Informations incorrectes",
+  advertising: "Publicité non sollicitée",
+};
+
 export default function ReportModal({ open, onClose, contentType, contentId }: ReportModalProps) {
-  const t = useTranslations("report");
   const [reason, setReason] = useState<ReportReason | "">("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,16 +40,16 @@ export default function ReportModal({ open, onClose, contentType, contentId }: R
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={t("title")} size="sm">
+    <Modal open={open} onClose={onClose} title="Signaler un contenu" size="sm">
       {done ? (
         <div className="text-center py-4">
           <p className="text-2xl mb-2">✅</p>
-          <p className="text-sm text-gray-600">{t("success")}</p>
+          <p className="text-sm text-gray-600">Signalement envoyé. Merci !</p>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">{t("reason")}</label>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Raison</label>
             <div className="space-y-2">
               {REASONS.map((r) => (
                 <label key={r} className="flex items-center gap-3 cursor-pointer">
@@ -56,13 +61,13 @@ export default function ReportModal({ open, onClose, contentType, contentId }: R
                     onChange={() => setReason(r)}
                     className="text-brand-navy"
                   />
-                  <span className="text-sm">{t(`reasons.${r}`)}</span>
+                  <span className="text-sm">{REASON_LABELS[r]}</span>
                 </label>
               ))}
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">{t("description")}</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Description (optionnelle)</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -72,7 +77,7 @@ export default function ReportModal({ open, onClose, contentType, contentId }: R
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} className="flex-1">Annuler</Button>
-            <Button onClick={submit} loading={loading} disabled={!reason} className="flex-1">{t("submit")}</Button>
+            <Button onClick={submit} loading={loading} disabled={!reason} className="flex-1">Signaler</Button>
           </div>
         </div>
       )}

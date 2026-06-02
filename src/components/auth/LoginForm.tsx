@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -12,7 +11,6 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ locale }: LoginFormProps) {
-  const t = useTranslations("auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +24,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithPassword({ email, password });
     if (err) {
-      setError(t("errors.invalid_credentials"));
+      setError("Email ou mot de passe incorrect");
     } else {
       router.push(`/${locale}`);
       router.refresh();
@@ -37,7 +35,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label={t("login.email")}
+        label="Email"
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -45,7 +43,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
         autoComplete="email"
       />
       <Input
-        label={t("login.password")}
+        label="Mot de passe"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -54,12 +52,12 @@ export default function LoginForm({ locale }: LoginFormProps) {
       />
       {error && <p className="text-sm text-brand-red">{error}</p>}
       <Button type="submit" loading={loading} className="w-full">
-        {t("login.submit")}
+        Se connecter
       </Button>
       <p className="text-center text-sm text-gray-500">
-        {t("login.no_account")}{" "}
+        Pas encore de compte ?{" "}
         <Link href={`/${locale}/auth/register`} className="text-brand-navy font-medium hover:underline">
-          {t("login.register_link")}
+          S&apos;inscrire
         </Link>
       </p>
     </form>

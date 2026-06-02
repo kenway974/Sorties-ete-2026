@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { useActivities } from "@/lib/hooks/useActivities";
 import ActivityCard from "@/components/activities/ActivityCard";
 import { ActivitySkeletonGrid } from "@/components/activities/ActivitySkeleton";
@@ -10,13 +9,12 @@ import FilterPanel from "@/components/filters/FilterPanel";
 import type { ActivityFilters } from "@/types";
 
 export default function ActivitiesPage() {
-  const t = useTranslations();
   const [filters, setFilters] = useState<ActivityFilters>({ sortBy: "date" });
   const { activities, loading } = useActivities(filters);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("activities.title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">Activités</h1>
 
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex gap-2">
@@ -33,7 +31,7 @@ export default function ActivitiesPage() {
       ) : activities.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <p className="text-5xl mb-4">🔍</p>
-          <p className="text-lg">{t("activities.no_results")}</p>
+          <p className="text-lg">Aucune activité trouvée</p>
         </div>
       ) : (
         <>

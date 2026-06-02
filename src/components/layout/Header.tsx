@@ -1,9 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Menu, X, MapPin, User, LogOut } from "lucide-react";
-import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import type { Profile } from "@/types";
 
@@ -14,7 +12,6 @@ interface HeaderProps {
 }
 
 export default function Header({ locale, user, onLogout }: HeaderProps) {
-  const t = useTranslations("nav");
   const [menuOpen, setMenuOpen] = useState(false);
   const base = `/${locale}`;
 
@@ -30,18 +27,17 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
-          <NavLink href={base}>{t("home")}</NavLink>
-          <NavLink href={`${base}/activities`}>{t("activities")}</NavLink>
-          {user && <NavLink href={`${base}/favorites`}>{t("favorites")}</NavLink>}
-          {user && <NavLink href={`${base}/propose`}>{t("propose")}</NavLink>}
+          <NavLink href={base}>Accueil</NavLink>
+          <NavLink href={`${base}/activities`}>Activités</NavLink>
+          {user && <NavLink href={`${base}/favorites`}>Favoris</NavLink>}
+          {user && <NavLink href={`${base}/propose`}>Proposer</NavLink>}
           {(user?.role === "admin" || user?.role === "moderator") && (
-            <NavLink href={`${base}/admin`}>{t("admin")}</NavLink>
+            <NavLink href={`${base}/admin`}>Admin</NavLink>
           )}
         </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-1">
-          <LanguageSwitcher />
           {user ? (
             <div className="flex items-center gap-1">
               <NotificationBell userId={user.id} />
@@ -55,7 +51,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
               <button
                 onClick={onLogout}
                 className="hidden md:flex p-2 rounded-xl hover:bg-white/10 transition-colors"
-                aria-label={t("logout")}
+                aria-label="Se déconnecter"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -66,13 +62,13 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
                 href={`${base}/auth/login`}
                 className="px-4 py-1.5 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
               >
-                {t("login")}
+                Se connecter
               </Link>
               <Link
                 href={`${base}/auth/register`}
-                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-brand-gold hover:bg-brand-gold-dark transition-colors"
+                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-brand-gold text-brand-navy hover:bg-brand-gold-dark transition-colors"
               >
-                {t("register")}
+                S&apos;inscrire
               </Link>
             </div>
           )}
@@ -89,28 +85,28 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-brand-navy-dark border-t border-white/10 py-3 px-4 flex flex-col gap-1 animate-fade-in">
-          <MobileLink href={base} onClick={() => setMenuOpen(false)}>{t("home")}</MobileLink>
-          <MobileLink href={`${base}/activities`} onClick={() => setMenuOpen(false)}>{t("activities")}</MobileLink>
-          {user && <MobileLink href={`${base}/favorites`} onClick={() => setMenuOpen(false)}>{t("favorites")}</MobileLink>}
-          {user && <MobileLink href={`${base}/propose`} onClick={() => setMenuOpen(false)}>{t("propose")}</MobileLink>}
+          <MobileLink href={base} onClick={() => setMenuOpen(false)}>Accueil</MobileLink>
+          <MobileLink href={`${base}/activities`} onClick={() => setMenuOpen(false)}>Activités</MobileLink>
+          {user && <MobileLink href={`${base}/favorites`} onClick={() => setMenuOpen(false)}>Favoris</MobileLink>}
+          {user && <MobileLink href={`${base}/propose`} onClick={() => setMenuOpen(false)}>Proposer</MobileLink>}
           {(user?.role === "admin" || user?.role === "moderator") && (
-            <MobileLink href={`${base}/admin`} onClick={() => setMenuOpen(false)}>{t("admin")}</MobileLink>
+            <MobileLink href={`${base}/admin`} onClick={() => setMenuOpen(false)}>Admin</MobileLink>
           )}
           <div className="pt-2 mt-2 border-t border-white/10">
             {user ? (
               <>
-                <MobileLink href={`${base}/profile`} onClick={() => setMenuOpen(false)}>{t("profile")}</MobileLink>
+                <MobileLink href={`${base}/profile`} onClick={() => setMenuOpen(false)}>Mon profil</MobileLink>
                 <button
                   onClick={() => { onLogout(); setMenuOpen(false); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl text-sm font-medium text-red-300 hover:bg-white/10 transition-colors"
                 >
-                  {t("logout")}
+                  Se déconnecter
                 </button>
               </>
             ) : (
               <>
-                <MobileLink href={`${base}/auth/login`} onClick={() => setMenuOpen(false)}>{t("login")}</MobileLink>
-                <MobileLink href={`${base}/auth/register`} onClick={() => setMenuOpen(false)}>{t("register")}</MobileLink>
+                <MobileLink href={`${base}/auth/login`} onClick={() => setMenuOpen(false)}>Se connecter</MobileLink>
+                <MobileLink href={`${base}/auth/register`} onClick={() => setMenuOpen(false)}>S&apos;inscrire</MobileLink>
               </>
             )}
           </div>

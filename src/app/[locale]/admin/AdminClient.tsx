@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { Users, Activity, Clock, Flag, Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
@@ -14,7 +13,6 @@ interface Props {
 }
 
 export default function AdminClient({ pendingActivities: initial, stats }: Props) {
-  const t = useTranslations("admin");
   const [pending, setPending] = useState(initial);
   const [processing, setProcessing] = useState<string | null>(null);
 
@@ -28,15 +26,14 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Administration</h1>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { icon: Users, label: t("stats.total_users"), value: stats.users, color: "text-blue-600 bg-blue-50" },
-          { icon: Activity, label: t("stats.total_activities"), value: stats.activities, color: "text-green-600 bg-green-50" },
-          { icon: Clock, label: t("stats.pending_activities"), value: stats.pending, color: "text-amber-600 bg-amber-50" },
-          { icon: Flag, label: t("stats.pending_reports"), value: stats.reports, color: "text-red-600 bg-red-50" },
+          { icon: Users, label: "Utilisateurs", value: stats.users, color: "text-blue-600 bg-blue-50" },
+          { icon: Activity, label: "Activités", value: stats.activities, color: "text-green-600 bg-green-50" },
+          { icon: Clock, label: "En attente", value: stats.pending, color: "text-amber-600 bg-amber-50" },
+          { icon: Flag, label: "Signalements", value: stats.reports, color: "text-red-600 bg-red-50" },
         ].map(({ icon: Icon, label, value, color }) => (
           <div key={label} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${color}`}>
@@ -48,12 +45,11 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
         ))}
       </div>
 
-      {/* Moderation queue */}
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("moderation_queue")}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">File de modération</h2>
       {pending.length === 0 ? (
         <div className="bg-white rounded-2xl p-8 text-center border border-gray-100">
           <Check className="w-12 h-12 text-green-400 mx-auto mb-3" />
-          <p className="text-gray-500">{t("empty_queue")}</p>
+          <p className="text-gray-500">Aucun contenu en attente</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -79,7 +75,7 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
                     onClick={() => handle(activity.id, "approved")}
                     disabled={processing === activity.id}
                     className="p-2 rounded-xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors disabled:opacity-50"
-                    title={t("actions.approve")}
+                    title="Approuver"
                   >
                     <Check className="w-5 h-5" />
                   </button>
@@ -87,7 +83,7 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
                     onClick={() => handle(activity.id, "rejected")}
                     disabled={processing === activity.id}
                     className="p-2 rounded-xl bg-red-50 text-brand-red hover:bg-red-100 transition-colors disabled:opacity-50"
-                    title={t("actions.reject")}
+                    title="Refuser"
                   >
                     <X className="w-5 h-5" />
                   </button>

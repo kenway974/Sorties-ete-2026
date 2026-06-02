@@ -2,8 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useTranslations } from "next-intl";
-import { MapPin, Calendar, Clock, Users, ExternalLink, Heart, Flag, ArrowLeft, Star } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, ExternalLink, Heart, ArrowLeft, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -12,6 +11,12 @@ import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import type { Activity, Review, Profile } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
+
+const CATEGORY_LABELS: Record<string, string> = {
+  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
+  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+};
 
 interface Props {
   activity: Activity;
@@ -23,8 +28,7 @@ interface Props {
   isRegistered: boolean;
 }
 
-export default function ActivityDetailClient({ activity, reviews, locale, userId, profile, isFavorite: initFav, isRegistered: initReg }: Props) {
-  const t = useTranslations();
+export default function ActivityDetailClient({ activity, reviews, userId, isFavorite: initFav, isRegistered: initReg }: Props) {
   const [isFavorite, setIsFavorite] = useState(initFav);
   const [isRegistered, setIsRegistered] = useState(initReg);
   const [participants, setParticipants] = useState(activity.current_participants);
@@ -88,16 +92,13 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      {/* Back */}
-      <Link href={`/${locale}/activities`} className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-navy mb-4">
+      <Link href="/fr/activities" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-navy mb-4">
         <ArrowLeft className="w-4 h-4" />
-        {t("common.back")}
+        Retour
       </Link>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Main content */}
         <div className="md:col-span-2 space-y-4">
-          {/* Photos */}
           {activity.photos && activity.photos.length > 0 && (
             <div className="rounded-2xl overflow-hidden h-64 bg-gray-100">
               <img src={activity.photos[0].url} alt={activity.title} className="w-full h-full object-cover" />
@@ -111,7 +112,7 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
 
           <div className="flex items-start justify-between gap-4">
             <div>
-              <Badge variant="navy" className="mb-2">{t(`categories.${activity.category}`)}</Badge>
+              <Badge variant="navy" className="mb-2">{CATEGORY_LABELS[activity.category] || activity.category}</Badge>
               <h1 className="text-2xl font-bold text-gray-900">{activity.title}</h1>
             </div>
             <div className="flex gap-2 shrink-0">
@@ -126,7 +127,6 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="flex gap-4 border-b border-gray-200">
             {(["info", "reviews"] as const).map((tab) => (
               <button
@@ -138,7 +138,7 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                {tab === "info" ? "Informations" : `${t("activities.reviews")} (${localReviews.length})`}
+                {tab === "info" ? "Informations" : `Avis (${localReviews.length})`}
               </button>
             ))}
           </div>
@@ -153,7 +153,6 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
                   ))}
                 </div>
               )}
-              {/* Map */}
               <div className="h-48 rounded-2xl overflow-hidden border border-gray-100">
                 <MapView activities={[activity]} />
               </div>
@@ -164,22 +163,22 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
             <div className="space-y-4">
               {userId && (
                 <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                  <h3 className="font-medium mb-3">{t("reviews.write")}</h3>
+                  <h3 className="font-medium mb-3">Écrire un avis</h3>
                   <StarRating value={reviewRating} onChange={setReviewRating} size="lg" />
                   <textarea
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
-                    placeholder={t("reviews.comment")}
+                    placeholder="Votre avis..."
                     rows={3}
                     className="w-full mt-3 px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none"
                   />
                   <Button size="sm" onClick={submitReview} disabled={reviewRating === 0} className="mt-2">
-                    {t("reviews.submit")}
+                    Publier
                   </Button>
                 </div>
               )}
               {localReviews.length === 0 && (
-                <p className="text-gray-400 text-center py-8">{t("reviews.no_reviews")}</p>
+                <p className="text-gray-400 text-center py-8">Aucun avis pour le moment.</p>
               )}
               {localReviews.map((review) => (
                 <div key={review.id} className="bg-white rounded-2xl p-4 border border-gray-100">
@@ -199,12 +198,11 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-4">
           <div className="bg-white rounded-2xl p-4 border border-gray-100 space-y-3">
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-brand-navy shrink-0" />
-              <span className="text-sm">{formatDate(activity.date, locale)}</span>
+              <span className="text-sm">{formatDate(activity.date, "fr")}</span>
             </div>
             <div className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-brand-navy shrink-0" />
@@ -217,10 +215,10 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
             <div className="flex items-center gap-3">
               <Users className="w-5 h-5 text-brand-navy shrink-0" />
               <span className="text-sm">
-                {t("activities.participants", { count: participants })}
+                {participants} participant(s)
                 {spotsLeft !== null && (
                   <span className={`ml-1 ${isFull ? "text-brand-red" : "text-green-600"} font-medium`}>
-                    ({isFull ? t("activities.spots_full") : t("activities.spots_left", { count: spotsLeft })})
+                    ({isFull ? "Complet" : `${spotsLeft} place(s) restante(s)`})
                   </span>
                 )}
               </span>
@@ -233,7 +231,7 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
             )}
             <div className="pt-2 border-t border-gray-100">
               <span className="text-xl font-bold text-brand-navy">
-                {formatPrice(activity.price, t("activities.free"))}
+                {formatPrice(activity.price, "Gratuit")}
               </span>
             </div>
           </div>
@@ -246,7 +244,7 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
               className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl border-2 border-brand-navy text-brand-navy font-medium hover:bg-brand-navy hover:text-white transition-colors text-sm"
             >
               <ExternalLink className="w-4 h-4" />
-              {t("activities.external_link")}
+              Réserver / Plus d&apos;infos
             </a>
           )}
 
@@ -259,17 +257,17 @@ export default function ActivityDetailClient({ activity, reviews, locale, userId
               className="w-full"
               size="lg"
             >
-              {isRegistered ? t("activities.unregister") : isFull ? t("activities.spots_full") : t("activities.register")}
+              {isRegistered ? "Se désinscrire" : isFull ? "Complet" : "S'inscrire"}
             </Button>
           ) : (
-            <Link href={`/${locale}/auth/login`}>
-              <Button className="w-full" size="lg">{t("activities.register")}</Button>
+            <Link href="/fr/auth/login">
+              <Button className="w-full" size="lg">S&apos;inscrire</Button>
             </Link>
           )}
 
           {activity.creator && (
             <div className="bg-white rounded-2xl p-3 border border-gray-100">
-              <p className="text-xs text-gray-500 mb-1">{t("activities.organized_by")}</p>
+              <p className="text-xs text-gray-500 mb-1">Organisé par</p>
               <p className="text-sm font-medium">{activity.creator.username}</p>
             </div>
           )}

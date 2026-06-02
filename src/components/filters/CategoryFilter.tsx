@@ -1,20 +1,19 @@
 "use client";
-import { useTranslations } from "next-intl";
 import type { ActivityCategory } from "@/types";
 
-const CATEGORIES: { key: ActivityCategory | "all"; emoji: string }[] = [
-  { key: "all", emoji: "🌆" },
-  { key: "soirees", emoji: "🎉" },
-  { key: "concerts", emoji: "🎵" },
-  { key: "expositions", emoji: "🎨" },
-  { key: "restaurants", emoji: "🍽️" },
-  { key: "bars", emoji: "🍻" },
-  { key: "sport", emoji: "⚽" },
-  { key: "culture", emoji: "🏛️" },
-  { key: "famille", emoji: "👨‍👩‍👧" },
-  { key: "etudiants", emoji: "🎓" },
-  { key: "networking", emoji: "🤝" },
-  { key: "loisirs", emoji: "🎮" },
+const CATEGORIES: { key: ActivityCategory | "all"; emoji: string; label: string }[] = [
+  { key: "all", emoji: "🌆", label: "Tout" },
+  { key: "soirees", emoji: "🎉", label: "Soirées" },
+  { key: "concerts", emoji: "🎵", label: "Concerts" },
+  { key: "expositions", emoji: "🎨", label: "Expositions" },
+  { key: "restaurants", emoji: "🍽️", label: "Restaurants" },
+  { key: "bars", emoji: "🍻", label: "Bars" },
+  { key: "sport", emoji: "⚽", label: "Sport" },
+  { key: "culture", emoji: "🏛️", label: "Culture" },
+  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
+  { key: "etudiants", emoji: "🎓", label: "Étudiants" },
+  { key: "networking", emoji: "🤝", label: "Networking" },
+  { key: "loisirs", emoji: "🎮", label: "Loisirs" },
 ];
 
 interface CategoryFilterProps {
@@ -23,11 +22,9 @@ interface CategoryFilterProps {
 }
 
 export default function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
-  const t = useTranslations("categories");
-
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-      {CATEGORIES.map(({ key, emoji }) => (
+      {CATEGORIES.map(({ key, emoji, label }) => (
         <button
           key={key}
           onClick={() => onChange(key === "all" ? null : (key as ActivityCategory))}
@@ -38,7 +35,7 @@ export default function CategoryFilter({ selected, onChange }: CategoryFilterPro
           }`}
         >
           <span>{emoji}</span>
-          <span>{t(key)}</span>
+          <span>{label}</span>
         </button>
       ))}
     </div>

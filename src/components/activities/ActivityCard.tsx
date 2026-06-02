@@ -1,10 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
-import { Heart, MapPin, Users, Calendar, Star, ExternalLink } from "lucide-react";
+import { Heart, MapPin, Users, Calendar, Star } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import type { Activity } from "@/types";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
+  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+};
 
 interface ActivityCardProps {
   activity: Activity;
@@ -14,9 +19,6 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, compact }: ActivityCardProps) {
-  const t = useTranslations();
-  const locale = useLocale();
-
   const spotsLeft = activity.max_participants !== null
     ? activity.max_participants - activity.current_participants
     : null;
@@ -24,7 +26,6 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-      {/* Cover image placeholder */}
       {!compact && activity.photos && activity.photos.length > 0 && (
         <div className="h-40 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
           <img
@@ -45,10 +46,9 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
       )}
 
       <div className="p-4">
-        {/* Category + Rating */}
         <div className="flex items-center justify-between mb-2">
           <Badge variant="navy" className="text-xs">
-            {t(`categories.${activity.category}`)}
+            {CATEGORY_LABELS[activity.category] || activity.category}
           </Badge>
           {activity.avg_rating && activity.avg_rating > 0 && (
             <div className="flex items-center gap-1 text-sm text-brand-gold font-medium">
@@ -58,18 +58,16 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
           )}
         </div>
 
-        {/* Title */}
-        <Link href={`/${locale}/activities/${activity.id}`}>
+        <Link href={`/fr/activities/${activity.id}`}>
           <h3 className="font-semibold text-gray-900 leading-snug mb-2 hover:text-brand-navy transition-colors line-clamp-2">
             {activity.title}
           </h3>
         </Link>
 
-        {/* Meta */}
         <div className="space-y-1 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <Calendar className="w-3.5 h-3.5 shrink-0" />
-            <span>{formatDate(activity.date, locale)} {formatTime(activity.time)}</span>
+            <span>{formatDate(activity.date, "fr")} {formatTime(activity.time)}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
@@ -79,27 +77,26 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
             <Users className="w-3.5 h-3.5 shrink-0" />
             <span>
               {isFull ? (
-                <span className="text-brand-red font-medium">{t("activities.spots_full")}</span>
+                <span className="text-brand-red font-medium">Complet</span>
               ) : spotsLeft !== null ? (
-                t("activities.spots_left", { count: spotsLeft })
+                `${spotsLeft} place(s) restante(s)`
               ) : (
-                t("activities.unlimited")
+                "Places illimitées"
               )}
             </span>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
           <span className="font-semibold text-brand-navy">
-            {formatPrice(activity.price, t("activities.free"))}
+            {formatPrice(activity.price, "Gratuit")}
           </span>
           <div className="flex items-center gap-2">
             {onFavoriteToggle && (
               <button
                 onClick={(e) => { e.preventDefault(); onFavoriteToggle(); }}
                 className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors"
-                aria-label={isFavorite ? t("activities.remove_favorite") : t("activities.add_favorite")}
+                aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               >
                 <Heart
                   className={`w-4 h-4 transition-colors ${
@@ -109,10 +106,10 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
               </button>
             )}
             <Link
-              href={`/${locale}/activities/${activity.id}`}
+              href={`/fr/activities/${activity.id}`}
               className="text-xs font-medium text-brand-navy hover:underline"
             >
-              {t("common.see_all")}
+              Voir
             </Link>
           </div>
         </div>

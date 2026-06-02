@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Activity, ActivityFilters } from "@/types";
 
@@ -7,8 +7,10 @@ export function useActivities(filters: ActivityFilters = {}) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const filtersKey = JSON.stringify(filters);
+  const prevKey = useRef("");
 
-  const fetch = useCallback(async () => {
+  const fetchActivities = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -18,25 +20,48 @@ export function useActivities(filters: ActivityFilters = {}) {
         .select(`
           *,
           creator:profiles!activities_creator_id_fkey(id, username, avatar_url),
-          photos:activity_photos(id, url),
-          registrations:activity_registrations(count)
+          photos:activity_photos(id, url)
         `)
         .eq("status", "approved");
+
+      const today = new Date().toISOString().split("T")[0];
+      query = query.gte("date", today);
 
       if (filters.category) query = query.eq("category", filters.category);
       if (filters.search) query = query.ilike("title", `%${filters.search}%`);
       if (filters.priceFilter === "free") query = query.is("price", null);
       if (filters.priceFilter === "paid") query = query.not("price", "is", null);
 
-      const today = new Date().toISOString().split("T")[0];
-      if (filters.dateFilter === "today") query = query.eq("date", today);
-      if (filters.dateFilter === "this_week") {
-        const endOfWeek = new Date();
-        endOfWeek.setDate(endOfWeek.getDate() + 7);
-        query = query.gte("date", today).lte("date", endOfWeek.toISOString().split("T")[0]);
+      if (filters.dateFilter === "today") {
+        query = query.eq("date", today);
+      } else if (filters.dateFilter === "tomorrow") {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        query = query.eq("date", tomorrow.toISOString().split("T")[0]);
+      } else if (filters.dateFilter === "this_week") {
+        const end = new Date();
+        end.setDate(end.getDate() + 7);
+        query = query.lte("date", end.toISOString().split("T")[0]);
+      } else if (filters.dateFilter === "this_weekend") {
+        const now = new Date();
+        const day = now.getDay();
+        const sat = new Date(now);
+        sat.setDate(now.getDate() + (6 - day));
+        const sun = new Date(sat);
+        sun.setDate(sat.getDate() + 1);
+        query = query.gte("date", sat.toISOString().split("T")[0]).lte("date", sun.toISOString().split("T")[0]);
+      } else if (filters.dateFilter === "this_month") {
+        const end = new Date();
+        end.setMonth(end.getMonth() + 1);
+        query = query.lte("date", end.toISOString().split("T")[0]);
       }
 
-      query = query.gte("date", today).order("date", { ascending: true }).limit(50);
+      const sortBy = filters.sortBy || "date";
+      if (sortBy === "date") query = query.order("date", { ascending: true });
+      else if (sortBy === "price") query = query.order("price", { ascending: true, nullsFirst: true });
+      else query = query.order("date", { ascending: true });
+
+      query = query.limit(50);
 
       const { data, error: err } = await query;
       if (err) throw err;
@@ -46,9 +71,20 @@ export function useActivities(filters: ActivityFilters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersKey]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    if (prevKey.current !== filtersKey) {
+      prevKey.current = filtersKey;
+      fetchActivities();
+    }
+  }, [filtersKey, fetchActivities]);
 
-  return { activities, loading, error, refetch: fetch };
+  useEffect(() => {
+    fetchActivities();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { activities, loading, error, refetch: fetchActivities };
 }

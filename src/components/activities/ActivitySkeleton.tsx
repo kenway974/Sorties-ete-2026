@@ -1,4 +1,4 @@
-export default function ActivitySkeleton() {
+export function ActivitySkeleton() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
       <div className="h-32 bg-gray-200" />

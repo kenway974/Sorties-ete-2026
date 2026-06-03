@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import type { Activity } from "@/types";
 
@@ -31,6 +31,7 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined" || !mapRef.current) return;
@@ -47,12 +48,13 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         maxZoom: 19,
       }).addTo(map);
 
       mapInstanceRef.current = map;
+      setMapReady(true);
     };
 
     init();
@@ -61,12 +63,13 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+        setMapReady(false);
       }
     };
   }, []);
 
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapReady || !mapInstanceRef.current) return;
     const run = async () => {
       const L = (await import("leaflet")).default;
       const map = mapInstanceRef.current;
@@ -78,40 +81,52 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
       activities.forEach((activity) => {
         const color = CATEGORY_COLORS[activity.category] || "#1B3A6B";
         const isSelected = activity.id === selectedId;
-        const size = isSelected ? 40 : 32;
+        const label = activity.title.length > 16 ? activity.title.slice(0, 16) + "…" : activity.title;
 
         const icon = L.divIcon({
           html: `<div style="
-            width:${size}px;height:${size}px;
-            background:${color};
-            border:3px solid ${isSelected ? "#fff" : "rgba(255,255,255,0.8)"};
-            border-radius:50% 50% 50% 0;
-            transform:rotate(-45deg);
-            box-shadow:0 2px 8px rgba(0,0,0,0.3);
-            display:flex;align-items:center;justify-content:center;
-          "></div>`,
+            background:${isSelected ? "#fff" : color};
+            color:${isSelected ? color : "#fff"};
+            border:2px solid ${color};
+            border-radius:20px;
+            padding:5px 11px;
+            font-size:11px;
+            font-weight:700;
+            white-space:nowrap;
+            box-shadow:0 2px 10px rgba(0,0,0,${isSelected ? "0.28" : "0.18"});
+            transform:${isSelected ? "scale(1.12)" : "scale(1)"};
+            cursor:pointer;
+            letter-spacing:0.01em;
+            font-family:system-ui,-apple-system,sans-serif;
+          ">${label}</div>`,
           className: "",
-          iconSize: [size, size],
-          iconAnchor: [size / 2, size],
-          popupAnchor: [0, -size],
+          iconAnchor: [0, 0],
+          popupAnchor: [60, -8],
         });
+
+        const priceHtml = activity.price != null
+          ? `<span style="font-size:12px;font-weight:700;color:${color}">${activity.price === 0 ? "Gratuit" : activity.price + "€"}</span>`
+          : "";
 
         const marker = L.marker([activity.lat, activity.lng], { icon })
           .addTo(map)
           .bindPopup(`
-            <div style="min-width:180px;padding:4px">
-              <strong style="font-size:14px">${activity.title}</strong><br/>
-              <span style="color:#666;font-size:12px">${activity.address}</span><br/>
-              <span style="font-size:12px">${activity.date} ${activity.time?.slice(0,5)}</span>
+            <div style="min-width:190px;padding:4px 2px;font-family:system-ui,-apple-system,sans-serif">
+              <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:3px;line-height:1.3">${activity.title}</div>
+              <div style="font-size:11px;color:#888;margin-bottom:6px">${activity.address}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:11px;color:#555">${activity.date} · ${activity.time?.slice(0, 5) ?? ""}</span>
+                ${priceHtml}
+              </div>
             </div>
-          `);
+          `, { maxWidth: 240 });
 
         marker.on("click", () => onActivityClick?.(activity));
         markersRef.current.push(marker);
       });
     };
     run();
-  }, [activities, selectedId, onActivityClick]);
+  }, [activities, selectedId, onActivityClick, mapReady]);
 
   useEffect(() => {
     if (!mapInstanceRef.current || !userLat || !userLng) return;
@@ -120,10 +135,10 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
       if (!map) return;
       const L = (await import("leaflet")).default;
       const icon = L.divIcon({
-        html: `<div style="width:16px;height:16px;background:#1B3A6B;border:3px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(27,58,107,0.3)"></div>`,
+        html: `<div style="width:14px;height:14px;background:#1B3A6B;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 4px rgba(27,58,107,0.25)"></div>`,
         className: "",
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
       });
       L.marker([userLat, userLng], { icon }).addTo(map);
       map.setView([userLat, userLng], 14);

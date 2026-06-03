@@ -70,6 +70,7 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
     const run = async () => {
       const L = (await import("leaflet")).default;
       const map = mapInstanceRef.current;
+      if (!map) return;
 
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
@@ -115,6 +116,8 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
   useEffect(() => {
     if (!mapInstanceRef.current || !userLat || !userLng) return;
     const run = async () => {
+      const map = mapInstanceRef.current;
+      if (!map) return;
       const L = (await import("leaflet")).default;
       const icon = L.divIcon({
         html: `<div style="width:16px;height:16px;background:#1B3A6B;border:3px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(27,58,107,0.3)"></div>`,
@@ -122,8 +125,8 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
         iconSize: [16, 16],
         iconAnchor: [8, 8],
       });
-      L.marker([userLat, userLng], { icon }).addTo(mapInstanceRef.current);
-      mapInstanceRef.current.setView([userLat, userLng], 14);
+      L.marker([userLat, userLng], { icon }).addTo(map);
+      map.setView([userLat, userLng], 14);
     };
     run();
   }, [userLat, userLng]);

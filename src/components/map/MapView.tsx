@@ -36,8 +36,6 @@ export default function MapView({ activities, userLat, userLng, onActivityClick,
 
     const init = async () => {
       const L = (await import("leaflet")).default;
-      await import("leaflet/dist/leaflet.css");
-
       if (mapInstanceRef.current) return;
 
       const map = L.map(mapRef.current!, {

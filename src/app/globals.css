@@ -41,3 +41,9 @@
 .leaflet-popup-tip-container {
   display: none;
 }
+/* Pill-style custom markers — no size clipping */
+.leaflet-pill-marker {
+  background: none !important;
+  border: none !important;
+  overflow: visible !important;
+}

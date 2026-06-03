@@ -1,4 +1,4 @@
-const CACHE_NAME = 'paris-sorties-v1';
+const CACHE_NAME = 'paris-sorties-v3';
 
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -25,19 +25,41 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (!url.protocol.startsWith('http')) return;
   if (url.hostname.includes('supabase.co')) return;
+  if (url.hostname.includes('cartocdn.com')) return;
+  if (url.hostname.includes('openstreetmap.org')) return;
 
+  // Network-first for HTML navigation — always fetch fresh page/JS references
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-first for hashed static assets (_next/static/*)
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          if (!response || response.status !== 200) return response;
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Network-first for everything else
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') return response;
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') return caches.match('/');
-      });
-    })
+    fetch(event.request).then((response) => {
+      if (!response || response.status !== 200 || response.type !== 'basic') return response;
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+      return response;
+    }).catch(() => caches.match(event.request))
   );
 });
 

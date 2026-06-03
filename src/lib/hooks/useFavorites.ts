@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export function useFavorites(userId: string | null) {
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(false);
+  const loading = false;
 
   useEffect(() => {
     if (!userId) { setFavoriteIds(new Set()); return; }

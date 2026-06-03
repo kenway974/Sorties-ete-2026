@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import type { Map as LeafletMap, Marker } from "leaflet";
 import type { Activity } from "@/types";
 
 interface MapViewProps {
@@ -28,8 +29,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function MapView({ activities, userLat, userLng, onActivityClick, selectedId }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const mapInstanceRef = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Marker[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !mapRef.current) return;

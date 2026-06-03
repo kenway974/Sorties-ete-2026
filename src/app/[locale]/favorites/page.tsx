@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import ActivityCard from "@/components/activities/ActivityCard";
 import Button from "@/components/ui/Button";
+import type { Activity } from "@/types";
 
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -17,7 +18,10 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  const activities = favorites?.map((f: any) => f.activity).filter(Boolean) || [];
+  type FavoriteRow = { activity_id: string; activity: Activity | null };
+  const activities = (favorites as FavoriteRow[] | null)
+    ?.map((f) => f.activity)
+    .filter((a): a is Activity => a !== null) || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -32,7 +36,7 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {activities.map((a: any) => (
+          {activities.map((a) => (
             <ActivityCard key={a.id} activity={a} isFavorite />
           ))}
         </div>

@@ -22,6 +22,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
       }
     }, 350);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local]);
 
   const showHistory = focused && local === "" && history.length > 0;

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, MapPin, Users, Calendar, Star } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
@@ -28,11 +29,11 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
       {!compact && activity.photos && activity.photos.length > 0 && (
         <div className="h-40 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
-          <img
+          <Image
             src={activity.photos[0].url}
             alt={activity.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
+            fill
+            className="object-cover"
           />
         </div>
       )}

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CookieToSet = { name: string; value: string; options?: any };
 
 export async function createClient() {

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, type ChangeEventHandler } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -83,7 +83,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         <label className="text-sm font-medium text-gray-700">Description</label>
         <textarea
           value={form.description}
-          onChange={set("description") as any}
+          onChange={set("description") as ChangeEventHandler<HTMLTextAreaElement>}
           rows={4}
           required
           className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none"
@@ -94,7 +94,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         <label className="text-sm font-medium text-gray-700">Catégorie</label>
         <select
           value={form.category}
-          onChange={set("category") as any}
+          onChange={set("category") as ChangeEventHandler<HTMLSelectElement>}
           required
           className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
         >

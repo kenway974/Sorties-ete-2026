@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CookieToSet = { name: string; value: string; options?: any };
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Users, Activity, Clock, Flag, Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils/formatters";
 import type { Activity as ActivityType } from "@/types";
@@ -66,8 +65,8 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
                   <p className="text-xs text-gray-400 mt-1">
                     {activity.address} — {formatDate(activity.date)} {activity.time?.slice(0, 5)}
                   </p>
-                  {(activity as any).creator && (
-                    <p className="text-xs text-gray-400">Par: {(activity as any).creator.username}</p>
+                  {activity.creator && (
+                    <p className="text-xs text-gray-400">Par: {activity.creator.username}</p>
                   )}
                 </div>
                 <div className="flex gap-2 shrink-0">

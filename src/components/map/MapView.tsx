@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import type * as LeafletType from "leaflet";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import type { Activity } from "@/types";
 
@@ -38,7 +39,7 @@ export default function MapView({
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
   // Store Leaflet after first import so marker renders are synchronous
-  const LRef = useRef<typeof import("leaflet").default | null>(null);
+  const LRef = useRef<typeof LeafletType | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
   // ── Map initialisation ──────────────────────────────────────────────────
@@ -47,7 +48,8 @@ export default function MapView({
     let cancelled = false;
 
     (async () => {
-      const L = (await import("leaflet")).default;
+      const leafletModule = await import("leaflet");
+      const L = (leafletModule.default ?? leafletModule) as typeof LeafletType;
       if (cancelled || mapInstanceRef.current || !mapRef.current) return;
 
       LRef.current = L;

@@ -43,12 +43,23 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     setError("");
     try {
       const supabase = createClient();
-      const geoRes = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(form.address + ", Paris, France")}&format=json&limit=1`
-      );
-      const geoData = await geoRes.json();
-      const lat = geoData[0] ? parseFloat(geoData[0].lat) : 48.8566;
-      const lng = geoData[0] ? parseFloat(geoData[0].lon) : 2.3522;
+      let lat = 48.8566;
+      let lng = 2.3522;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const geoRes = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(form.address + ", Paris, France")}&format=json&limit=1`,
+          { headers: { "User-Agent": "ParisSorties/1.0 (contact@paris-sorties.fr)" }, signal: controller.signal }
+        );
+        clearTimeout(timeout);
+        if (geoRes.ok) {
+          const geoData = await geoRes.json();
+          if (geoData[0]) { lat = parseFloat(geoData[0].lat); lng = parseFloat(geoData[0].lon); }
+        }
+      } catch {
+        // Nominatim timeout or error — fallback to Paris center, carry on
+      }
 
       const { error: err } = await supabase.from("activities").insert({
         title: form.title,

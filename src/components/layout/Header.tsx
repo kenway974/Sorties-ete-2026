@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, MapPin, User, LogOut } from "lucide-react";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import type { Profile } from "@/types";
@@ -14,6 +14,13 @@ interface HeaderProps {
 export default function Header({ locale, user, onLogout }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const base = `/${locale}`;
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   return (
     <header className="sticky top-0 z-30 bg-brand-navy text-white shadow-md">
@@ -75,7 +82,8 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
           <button
             className="md:hidden p-2 rounded-xl hover:bg-white/10"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

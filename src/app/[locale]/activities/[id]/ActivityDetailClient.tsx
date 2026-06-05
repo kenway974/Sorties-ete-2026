@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { MapPin, Calendar, Clock, Users, ExternalLink, Heart, ArrowLeft, Star } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, ExternalLink, Heart, ArrowLeft, Star, Share2, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -38,6 +38,19 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
   const [reviewRating, setReviewRating] = useState(0);
   const [localReviews, setLocalReviews] = useState(reviews);
   const [activeTab, setActiveTab] = useState<"info" | "reviews">("info");
+  const [imgError, setImgError] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: activity.title, text: activity.description || "", url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const spotsLeft = activity.max_participants !== null ? activity.max_participants - participants : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
@@ -100,12 +113,11 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
-          {activity.photos && activity.photos.length > 0 && (
-            <div className="rounded-2xl overflow-hidden h-64 bg-gray-100 relative">
-              <Image src={activity.photos[0].url} alt={activity.title} fill className="object-cover" />
+          {activity.photos && activity.photos.length > 0 && !imgError ? (
+            <div className="rounded-2xl overflow-hidden h-64 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
+              <Image src={activity.photos[0].url} alt={activity.title} fill className="object-cover" onError={() => setImgError(true)} />
             </div>
-          )}
-          {(!activity.photos || activity.photos.length === 0) && (
+          ) : (
             <div className="rounded-2xl h-48 bg-gradient-to-br from-brand-navy to-brand-navy-light flex items-center justify-center">
               <MapPin className="w-16 h-16 text-white/20" />
             </div>
@@ -117,6 +129,15 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
               <h1 className="text-2xl font-bold text-gray-900">{activity.title}</h1>
             </div>
             <div className="flex gap-2 shrink-0">
+              <button
+                onClick={handleShare}
+                className="p-2.5 rounded-xl border border-gray-200 hover:border-brand-navy transition-colors"
+                title="Partager"
+              >
+                {copied
+                  ? <Check className="w-5 h-5 text-green-500" />
+                  : <Share2 className="w-5 h-5 text-gray-400" />}
+              </button>
               {userId && (
                 <button
                   onClick={toggleFavorite}

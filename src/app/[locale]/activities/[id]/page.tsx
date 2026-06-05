@@ -1,6 +1,41 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import ActivityDetailClient from "./ActivityDetailClient";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: activity } = await supabase
+    .from("activities")
+    .select("title, description, photos:activity_photos(url)")
+    .eq("id", id)
+    .single();
+
+  if (!activity) return { title: "Activité introuvable" };
+
+  const image = (activity.photos as { url: string }[] | null)?.[0]?.url;
+
+  return {
+    title: activity.title,
+    description: activity.description ?? undefined,
+    openGraph: {
+      title: activity.title,
+      description: activity.description ?? undefined,
+      ...(image ? { images: [{ url: image }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: activity.title,
+      description: activity.description ?? undefined,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
+}
 
 export default async function ActivityDetailPage({
   params,

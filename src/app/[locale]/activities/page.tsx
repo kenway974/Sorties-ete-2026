@@ -29,7 +29,7 @@ export default function ActivitiesPage() {
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
   const [filters, setFilters] = useState<ActivityFilters>({ sortBy: "date" });
   const { lat, lng, locate, loading: locating } = useGeolocation();
-  const { activities, loading } = useActivities(filters);
+  const { activities, loading, loadingMore, hasMore, loadMore } = useActivities(filters);
 
   // Read ?category= and ?q= from URL on mount
   useEffect(() => {
@@ -101,10 +101,31 @@ export default function ActivitiesPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm text-gray-500 mb-4">{activities.length} résultat(s)</p>
+                <p className="text-sm text-gray-500 mb-4">{activities.length} résultat(s){hasMore ? "+" : ""}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {activities.map((a) => <ActivityCard key={a.id} activity={a} />)}
                 </div>
+                {hasMore && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={loadMore}
+                      disabled={loadingMore}
+                      className="px-8 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-60 shadow-sm"
+                    >
+                      {loadingMore ? (
+                        <span className="flex items-center gap-2">
+                          <span className="w-4 h-4 border-2 border-gray-300 border-t-brand-navy rounded-full animate-spin" />
+                          Chargement...
+                        </span>
+                      ) : "Charger plus d'activités"}
+                    </button>
+                  </div>
+                )}
+                {loadingMore && !hasMore && (
+                  <div className="flex justify-center mt-6 gap-2 text-sm text-gray-400">
+                    <span className="w-4 h-4 border-2 border-gray-300 border-t-brand-navy rounded-full animate-spin" />
+                  </div>
+                )}
               </>
             )}
           </div>

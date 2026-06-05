@@ -25,18 +25,19 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
   const params = useParams();
   const locale = (params?.locale as string) || "fr";
   const [imgError, setImgError] = useState(false);
+  const photoUrl = activity.photos?.[0]?.url;
+  const hasPhoto = !compact && !!photoUrl && !imgError;
   const spotsLeft = activity.max_participants !== null
     ? activity.max_participants - activity.current_participants
     : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
-  const hasPhoto = !compact && activity.photos && activity.photos.length > 0 && !imgError;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-      {hasPhoto && (
+      {hasPhoto && photoUrl && (
         <div className="h-40 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
           <Image
-            src={activity.photos![0].url}
+            src={photoUrl}
             alt={activity.title}
             fill
             className="object-cover"

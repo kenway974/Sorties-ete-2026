@@ -36,7 +36,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
       {hasPhoto && (
         <div className="h-40 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
           <Image
-            src={activity.photos[0].url}
+            src={activity.photos![0].url}
             alt={activity.title}
             fill
             className="object-cover"

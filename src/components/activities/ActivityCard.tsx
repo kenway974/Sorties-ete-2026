@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, MapPin, Users, Calendar, Star } from "lucide-react";
@@ -20,24 +21,27 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, compact }: ActivityCardProps) {
+  const [imgError, setImgError] = useState(false);
   const spotsLeft = activity.max_participants !== null
     ? activity.max_participants - activity.current_participants
     : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
+  const hasPhoto = !compact && activity.photos && activity.photos.length > 0 && !imgError;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-      {!compact && activity.photos && activity.photos.length > 0 && (
+      {hasPhoto && (
         <div className="h-40 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
           <Image
             src={activity.photos[0].url}
             alt={activity.title}
             fill
             className="object-cover"
+            onError={() => setImgError(true)}
           />
         </div>
       )}
-      {!compact && (!activity.photos || activity.photos.length === 0) && (
+      {!compact && !hasPhoto && (
         <div
           className="h-32 flex items-center justify-center"
           style={{ background: `linear-gradient(135deg, #1B3A6B, #2A4F8A)` }}

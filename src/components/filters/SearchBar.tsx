@@ -44,6 +44,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
         <button
           onClick={() => { setLocal(""); onChange(""); inputRef.current?.focus(); }}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          aria-label="Effacer la recherche"
         >
           <X className="w-4 h-4" />
         </button>

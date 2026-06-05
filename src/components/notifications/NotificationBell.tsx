@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
+
 import { createClient } from "@/lib/supabase/client";
 import type { Notification } from "@/types";
 
@@ -48,15 +49,26 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
   const unread = notifications.length;
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-label={unread > 0 ? `${unread} notification(s) non lue(s)` : "Notifications"}
+        aria-expanded={open}
         className="relative p-2 rounded-xl hover:bg-white/10 transition-colors"
       >
         <Bell className="w-5 h-5" />
         {unread > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 bg-brand-red rounded-full" />
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-brand-red rounded-full text-white text-[10px] font-bold flex items-center justify-center px-0.5">
+            {unread > 9 ? "9+" : unread}
+          </span>
         )}
       </button>
       {open && (

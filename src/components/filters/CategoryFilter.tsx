@@ -23,7 +23,12 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div className="relative">
+      <div
+        className="flex gap-2 overflow-x-auto pb-1 scrollbar-none"
+        role="group"
+        aria-label="Filtrer par catégorie"
+      >
       {CATEGORIES.map(({ key, emoji, label }) => (
         <button
           key={key}
@@ -38,6 +43,8 @@ export default function CategoryFilter({ selected, onChange }: CategoryFilterPro
           <span>{label}</span>
         </button>
       ))}
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent" />
     </div>
   );
 }

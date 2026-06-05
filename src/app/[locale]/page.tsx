@@ -41,7 +41,9 @@ const HOW_IT_WORKS = [
   },
 ];
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const base = `/${locale}`;
   const supabase = await createClient();
 
   const { data: featured } = await supabase
@@ -92,14 +94,14 @@ export default async function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/fr/activities"
+              href={`${base}/activities`}
               className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 transition-colors text-base shadow-xl shadow-brand-gold/20"
             >
               Explorer les activités
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              href="/fr/propose"
+              href={`${base}/propose`}
               className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-medium px-9 py-4 rounded-2xl hover:bg-white/20 transition-colors text-base border border-white/20"
             >
               Proposer un événement
@@ -157,7 +159,7 @@ export default async function HomePage() {
           </div>
           <div className="mt-10 text-center">
             <Link
-              href="/fr/activities"
+              href={`${base}/activities`}
               className="inline-flex items-center gap-2 text-brand-navy font-semibold hover:gap-3 transition-all text-sm"
             >
               Voir toutes les activités <ChevronRight className="w-4 h-4" />
@@ -177,7 +179,7 @@ export default async function HomePage() {
             {CATEGORIES.map(({ key, emoji, label }) => (
               <Link
                 key={key}
-                href={`/fr/activities?category=${key}`}
+                href={`${base}/activities?category=${key}`}
                 className="flex flex-col items-center gap-2 p-3 rounded-2xl border border-white bg-white hover:border-brand-navy hover:shadow-md transition-all group"
               >
                 <span className="text-2xl">{emoji}</span>
@@ -199,7 +201,7 @@ export default async function HomePage() {
               <p className="text-gray-400 text-sm mt-1">Les prochains événements approuvés par la communauté</p>
             </div>
             <Link
-              href="/fr/activities"
+              href={`${base}/activities`}
               className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-brand-navy hover:underline shrink-0"
             >
               Tout voir <ArrowRight className="w-4 h-4" />
@@ -210,7 +212,7 @@ export default async function HomePage() {
             <div className="text-center py-16 bg-brand-cream rounded-3xl text-gray-400">
               <Calendar className="w-10 h-10 mx-auto mb-3 opacity-40" />
               <p className="font-medium">Aucun événement à venir pour le moment.</p>
-              <Link href="/fr/propose" className="mt-3 inline-block text-brand-navy font-semibold hover:underline text-sm">
+              <Link href={`${base}/propose`} className="mt-3 inline-block text-brand-navy font-semibold hover:underline text-sm">
                 Soyez le premier à en proposer un →
               </Link>
             </div>
@@ -224,7 +226,7 @@ export default async function HomePage() {
 
           <div className="mt-6 text-center sm:hidden">
             <Link
-              href="/fr/activities"
+              href={`${base}/activities`}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-navy hover:underline"
             >
               Voir toutes les activités <ArrowRight className="w-4 h-4" />
@@ -250,14 +252,14 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/fr/propose"
+              href={`${base}/propose`}
               className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 transition-colors shadow-lg shadow-brand-gold/20"
             >
               Proposer un événement
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/fr/activities"
+              href={`${base}/activities`}
               className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-medium px-9 py-4 rounded-2xl hover:bg-white/20 transition-colors border border-white/20"
             >
               Explorer d&apos;abord

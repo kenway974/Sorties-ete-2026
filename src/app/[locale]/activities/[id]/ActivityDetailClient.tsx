@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 import { MapPin, Calendar, Clock, Users, ExternalLink, Heart, ArrowLeft, Star, Share2, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
@@ -30,6 +31,8 @@ interface Props {
 }
 
 export default function ActivityDetailClient({ activity, reviews, userId, isFavorite: initFav, isRegistered: initReg }: Props) {
+  const params = useParams();
+  const locale = (params?.locale as string) || "fr";
   const [isFavorite, setIsFavorite] = useState(initFav);
   const [isRegistered, setIsRegistered] = useState(initReg);
   const [participants, setParticipants] = useState(activity.current_participants);
@@ -106,7 +109,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <Link href="/fr/activities" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-navy mb-4">
+      <Link href={`/${locale}/activities`} className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-navy mb-4">
         <ArrowLeft className="w-4 h-4" />
         Retour
       </Link>
@@ -282,7 +285,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
               {isRegistered ? "Se désinscrire" : isFull ? "Complet" : "S'inscrire"}
             </Button>
           ) : (
-            <Link href="/fr/auth/login">
+            <Link href={`/${locale}/auth/login`}>
               <Button className="w-full" size="lg">S&apos;inscrire</Button>
             </Link>
           )}

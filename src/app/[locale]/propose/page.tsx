@@ -5,6 +5,7 @@ import { CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import ProposeForm from "@/components/activities/ProposeForm";
 import Button from "@/components/ui/Button";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Link from "next/link";
 
 export default function ProposePage() {
@@ -22,7 +23,7 @@ export default function ProposePage() {
     });
   }, []);
 
-  if (loading) return null;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">

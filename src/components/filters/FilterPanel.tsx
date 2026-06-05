@@ -31,7 +31,8 @@ const SORT_OPTIONS = ["date", "distance", "popularity", "rating", "price"] as co
 export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   const [open, setOpen] = useState(false);
 
-  const hasFilters = filters.dateFilter || filters.priceFilter || filters.sortBy;
+  const activeCount = [filters.dateFilter, filters.priceFilter, filters.sortBy && filters.sortBy !== "date" ? filters.sortBy : null].filter(Boolean).length;
+  const hasFilters = activeCount > 0;
 
   const reset = () => onChange({ ...filters, dateFilter: null, priceFilter: null, sortBy: "date" });
 
@@ -48,8 +49,8 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         <SlidersHorizontal className="w-4 h-4" />
         Filtres
         {hasFilters && (
-          <span className="bg-white/20 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-            !
+          <span className="bg-white/20 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+            {activeCount}
           </span>
         )}
       </button>

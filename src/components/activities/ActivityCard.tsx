@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { Heart, MapPin, Users, Calendar, Star } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
@@ -21,6 +22,8 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, compact }: ActivityCardProps) {
+  const params = useParams();
+  const locale = (params?.locale as string) || "fr";
   const [imgError, setImgError] = useState(false);
   const spotsLeft = activity.max_participants !== null
     ? activity.max_participants - activity.current_participants
@@ -63,7 +66,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
           )}
         </div>
 
-        <Link href={`/fr/activities/${activity.id}`}>
+        <Link href={`/${locale}/activities/${activity.id}`}>
           <h3 className="font-semibold text-gray-900 leading-snug mb-2 hover:text-brand-navy transition-colors line-clamp-2">
             {activity.title}
           </h3>
@@ -102,6 +105,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
                 onClick={(e) => { e.preventDefault(); onFavoriteToggle(); }}
                 className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors"
                 aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                aria-pressed={isFavorite}
               >
                 <Heart
                   className={`w-4 h-4 transition-colors ${
@@ -111,7 +115,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
               </button>
             )}
             <Link
-              href={`/fr/activities/${activity.id}`}
+              href={`/${locale}/activities/${activity.id}`}
               className="text-xs font-medium text-brand-navy hover:underline"
             >
               Voir

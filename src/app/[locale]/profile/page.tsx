@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [form, setForm] = useState({ username: "", bio: "", preferred_language: "fr" });
   const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
 
@@ -47,14 +48,19 @@ export default function ProfilePage() {
   const save = async () => {
     if (!profile) return;
     setSaving(true);
+    setSaveError("");
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({ ...form, preferences: prefs, updated_at: new Date().toISOString() })
       .eq("id", profile.id);
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (error) {
+      setSaveError("Erreur lors de la sauvegarde. Veuillez réessayer.");
+    } else {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    }
   };
 
   const togglePref = (cat: ActivityCategory) =>
@@ -99,6 +105,7 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
+        {saveError && <p className="text-sm text-brand-red">{saveError}</p>}
         <Button onClick={save} loading={saving} className="w-full">
           {saved ? "✓ Enregistré !" : "Enregistrer"}
         </Button>

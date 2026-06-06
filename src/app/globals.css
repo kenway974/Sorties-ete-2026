@@ -7,9 +7,45 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
   }
   body {
-    @apply bg-brand-cream text-gray-900;
+    @apply bg-brand-cream text-gray-900 antialiased;
+    @apply dark:bg-[#0d111a] dark:text-gray-100;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-navy/50 ring-offset-2;
+  }
+  ::selection {
+    @apply bg-brand-navy/20 text-brand-navy dark:bg-brand-gold/30 dark:text-brand-gold;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+  .dark .glass {
+    background: rgba(15, 20, 35, 0.8);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+    @apply hover:-translate-y-1 hover:shadow-card-hover;
+  }
+  .shimmer-bg {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s linear infinite;
+  }
+  .dark .shimmer-bg {
+    background: linear-gradient(90deg, #1e2533 25%, #252d3d 50%, #1e2533 75%);
+    background-size: 200% 100%;
   }
 }
 
@@ -27,6 +63,15 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 /* Leaflet overrides */
@@ -41,7 +86,6 @@
 .leaflet-popup-tip-container {
   display: none;
 }
-/* Pill-style custom markers — no size clipping */
 .leaflet-pill-marker {
   background: none !important;
   border: none !important;

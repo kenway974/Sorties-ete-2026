@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import HeaderClient from "@/components/layout/HeaderClient";
 import Footer from "@/components/layout/Footer";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 
 export default async function LocaleLayout({
   children,
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
       <HeaderClient locale={locale} profile={profile} />
       <main className="flex-1">{children}</main>
       <Footer />
+      <OnboardingWizard locale={locale} />
     </div>
   );
 }

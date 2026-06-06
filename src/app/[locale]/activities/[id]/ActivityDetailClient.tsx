@@ -11,6 +11,7 @@ import Button from "@/components/ui/Button";
 import StarRating from "@/components/ui/StarRating";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import { useRecentlyViewed } from "@/lib/hooks/useRecentlyViewed";
+import GoingButton from "@/components/activities/GoingButton";
 import type { Activity, Review, Profile } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -286,6 +287,8 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
               Réserver / Plus d&apos;infos
             </a>
           )}
+
+          <GoingButton activityId={activity.id} userId={userId} className="w-full justify-center" />
 
           {userId ? (
             <Button

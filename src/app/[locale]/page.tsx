@@ -7,6 +7,7 @@ import {
 import ActivityCard from "@/components/activities/ActivityCard";
 import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
+import RecentlyViewed from "@/components/home/RecentlyViewed";
 
 const CATEGORIES = [
   { key: "soirees",    emoji: "🎉", label: "Soirées" },
@@ -234,6 +235,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
       </section>
+
+      {/* ── RECENTLY VIEWED ── */}
+      <RecentlyViewed />
 
       {/* ── CTA ORGANISER ── */}
       <section className="bg-brand-navy py-16 relative overflow-hidden">

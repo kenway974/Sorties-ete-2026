@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -10,6 +10,7 @@ import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import StarRating from "@/components/ui/StarRating";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
+import { useRecentlyViewed } from "@/lib/hooks/useRecentlyViewed";
 import type { Activity, Review, Profile } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -33,7 +34,20 @@ interface Props {
 export default function ActivityDetailClient({ activity, reviews, userId, isFavorite: initFav, isRegistered: initReg }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) || "fr";
+  const { add: addRecentlyViewed } = useRecentlyViewed();
   const [isFavorite, setIsFavorite] = useState(initFav);
+
+  useEffect(() => {
+    addRecentlyViewed({
+      id: activity.id,
+      title: activity.title,
+      category: activity.category,
+      date: activity.date,
+      address: activity.address,
+      price: activity.price,
+      photoUrl: activity.photos?.[0]?.url,
+    });
+  }, [activity, addRecentlyViewed]);
   const [isRegistered, setIsRegistered] = useState(initReg);
   const [participants, setParticipants] = useState(activity.current_participants);
   const [loading, setLoading] = useState(false);

@@ -12,6 +12,8 @@ import StarRating from "@/components/ui/StarRating";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import { useRecentlyViewed } from "@/lib/hooks/useRecentlyViewed";
 import GoingButton from "@/components/activities/GoingButton";
+import { useItinerary } from "@/lib/hooks/useItinerary";
+import { Route } from "lucide-react";
 import type { Activity, Review, Profile } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -36,6 +38,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
   const params = useParams();
   const locale = (params?.locale as string) || "fr";
   const { add: addRecentlyViewed } = useRecentlyViewed();
+  const { add: addToItinerary, has: inItinerary, remove: removeFromItinerary } = useItinerary();
   const [isFavorite, setIsFavorite] = useState(initFav);
 
   useEffect(() => {
@@ -289,6 +292,18 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
           )}
 
           <GoingButton activityId={activity.id} userId={userId} className="w-full justify-center" />
+
+          <button
+            onClick={() => inItinerary(activity.id) ? removeFromItinerary(activity.id) : addToItinerary(activity)}
+            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
+              inItinerary(activity.id)
+                ? "bg-brand-navy/5 border-brand-navy text-brand-navy dark:bg-brand-navy/20 dark:text-white"
+                : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand-navy hover:text-brand-navy"
+            }`}
+          >
+            <Route className="w-4 h-4" />
+            {inItinerary(activity.id) ? "Dans mon itinéraire ✓" : "Ajouter à l'itinéraire"}
+          </button>
 
           {userId ? (
             <Button

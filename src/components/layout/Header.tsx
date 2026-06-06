@@ -68,6 +68,8 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
           {[
             { href: base, label: "Accueil" },
             { href: `${base}/activities`, label: "Activités" },
+            { href: `${base}/collections`, label: "Collections" },
+            { href: `${base}/itinerary`, label: "Itinéraire" },
             ...(user ? [{ href: `${base}/favorites`, label: "Favoris" }] : []),
             ...(user ? [{ href: `${base}/propose`, label: "Proposer" }] : []),
             ...((user?.role === "admin" || user?.role === "moderator") ? [{ href: `${base}/admin`, label: "Admin" }] : []),
@@ -152,6 +154,8 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
           {[
             { href: base, label: "Accueil" },
             { href: `${base}/activities`, label: "Activités" },
+            { href: `${base}/collections`, label: "Collections" },
+            { href: `${base}/itinerary`, label: "Itinéraire" },
             ...(user ? [{ href: `${base}/favorites`, label: "Favoris" }] : []),
             ...(user ? [{ href: `${base}/propose`, label: "Proposer" }] : []),
             ...((user?.role === "admin" || user?.role === "moderator") ? [{ href: `${base}/admin`, label: "Admin" }] : []),

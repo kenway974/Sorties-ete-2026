@@ -66,6 +66,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
 
   const handleFavToggle = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setFavPulse(true);
     setTimeout(() => setFavPulse(false), 400);
     onFavoriteToggle?.();

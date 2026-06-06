@@ -42,25 +42,26 @@ describe("ActivityCard", () => {
     expect(screen.getByText(/50/)).toBeDefined();
   });
 
-  it("shows spots_full key when activity is full", () => {
+  it("shows full label when activity is full", () => {
     render(<ActivityCard activity={{ ...base, max_participants: 10, current_participants: 10 }} />);
-    expect(screen.getByText(/activities.spots_full/)).toBeDefined();
+    // "Complet" appears both as the image overlay badge and the spots line
+    expect(screen.getAllByText("Complet").length).toBeGreaterThan(0);
   });
 
-  it("shows unlimited key when max_participants is null", () => {
+  it("shows unlimited label when max_participants is null", () => {
     render(<ActivityCard activity={{ ...base, max_participants: null }} />);
-    expect(screen.getByText(/activities.unlimited/)).toBeDefined();
+    expect(screen.getByText(/illimitées/)).toBeDefined();
   });
 
   it("shows free label when price is null", () => {
     render(<ActivityCard activity={{ ...base, price: null }} />);
-    // formatPrice returns "activities.free" via translation mock
-    expect(screen.getByText("activities.free")).toBeDefined();
+    expect(screen.getByText("Gratuit")).toBeDefined();
   });
 
   it("shows formatted price when price is set", () => {
     render(<ActivityCard activity={base} />);
-    expect(screen.getByText(/12/)).toBeDefined();
+    // formatPrice(12) → "12,00 €"
+    expect(screen.getByText(/12,00/)).toBeDefined();
   });
 
   it("renders the favorite button when onFavoriteToggle is provided", () => {

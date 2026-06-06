@@ -1,20 +1,42 @@
 ﻿import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { getSiteUrl } from "@/lib/utils/siteUrl";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
 
+const SITE_URL = getSiteUrl();
+
 export const metadata: Metadata = {
-  title: "ParisSorties — Découvrez Paris",
-  description: "Activités, événements et sorties à Paris et Île-de-France",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "ParisSorties — Toutes les sorties à Paris cet été",
+    template: "%s · ParisSorties",
+  },
+  description:
+    "Concerts, expos, soirées, sport, restos… Découvrez et filtrez toutes les activités et événements à Paris et en Île-de-France. Gratuit, sans inscription.",
+  keywords: [
+    "sorties Paris", "que faire à Paris", "événements Paris", "concerts Paris",
+    "expositions Paris", "activités Paris", "agenda Paris", "soirées Paris",
+  ],
+  applicationName: "ParisSorties",
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "ParisSorties" },
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "ParisSorties",
-    description: "Découvrez les meilleures sorties à Paris",
+    title: "ParisSorties — Toutes les sorties à Paris cet été",
+    description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
+    url: SITE_URL,
+    siteName: "ParisSorties",
     locale: "fr_FR",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "ParisSorties — Toutes les sorties à Paris cet été",
+    description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

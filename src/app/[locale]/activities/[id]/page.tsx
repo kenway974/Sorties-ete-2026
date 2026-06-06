@@ -1,37 +1,59 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { getSiteUrl } from "@/lib/utils/siteUrl";
+import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import ActivityDetailClient from "./ActivityDetailClient";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
+  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+};
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { id, locale } = await params;
   const supabase = await createClient();
   const { data: activity } = await supabase
     .from("activities")
-    .select("title, description, photos:activity_photos(url)")
+    .select("title, description, date, time, address, price, category, photos:activity_photos(url)")
     .eq("id", id)
     .single();
 
-  if (!activity) return { title: "Activité introuvable" };
+  if (!activity) return { title: "Activité introuvable", robots: { index: false, follow: false } };
 
   const image = (activity.photos as { url: string }[] | null)?.[0]?.url;
+  const cat = CATEGORY_LABELS[activity.category] ?? activity.category;
+  const when = `${formatDate(activity.date, "fr")} à ${formatTime(activity.time)}`;
+  const price = formatPrice(activity.price, "Gratuit");
+
+  const description =
+    activity.description?.slice(0, 200) ??
+    `${cat} à Paris — ${when}, ${activity.address}. ${price}. À découvrir sur ParisSorties.`;
+
+  const canonical = `${getSiteUrl()}/${locale}/activities/${id}`;
 
   return {
     title: activity.title,
-    description: activity.description ?? undefined,
+    description,
+    alternates: { canonical },
     openGraph: {
       title: activity.title,
-      description: activity.description ?? undefined,
-      ...(image ? { images: [{ url: image }] } : {}),
+      description,
+      url: canonical,
+      type: "article",
+      siteName: "ParisSorties",
+      locale: "fr_FR",
+      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: activity.title }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: activity.title,
-      description: activity.description ?? undefined,
+      description,
       ...(image ? { images: [image] } : {}),
     },
   };
@@ -80,15 +102,57 @@ export default async function ActivityDetailPage({
     ? !!(await supabase.from("activity_registrations").select("id").eq("user_id", user.id).eq("activity_id", id).single()).data
     : false;
 
+  const reviewList = reviews ?? [];
+  const avgRating = reviewList.length
+    ? reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length
+    : 0;
+  const image = activity.photos?.[0]?.url;
+  const startDate = activity.time ? `${activity.date}T${activity.time}` : activity.date;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: activity.title,
+    description: activity.description ?? undefined,
+    startDate,
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    ...(image ? { image: [image] } : {}),
+    location: {
+      "@type": "Place",
+      name: activity.address,
+      address: { "@type": "PostalAddress", streetAddress: activity.address, addressLocality: "Paris", addressCountry: "FR" },
+      ...(activity.lat && activity.lng
+        ? { geo: { "@type": "GeoCoordinates", latitude: activity.lat, longitude: activity.lng } }
+        : {}),
+    },
+    offers: {
+      "@type": "Offer",
+      price: activity.price ?? 0,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      url: `${getSiteUrl()}/${locale}/activities/${id}`,
+    },
+    ...(activity.creator?.username
+      ? { organizer: { "@type": "Organization", name: activity.creator.username } }
+      : {}),
+    ...(avgRating > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: avgRating.toFixed(1), reviewCount: reviewList.length } }
+      : {}),
+  };
+
   return (
-    <ActivityDetailClient
-      activity={activity}
-      reviews={reviews || []}
-      locale={locale}
-      userId={user?.id || null}
-      profile={profile}
-      isFavorite={isFavorite}
-      isRegistered={isRegistered}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <ActivityDetailClient
+        activity={activity}
+        reviews={reviewList}
+        locale={locale}
+        userId={user?.id || null}
+        profile={profile}
+        isFavorite={isFavorite}
+        isRegistered={isRegistered}
+      />
+    </>
   );
 }

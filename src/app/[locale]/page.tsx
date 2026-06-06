@@ -5,6 +5,8 @@ import {
   Search, Heart, Sparkles, ChevronRight,
 } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
+import QuickFilters from "@/components/home/QuickFilters";
+import DiscoverButton from "@/components/home/DiscoverButton";
 
 const CATEGORIES = [
   { key: "soirees",    emoji: "🎉", label: "Soirées" },
@@ -92,21 +94,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
             <Link
               href={`${base}/activities`}
-              className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 transition-colors text-base shadow-xl shadow-brand-gold/20"
+              className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 hover:scale-105 active:scale-95 transition-all text-base shadow-xl shadow-brand-gold/20"
             >
               Explorer les activités
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link
-              href={`${base}/propose`}
-              className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-medium px-9 py-4 rounded-2xl hover:bg-white/20 transition-colors text-base border border-white/20"
-            >
-              Proposer un événement
-            </Link>
+            <DiscoverButton />
           </div>
+
+          {/* Quick temporal filters */}
+          <QuickFilters />
         </div>
 
         {/* Bottom wave */}

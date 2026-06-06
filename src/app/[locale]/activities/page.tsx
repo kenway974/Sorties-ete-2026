@@ -31,16 +31,18 @@ export default function ActivitiesPage() {
   const { lat, lng, locate, loading: locating } = useGeolocation();
   const { activities, loading, loadingMore, hasMore, loadMore } = useActivities(filters);
 
-  // Read ?category= and ?q= from URL on mount
+  // Read ?category=, ?q=, ?date= from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get("category");
     const q = params.get("q");
-    if (cat || q) {
+    const date = params.get("date") as ActivityFilters["dateFilter"] | null;
+    if (cat || q || date) {
       setFilters((f) => ({
         ...f,
         ...(cat ? { category: cat as ActivityFilters["category"] } : {}),
         ...(q ? { search: q } : {}),
+        ...(date ? { dateFilter: date } : {}),
       }));
     }
   }, []);

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import HeaderClient from "@/components/layout/HeaderClient";
 import Footer from "@/components/layout/Footer";
+import CookieConsent from "@/components/layout/CookieConsent";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 
 export default async function LocaleLayout({
@@ -33,7 +34,8 @@ export default async function LocaleLayout({
     <div className="min-h-screen flex flex-col">
       <HeaderClient locale={locale} profile={profile} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer locale={locale} />
+      <CookieConsent locale={locale} />
       <OnboardingWizard locale={locale} />
     </div>
   );

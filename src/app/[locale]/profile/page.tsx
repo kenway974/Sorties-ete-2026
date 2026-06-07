@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PushToggle from "@/components/notifications/PushToggle";
+import DeleteAccountButton from "@/components/auth/DeleteAccountButton";
 import type { Profile, ActivityCategory } from "@/types";
 
 const PREFS: ActivityCategory[] = [
@@ -118,6 +119,8 @@ export default function ProfilePage() {
           <PushToggle userId={profile.id} />
         </div>
       )}
+
+      {profile && <DeleteAccountButton />}
     </div>
   );
 }

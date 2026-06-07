@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import StarRating from "@/components/ui/StarRating";
+import AddToCollectionButton from "@/components/activities/AddToCollectionButton";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import { useRecentlyViewed } from "@/lib/hooks/useRecentlyViewed";
 import GoingButton from "@/components/activities/GoingButton";
@@ -159,6 +160,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
                   ? <Check className="w-5 h-5 text-green-500" />
                   : <Share2 className="w-5 h-5 text-gray-400" />}
               </button>
+              <AddToCollectionButton activityId={activity.id} userId={userId} locale={locale} />
               {userId && (
                 <button
                   onClick={toggleFavorite}

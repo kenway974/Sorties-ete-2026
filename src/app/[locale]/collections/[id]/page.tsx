@@ -1,9 +1,40 @@
-﻿import { createClient } from "@/lib/supabase/server";
+﻿import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookMarked, ArrowLeft, Globe, Lock, Calendar } from "lucide-react";
-import ActivityCard from "@/components/activities/ActivityCard";
+import { getSiteUrl } from "@/lib/utils/siteUrl";
 import { formatDate } from "@/lib/utils/formatters";
+import CollectionContent from "@/components/collections/CollectionContent";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { id, locale } = await params;
+  const supabase = await createClient();
+  const { data: c } = await supabase
+    .from("collections")
+    .select("title, description, is_public, user:profiles(username)")
+    .eq("id", id)
+    .single();
+
+  if (!c || !c.is_public) return { title: "Collection", robots: { index: false, follow: false } };
+
+  const user = c.user as unknown as { username?: string } | null;
+  const desc = c.description ||
+    `Une sélection de sorties à Paris${user?.username ? ` par ${user.username}` : ""} sur ParisSorties.`;
+  const canonical = `${getSiteUrl()}/${locale}/collections/${id}`;
+
+  return {
+    title: c.title,
+    description: desc,
+    alternates: { canonical },
+    openGraph: { title: c.title, description: desc, url: canonical, type: "article", siteName: "ParisSorties", locale: "fr_FR" },
+    twitter: { card: "summary_large_image", title: c.title, description: desc },
+  };
+}
 
 export default async function CollectionDetailPage({
   params,
@@ -20,6 +51,9 @@ export default async function CollectionDetailPage({
     .single();
 
   if (!collection) notFound();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const isOwner = !!user && user.id === collection.user_id;
 
   const { data: items } = await supabase
     .from("collection_items")
@@ -46,7 +80,7 @@ export default async function CollectionDetailPage({
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{collection.title}</h1>
               <span className="flex items-center gap-1 text-xs text-gray-400 border border-gray-200 dark:border-gray-700 rounded-full px-2 py-0.5">
                 {collection.is_public ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                {collection.is_public ? "Publique" : "Privee"}
+                {collection.is_public ? "Publique" : "Privée"}
               </span>
             </div>
             {collection.description && (
@@ -58,24 +92,19 @@ export default async function CollectionDetailPage({
                 <Calendar className="w-3 h-3" />
                 {formatDate(collection.created_at.split("T")[0], "fr")}
               </span>
-              <span>{activities.length} activite{activities.length !== 1 ? "s" : ""}</span>
+              <span>{activities.length} activité{activities.length !== 1 ? "s" : ""}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {activities.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <BookMarked className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p>Cette collection est vide.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
-        </div>
-      )}
+      <CollectionContent
+        collectionId={collection.id}
+        title={collection.title}
+        activities={activities}
+        isOwner={isOwner}
+        locale={locale}
+      />
     </div>
   );
 }

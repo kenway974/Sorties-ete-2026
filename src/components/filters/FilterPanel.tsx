@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -31,10 +31,29 @@ const SORT_OPTIONS = ["date", "distance", "popularity", "rating", "price"] as co
 export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   const [open, setOpen] = useState(false);
 
-  const activeCount = [filters.dateFilter, filters.priceFilter, filters.sortBy && filters.sortBy !== "date" ? filters.sortBy : null].filter(Boolean).length;
+  const activeCount = [
+    filters.dateFilter,
+    filters.priceFilter,
+    filters.sortBy && filters.sortBy !== "date" ? filters.sortBy : null,
+    filters.dateFrom || filters.dateTo ? "dateRange" : null,
+    filters.timeFrom || filters.timeTo ? "timeRange" : null,
+  ].filter(Boolean).length;
   const hasFilters = activeCount > 0;
 
-  const reset = () => onChange({ ...filters, dateFilter: null, priceFilter: null, sortBy: "date" });
+  const reset = () =>
+    onChange({
+      ...filters,
+      dateFilter: null,
+      priceFilter: null,
+      sortBy: "date",
+      dateFrom: null,
+      dateTo: null,
+      timeFrom: null,
+      timeTo: null,
+    });
+
+  const inputCls =
+    "w-full px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-navy/50";
 
   return (
     <div className="relative">
@@ -43,7 +62,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors ${
           hasFilters
             ? "bg-brand-navy text-white border-brand-navy"
-            : "bg-white border-gray-200 text-gray-600 hover:border-brand-navy"
+            : "bg-white dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 text-gray-600 hover:border-brand-navy"
         }`}
       >
         <SlidersHorizontal className="w-4 h-4" />
@@ -58,9 +77,9 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full mt-2 z-40 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-72 animate-fade-in">
+          <div className="absolute left-0 top-full mt-2 z-40 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-4 w-80 max-h-[70vh] overflow-y-auto animate-fade-in">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Filtres</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">Filtres</h3>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-4 h-4" />
               </button>
@@ -68,7 +87,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Date</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Quand</label>
                 <div className="flex flex-wrap gap-2">
                   {DATE_OPTIONS.map((opt) => (
                     <button
@@ -77,7 +96,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                         filters.dateFilter === opt
                           ? "bg-brand-navy text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
                       }`}
                     >
                       {DATE_LABELS[opt]}
@@ -86,8 +105,53 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                 </div>
               </div>
 
+              {/* Plage de dates */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Prix</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Plage de dates</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={filters.dateFrom || ""}
+                    onChange={(e) => onChange({ ...filters, dateFrom: e.target.value || null, dateFilter: null })}
+                    className={inputCls}
+                    aria-label="Date de début"
+                  />
+                  <span className="text-xs text-gray-400">→</span>
+                  <input
+                    type="date"
+                    value={filters.dateTo || ""}
+                    onChange={(e) => onChange({ ...filters, dateTo: e.target.value || null, dateFilter: null })}
+                    className={inputCls}
+                    aria-label="Date de fin"
+                  />
+                </div>
+              </div>
+
+              {/* Plage horaire */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Tranche horaire</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={filters.timeFrom || ""}
+                    onChange={(e) => onChange({ ...filters, timeFrom: e.target.value || null })}
+                    className={inputCls}
+                    aria-label="Heure de début"
+                  />
+                  <span className="text-xs text-gray-400">→</span>
+                  <input
+                    type="time"
+                    value={filters.timeTo || ""}
+                    onChange={(e) => onChange({ ...filters, timeTo: e.target.value || null })}
+                    className={inputCls}
+                    aria-label="Heure de fin"
+                  />
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1">Ex. 18:00 → 23:00 pour les sorties du soir.</p>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Prix</label>
                 <div className="flex gap-2">
                   {(["free", "paid"] as const).map((opt) => (
                     <button
@@ -96,7 +160,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                       className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                         filters.priceFilter === opt
                           ? "bg-brand-navy text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
                       }`}
                     >
                       {opt === "free" ? "Gratuit" : "Payant"}
@@ -106,11 +170,11 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Trier par</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Trier par</label>
                 <select
                   value={filters.sortBy || "date"}
                   onChange={(e) => onChange({ ...filters, sortBy: e.target.value as ActivityFilters["sortBy"] })}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy/50"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>{SORT_LABELS[opt]}</option>
@@ -119,7 +183,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+            <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
               <Button variant="outline" size="sm" onClick={reset} className="flex-1">Réinitialiser</Button>
               <Button size="sm" onClick={() => setOpen(false)} className="flex-1">Appliquer</Button>
             </div>

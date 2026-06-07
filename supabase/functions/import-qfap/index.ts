@@ -167,12 +167,15 @@ Deno.serve(async (req) => {
       offset += PAGE;
     }
 
-    // Remove past imported events (display already hides them; keep table lean)
+    // Remove past imported events — to the HOUR — in Europe/Paris time.
+    const now = new Date();
+    const pDate = now.toLocaleDateString("en-CA", { timeZone: "Europe/Paris" });
+    const pTime = now.toLocaleTimeString("en-GB", { timeZone: "Europe/Paris", hour12: false });
     const { count: deleted } = await supabase
       .from("activities")
       .delete({ count: "exact" })
       .eq("source", "qfap")
-      .lt("date", today);
+      .or(`date.lt.${pDate},and(date.eq.${pDate},time.lt.${pTime})`);
 
     return new Response(
       JSON.stringify({

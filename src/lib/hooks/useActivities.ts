@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { futureOrClause } from "@/lib/utils/parisTime";
 import type { Activity, ActivityFilters } from "@/types";
 
 const PAGE_SIZE = 20;
@@ -26,12 +27,21 @@ export function useActivities(filters: ActivityFilters = {}) {
       .eq("status", "approved");
 
     const today = new Date().toISOString().split("T")[0];
-    query = query.gte("date", today);
+    // Hide events that are already past — to the HOUR (future date, or today but
+    // start time not yet passed). Uses Paris-local now.
+    query = query.or(futureOrClause());
 
     if (filters.category) query = query.eq("category", filters.category);
     if (filters.search) query = query.ilike("title", `%${filters.search}%`);
     if (filters.priceFilter === "free") query = query.is("price", null);
     if (filters.priceFilter === "paid") query = query.not("price", "is", null);
+
+    // Custom date range
+    if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
+    if (filters.dateTo) query = query.lte("date", filters.dateTo);
+    // Time-of-day range (applies across all matching dates)
+    if (filters.timeFrom) query = query.gte("time", filters.timeFrom.length === 5 ? filters.timeFrom + ":00" : filters.timeFrom);
+    if (filters.timeTo) query = query.lte("time", filters.timeTo.length === 5 ? filters.timeTo + ":00" : filters.timeTo);
 
     if (filters.dateFilter === "today") {
       query = query.eq("date", today);

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { futureOrClause } from "@/lib/utils/parisTime";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -31,8 +32,9 @@ export async function GET(request: NextRequest) {
       photos:activity_photos(id, url)
     `, { count: "exact" })
     .eq("status", "approved")
-    .gte("date", new Date().toISOString().split("T")[0])
+    .or(futureOrClause())
     .order("date", { ascending: true })
+    .order("time", { ascending: true })
     .range(offset, offset + limit - 1);
 
   if (category) query = query.eq("category", category);

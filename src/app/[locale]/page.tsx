@@ -8,6 +8,7 @@ import ActivityCard from "@/components/activities/ActivityCard";
 import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
+import { futureOrClause } from "@/lib/utils/parisTime";
 
 const CATEGORIES = [
   { key: "soirees",    emoji: "🎉", label: "Soirées",    color: "hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300" },
@@ -38,8 +39,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     .from("activities")
     .select("*, photos:activity_photos(id, url)")
     .eq("status", "approved")
-    .gte("date", new Date().toISOString().split("T")[0])
+    .or(futureOrClause())
     .order("date", { ascending: true })
+    .order("time", { ascending: true })
     .limit(4);
 
   const activities = featured || [];

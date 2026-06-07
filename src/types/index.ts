@@ -119,4 +119,10 @@ export interface ActivityFilters {
   search?: string;
   userLat?: number;
   userLng?: number;
+  /** Custom date range (YYYY-MM-DD). */
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  /** Time-of-day range (HH:MM), applies across all matching dates. */
+  timeFrom?: string | null;
+  timeTo?: string | null;
 }

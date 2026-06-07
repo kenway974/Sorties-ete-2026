@@ -64,7 +64,7 @@ export default function CGUPage() {
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">9. Contact</h2>
-      <p>[À COMPLÉTER : contact@parissorties.fr]</p>
+      <p>tikenspam2@gmail.com</p>
     </>
   );
 }

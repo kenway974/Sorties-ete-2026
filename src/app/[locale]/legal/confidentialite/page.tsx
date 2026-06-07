@@ -17,7 +17,7 @@ export default function ConfidentialitePage() {
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">1. Responsable du traitement</h2>
-      <p>[À COMPLÉTER : Nom / Raison sociale] — contact : [À COMPLÉTER : email].</p>
+      <p>Kenny Pignolet (entrepreneur individuel) — Rue Béatrice, 94240 L&apos;Haÿ-les-Roses — contact : tikenspam2@gmail.com.</p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">2. Données collectées</h2>
       <ul className="list-disc pl-6 space-y-1">
@@ -49,7 +49,7 @@ export default function ConfidentialitePage() {
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">6. Vos droits</h2>
       <p>
         Vous disposez d&apos;un droit d&apos;accès, de rectification, d&apos;effacement, de limitation, d&apos;opposition et de
-        portabilité de vos données. Pour les exercer : [À COMPLÉTER : email]. Vous pouvez aussi introduire une
+        portabilité de vos données. Pour les exercer : tikenspam2@gmail.com. Vous pouvez aussi introduire une
         réclamation auprès de la <a className="text-brand-navy dark:text-brand-gold underline" href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">CNIL</a>.
       </p>
 

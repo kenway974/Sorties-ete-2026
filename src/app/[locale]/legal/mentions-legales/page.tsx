@@ -15,21 +15,21 @@ export default function MentionsLegalesPage() {
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">1. Éditeur du site</h2>
       <p>
         Le site <strong>ParisSorties</strong> est édité par :<br />
-        <strong>[À COMPLÉTER : Nom / Raison sociale]</strong><br />
-        Statut juridique : [À COMPLÉTER : ex. auto-entrepreneur, SAS…]<br />
-        SIRET : [À COMPLÉTER]<br />
-        Adresse : [À COMPLÉTER]<br />
-        Email : [À COMPLÉTER : contact@parissorties.fr]<br />
+        <strong>Kenny Pignolet</strong><br />
+        Entrepreneur individuel (micro-entreprise)<br />
+        SIRET : 898 371 513 00034<br />
+        Adresse : Rue Béatrice, 94240 L&apos;Haÿ-les-Roses, France<br />
+        Email : tikenspam2@gmail.com<br />
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">2. Directeur de la publication</h2>
-      <p>[À COMPLÉTER : Prénom Nom]</p>
+      <p>Kenny Pignolet</p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">3. Hébergeur</h2>
       <p>
         Le site est hébergé par <strong>Vercel Inc.</strong><br />
         340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis — vercel.com<br />
-        Base de données et authentification : <strong>Supabase</strong> (hébergement UE — Irlande).
+        Base de données et authentification : <strong>Supabase</strong> (hébergement Union Européenne — Irlande).
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">4. Propriété intellectuelle</h2>
@@ -46,7 +46,7 @@ export default function MentionsLegalesPage() {
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">6. Contact</h2>
-      <p>Pour toute question : [À COMPLÉTER : contact@parissorties.fr]</p>
+      <p>Pour toute question : tikenspam2@gmail.com</p>
     </>
   );
 }

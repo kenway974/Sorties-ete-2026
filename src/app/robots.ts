@@ -1,4 +1,4 @@
-﻿import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
 
 export default function robots(): MetadataRoute.Robots {
@@ -8,7 +8,14 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/fr/admin", "/fr/profile", "/api/"],
+        disallow: [
+          "/fr/admin",
+          "/fr/profile",
+          "/fr/favorites",
+          "/fr/itinerary",
+          "/fr/auth/",
+          "/api/",
+        ],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

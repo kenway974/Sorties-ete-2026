@@ -2,8 +2,11 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { futureOrClause } from "@/lib/utils/parisTime";
+import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
 
 export async function GET(request: NextRequest) {
+  const limited = rateLimit(getRateLimitKey(request, "activities"), { limit: 60, windowSecs: 60 });
+  if (limited) return limited;
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
   const search = searchParams.get("search");

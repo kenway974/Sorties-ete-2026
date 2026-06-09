@@ -1,7 +1,10 @@
 ﻿import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
 
 export async function GET(request: Request) {
+  const limited = rateLimit(getRateLimitKey(request, "random"), { limit: 20, windowSecs: 60 });
+  if (limited) return limited;
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
 

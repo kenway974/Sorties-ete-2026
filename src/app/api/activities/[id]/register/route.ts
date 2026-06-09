@@ -1,11 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CookieToSet = { name: string; value: string; options?: any };
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const limited = rateLimit(getRateLimitKey(request, "register"), { limit: 10, windowSecs: 60 });
+  if (limited) return limited;
+
   const { id } = await params;
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -51,6 +55,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const limited = rateLimit(getRateLimitKey(request, "register"), { limit: 10, windowSecs: 60 });
+  if (limited) return limited;
+
   const { id } = await params;
   const cookieStore = await cookies();
   const supabase = createServerClient(

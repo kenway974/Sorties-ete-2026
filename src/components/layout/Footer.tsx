@@ -4,7 +4,7 @@ import { MapPin } from "lucide-react";
 export default function Footer({ locale = "fr" }: { locale?: string }) {
   const base = `/${locale}`;
   return (
-    <footer className="bg-brand-navy text-white/70 text-sm mt-auto">
+    <footer role="contentinfo" className="bg-brand-navy text-white/70 text-sm mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link href={base} className="flex items-center gap-2 font-medium text-white">

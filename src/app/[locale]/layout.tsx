@@ -4,6 +4,7 @@ import HeaderClient from "@/components/layout/HeaderClient";
 import Footer from "@/components/layout/Footer";
 import CookieConsent from "@/components/layout/CookieConsent";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
+import SkipNav from "@/components/layout/SkipNav";
 
 export default async function LocaleLayout({
   children,
@@ -32,8 +33,9 @@ export default async function LocaleLayout({
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SkipNav />
       <HeaderClient locale={locale} profile={profile} />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">{children}</main>
       <Footer locale={locale} />
       <CookieConsent locale={locale} />
       <OnboardingWizard locale={locale} />

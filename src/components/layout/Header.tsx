@@ -47,6 +47,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
 
   return (
     <header
+      role="banner"
       className={`sticky top-0 z-30 transition-all duration-300 ${
         scrolled
           ? "bg-brand-navy/95 backdrop-blur-md shadow-lg"
@@ -64,7 +65,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
+        <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-1 flex-1 justify-center">
           {[
             { href: base, label: "Accueil" },
             { href: `${base}/activities`, label: "Activités" },
@@ -150,7 +151,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-brand-navy-dark border-t border-white/10 py-3 px-4 flex flex-col gap-0.5 animate-slide-down">
+        <nav aria-label="Menu mobile" className="md:hidden bg-brand-navy-dark border-t border-white/10 py-3 px-4 flex flex-col gap-0.5 animate-slide-down">
           {[
             { href: base, label: "Accueil" },
             { href: `${base}/activities`, label: "Activités" },
@@ -195,7 +196,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
               </>
             )}
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

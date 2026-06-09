@@ -48,11 +48,50 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "ParisSorties",
+      description: "Découvrez et filtrez toutes les activités et événements à Paris.",
+      inLanguage: "fr-FR",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/fr/activities?search={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "WebApplication",
+      "@id": `${SITE_URL}/#webapp`,
+      name: "ParisSorties",
+      url: SITE_URL,
+      applicationCategory: "LifestyleApplication",
+      operatingSystem: "All",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "ParisSorties",
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/icons/icon-512.png` },
+    },
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         {/* Dark mode init — prevents flash */}
         <script
           dangerouslySetInnerHTML={{

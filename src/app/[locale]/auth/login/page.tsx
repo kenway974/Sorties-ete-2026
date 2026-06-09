@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { MapPin } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
+
+export const metadata: Metadata = {
+  title: "Connexion",
+  description: "Connectez-vous à ParisSorties pour accéder à vos favoris, vos inscriptions et vos collections.",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

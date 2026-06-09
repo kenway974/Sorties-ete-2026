@@ -1,6 +1,18 @@
-﻿import { createClient } from "@/lib/supabase/server";
+﻿import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { BookMarked, Plus, Lock, Globe } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Collections",
+  description: "Explorez les listes d'activités partagées par la communauté ParisSorties ou créez la vôtre.",
+  alternates: { canonical: "/fr/collections" },
+  openGraph: {
+    title: "Collections · ParisSorties",
+    description: "Explorez les listes d'activités partagées par la communauté ParisSorties.",
+    type: "website",
+  },
+};
 
 export default async function CollectionsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

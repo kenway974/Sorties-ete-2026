@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Mes favoris",
+  description: "Retrouvez toutes les activités et événements parisiens que vous avez sauvegardés.",
+  robots: { index: false, follow: false },
+};
 import Link from "next/link";
 import ActivityCard from "@/components/activities/ActivityCard";
 import Button from "@/components/ui/Button";

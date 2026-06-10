@@ -15,7 +15,8 @@ import { useRecentlyViewed } from "@/lib/hooks/useRecentlyViewed";
 import GoingButton from "@/components/activities/GoingButton";
 import { useItinerary } from "@/lib/hooks/useItinerary";
 import { Route } from "lucide-react";
-import type { Activity, Review, Profile } from "@/types";
+import ActivityCard from "@/components/activities/ActivityCard";
+import type { Activity, Review, Profile, ActivityRegistration } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
 
@@ -33,9 +34,11 @@ interface Props {
   profile: Profile | null;
   isFavorite: boolean;
   isRegistered: boolean;
+  registeredUsers: ActivityRegistration[];
+  similarActivities: Activity[];
 }
 
-export default function ActivityDetailClient({ activity, reviews, userId, isFavorite: initFav, isRegistered: initReg }: Props) {
+export default function ActivityDetailClient({ activity, reviews, userId, isFavorite: initFav, isRegistered: initReg, registeredUsers, similarActivities }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) || "fr";
   const { add: addRecentlyViewed } = useRecentlyViewed();
@@ -281,6 +284,40 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
             </div>
           </div>
 
+          {registeredUsers.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Qui y va ?</h3>
+              <div className="flex items-center">
+                {registeredUsers.slice(0, 6).map((reg, i) => (
+                  <div
+                    key={reg.id}
+                    className="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs font-bold ring-2 ring-white dark:ring-gray-800 overflow-hidden shrink-0"
+                    style={{ marginLeft: i > 0 ? "-8px" : "0", zIndex: 6 - i }}
+                    title={reg.user?.username || "Participant"}
+                  >
+                    {reg.user?.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={reg.user.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      (reg.user?.username?.[0] || "?").toUpperCase()
+                    )}
+                  </div>
+                ))}
+                {registeredUsers.length > 6 && (
+                  <div
+                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 flex items-center justify-center text-xs font-bold ring-2 ring-white dark:ring-gray-800 shrink-0"
+                    style={{ marginLeft: "-8px" }}
+                  >
+                    +{registeredUsers.length - 6}
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                {registeredUsers.length} personne{registeredUsers.length !== 1 ? "s" : ""} inscrite{registeredUsers.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          )}
+
           {activity.external_url && (
             <a
               href={activity.external_url}
@@ -332,6 +369,19 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
           )}
         </div>
       </div>
+
+      {similarActivities.length > 0 && (
+        <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Vous aimerez aussi</h2>
+          <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2 -mx-4 px-4 snap-x snap-mandatory">
+            {similarActivities.map((a) => (
+              <div key={a.id} className="min-w-[240px] max-w-[240px] snap-start">
+                <ActivityCard activity={a} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import ActivityDetailClient from "./ActivityDetailClient";
+import type { Activity, ActivityRegistration } from "@/types";
 
 const CATEGORY_LABELS: Record<string, string> = {
   soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
@@ -80,11 +81,26 @@ export default async function ActivityDetailPage({
 
   if (!activity) notFound();
 
-  const { data: reviews } = await supabase
-    .from("reviews")
-    .select("*, user:profiles(id, username, avatar_url)")
-    .eq("activity_id", id)
-    .order("created_at", { ascending: false });
+  const participantList: ActivityRegistration[] =
+    ((activity as Record<string, unknown>).registrations as ActivityRegistration[]) || [];
+
+  const [{ data: reviews }, { data: similarData }] = await Promise.all([
+    supabase
+      .from("reviews")
+      .select("*, user:profiles(id, username, avatar_url)")
+      .eq("activity_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("activities")
+      .select("*, photos:activity_photos(id, url)")
+      .eq("category", activity.category)
+      .eq("status", "approved")
+      .neq("id", id)
+      .gte("date", new Date().toISOString().slice(0, 10))
+      .order("date", { ascending: true })
+      .limit(6),
+  ]);
+  const similarActivities = (similarData || []) as Activity[];
 
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -152,6 +168,8 @@ export default async function ActivityDetailPage({
         profile={profile}
         isFavorite={isFavorite}
         isRegistered={isRegistered}
+        registeredUsers={participantList}
+        similarActivities={similarActivities}
       />
     </>
   );

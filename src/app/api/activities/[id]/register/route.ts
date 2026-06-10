@@ -51,6 +51,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .update({ current_participants: activity.current_participants + 1 })
     .eq("id", id);
 
+  // Fire-and-forget confirmation email (graceful degradation if edge fn unavailable)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (supabaseUrl && anonKey) {
+    fetch(`${supabaseUrl}/functions/v1/send-confirmation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+      body: JSON.stringify({ userId: user.id, activityId: id }),
+    }).catch(() => {});
+  }
+
   return NextResponse.json({ success: true });
 }
 

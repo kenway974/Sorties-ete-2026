@@ -129,6 +129,12 @@ export default async function MyEventsPage({
                   >
                     Voir la page →
                   </Link>
+                  <Link
+                    href={`/${locale}/profile/my-events/${activity.id}/edit`}
+                    className="text-xs text-gray-500 dark:text-gray-400 font-medium hover:text-brand-navy dark:hover:text-brand-gold transition-colors"
+                  >
+                    Modifier
+                  </Link>
                 </div>
               </div>
             );

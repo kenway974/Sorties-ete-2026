@@ -37,6 +37,10 @@ export async function generateMetadata({
     `${cat} à Paris — ${when}, ${activity.address}. ${price}. À découvrir sur ParisSorties.`;
 
   const canonical = `${getSiteUrl()}/${locale}/activities/${id}`;
+  const siteUrl = getSiteUrl();
+  const ogImageUrl = image
+    ? image
+    : `${siteUrl}/api/og?title=${encodeURIComponent(activity.title)}&category=${activity.category}&date=${activity.date}${activity.price != null ? `&price=${activity.price === 0 ? "Gratuit" : activity.price + "€"}` : ""}`;
 
   return {
     title: activity.title,
@@ -49,13 +53,13 @@ export async function generateMetadata({
       type: "article",
       siteName: "ParisSorties",
       locale: "fr_FR",
-      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: activity.title }] } : {}),
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: activity.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: activity.title,
       description,
-      ...(image ? { images: [image] } : {}),
+      images: [ogImageUrl],
     },
   };
 }

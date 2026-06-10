@@ -1,15 +1,17 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { List, Map as MapIcon, Crosshair } from "lucide-react";
 import { useActivities } from "@/lib/hooks/useActivities";
 import { useGeolocation } from "@/lib/hooks/useGeolocation";
+import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 import CategoryFilter from "@/components/filters/CategoryFilter";
 import SearchBar from "@/components/filters/SearchBar";
 import FilterPanel from "@/components/filters/FilterPanel";
 import ActivityCard from "@/components/activities/ActivityCard";
 import { ActivitySkeleton, ActivitySkeletonGrid } from "@/components/activities/ActivitySkeleton";
 import BottomSheet from "@/components/ui/BottomSheet";
+import BackToTop from "@/components/ui/BackToTop";
 import type { Activity, ActivityFilters } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
@@ -29,14 +31,17 @@ export default function ActivitiesPage() {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [filters, setFilters] = useState<ActivityFilters>({ sortBy: "date" });
   const { lat, lng, locate, loading: locating } = useGeolocation();
-  const { activities, loading, loadingMore, hasMore, loadMore } = useActivities(filters);
+  const { activities, loading, loadingMore, hasMore, loadMore, refetch } = useActivities(filters);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  // Read ?category=, ?q=, ?date= from URL on mount
+  // Read ?category=, ?q=, ?date=, ?view= from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get("category");
     const q = params.get("q");
     const date = params.get("date") as ActivityFilters["dateFilter"] | null;
+    const viewParam = params.get("view");
+    if (viewParam === "map") setView("map");
     if (cat || q || date) {
       setFilters((f) => ({
         ...f,
@@ -47,12 +52,17 @@ export default function ActivitiesPage() {
     }
   }, []);
 
+  const { pullDistance, refreshing } = usePullToRefresh({
+    onRefresh: refetch,
+    scrollContainerRef: listRef,
+  });
+
   const handleActivityClick = useCallback((a: Activity) => {
     setSelectedActivity(a);
   }, []);
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100vh - 56px)" }}>
+    <div className="flex flex-col h-[calc(100vh-56px-64px)] md:h-[calc(100vh-56px)]">
       {/* Toolbar */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-3 py-2.5 space-y-2 z-10 shrink-0">
         <div className="flex items-center gap-2">
@@ -91,7 +101,18 @@ export default function ActivitiesPage() {
 
       {/* List view */}
       {view === "list" && (
-        <div className="flex-1 overflow-y-auto bg-brand-cream dark:bg-[#0d111a]">
+        <div ref={listRef} className="flex-1 overflow-y-auto bg-brand-cream dark:bg-[#0d111a] relative">
+          {/* Pull-to-refresh indicator */}
+          {(pullDistance > 0 || refreshing) && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 z-10 flex items-center justify-center transition-all"
+              style={{ top: Math.max(0, pullDistance - 40), opacity: Math.min(1, pullDistance / 60) }}
+            >
+              <div className={`w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-md flex items-center justify-center ${refreshing ? "animate-spin border-2 border-brand-navy border-t-transparent" : ""}`}>
+                {!refreshing && <span className="text-sm" style={{ transform: `rotate(${pullDistance * 3}deg)`, display: "inline-block" }}>↓</span>}
+              </div>
+            </div>
+          )}
           <div className="max-w-7xl mx-auto px-3 py-4">
             {loading ? (
               <ActivitySkeletonGrid />
@@ -130,6 +151,7 @@ export default function ActivitiesPage() {
               </>
             )}
           </div>
+          <BackToTop scrollContainerRef={listRef} />
         </div>
       )}
 

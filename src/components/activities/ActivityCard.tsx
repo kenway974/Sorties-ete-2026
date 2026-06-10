@@ -171,8 +171,12 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
                   <span className={isPopular ? "text-orange-600 dark:text-orange-400 font-medium" : ""}>
                     {spotsLeft} place{spotsLeft !== 1 ? "s" : ""} restante{spotsLeft !== 1 ? "s" : ""}
                   </span>
+                ) : activity.current_participants > 0 ? (
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                    {activity.current_participants} participant{activity.current_participants !== 1 ? "s" : ""}
+                  </span>
                 ) : (
-                  "Places illimitées"
+                  <span className="text-gray-400 italic">Soyez le premier !</span>
                 )}
               </span>
             </div>

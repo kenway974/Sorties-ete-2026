@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PushToggle from "@/components/notifications/PushToggle";
 import DeleteAccountButton from "@/components/auth/DeleteAccountButton";
+import UserBadges from "@/components/profile/UserBadges";
+import type { BadgeStats } from "@/components/profile/UserBadges";
 import type { Profile, ActivityCategory } from "@/types";
 
 const PREFS: ActivityCategory[] = [
@@ -31,16 +35,29 @@ export default function ProfilePage() {
   const [saveError, setSaveError] = useState("");
   const [form, setForm] = useState({ username: "", bio: "", preferred_language: "fr" });
   const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
+  const [badgeStats, setBadgeStats] = useState<BadgeStats | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push(`/${locale}/auth/login`); return; }
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      if (data) {
+      const [profileRes, regCount, reviewCount, activityCount] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        supabase.from("activity_registrations").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("reviews").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("activities").select("id", { count: "exact", head: true }).eq("creator_id", user.id),
+      ]);
+      if (profileRes.data) {
+        const data = profileRes.data;
         setProfile(data);
         setForm({ username: data.username || "", bio: data.bio || "", preferred_language: "fr" });
         setPrefs(data.preferences || []);
+        setBadgeStats({
+          activitiesRegistered: regCount.count ?? 0,
+          activitiesCreated: activityCount.count ?? 0,
+          reviewsWritten: reviewCount.count ?? 0,
+          profileComplete: !!(data.username && data.bio && data.preferences?.length > 0),
+        });
       }
       setLoading(false);
     });
@@ -112,6 +129,32 @@ export default function ProfilePage() {
           {saved ? "✓ Enregistré !" : "Enregistrer"}
         </Button>
       </div>
+
+      {badgeStats && (
+        <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <UserBadges stats={badgeStats} />
+        </div>
+      )}
+
+      {profile && (
+        <div className="mt-6">
+          <Link
+            href={`/${locale}/profile/my-events`}
+            className="flex items-center justify-between w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:border-brand-navy dark:hover:border-brand-gold transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-navy/8 dark:bg-brand-gold/10 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-brand-navy dark:text-brand-gold" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Mes activités</p>
+                <p className="text-xs text-gray-400">Dashboard organisateur</p>
+              </div>
+            </div>
+            <span className="text-gray-400 group-hover:text-brand-navy dark:group-hover:text-brand-gold transition-colors text-lg">→</span>
+          </Link>
+        </div>
+      )}
 
       {profile && (
         <div className="mt-6">

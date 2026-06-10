@@ -16,6 +16,7 @@ import GoingButton from "@/components/activities/GoingButton";
 import { useItinerary } from "@/lib/hooks/useItinerary";
 import { Route } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
+import ActivityStories from "@/components/activities/ActivityStories";
 import type { Activity, Review, Profile, ActivityRegistration } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -147,6 +148,8 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
               <MapPin className="w-16 h-16 text-white/20" />
             </div>
           )}
+
+          <ActivityStories activityId={activity.id} userId={userId} />
 
           <div className="flex items-start justify-between gap-4">
             <div>

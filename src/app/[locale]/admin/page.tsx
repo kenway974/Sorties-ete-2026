@@ -14,7 +14,7 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
 
   const { data: pendingActivities } = await supabase
     .from("activities")
-    .select("*, creator:profiles!activities_creator_id_fkey(id, username)")
+    .select("*, moderation_note, creator:profiles!activities_creator_id_fkey(id, username)")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
 

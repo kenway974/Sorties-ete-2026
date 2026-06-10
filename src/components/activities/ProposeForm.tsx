@@ -61,7 +61,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         // Nominatim timeout or error — fallback to Paris center, carry on
       }
 
-      const { error: err } = await supabase.from("activities").insert({
+      const { data: inserted, error: err } = await supabase.from("activities").insert({
         title: form.title,
         description: form.description,
         category: form.category,
@@ -77,8 +77,16 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         status: "pending",
         creator_id: userId,
         current_participants: 0,
-      });
+      }).select("id").single();
       if (err) throw err;
+
+      // Trigger AI moderation asynchronously — failure is non-blocking
+      if (inserted?.id) {
+        supabase.functions.invoke("moderate-activity", {
+          body: { activityId: inserted.id },
+        }).catch(() => {});
+      }
+
       onSuccess();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur inconnue");

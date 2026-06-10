@@ -5,10 +5,11 @@ import {
   Search, Heart, Sparkles, ChevronRight,
 } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
+import ActivityRow from "@/components/home/ActivityRow";
 import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
-import { futureOrClause } from "@/lib/utils/parisTime";
+import { futureOrClause, parisNow } from "@/lib/utils/parisTime";
 
 const CATEGORIES = [
   { key: "soirees",    emoji: "🎉", label: "Soirées",    color: "hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300" },
@@ -35,16 +36,53 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const base = `/${locale}`;
   const supabase = await createClient();
 
-  const { data: featured } = await supabase
-    .from("activities")
-    .select("*, photos:activity_photos(id, url)")
-    .eq("status", "approved")
-    .or(futureOrClause())
-    .order("date", { ascending: true })
-    .order("time", { ascending: true })
-    .limit(4);
+  const { date: parisDate, time: parisTime } = parisNow();
 
-  const activities = featured || [];
+  const [featuredRes, tonightRes, lastMinuteRes, trendingRes] = await Promise.all([
+    supabase
+      .from("activities")
+      .select("*, photos:activity_photos(id, url)")
+      .eq("status", "approved")
+      .or(futureOrClause())
+      .order("date", { ascending: true })
+      .order("time", { ascending: true })
+      .limit(4),
+
+    // Ce soir : aujourd'hui, encore à venir
+    supabase
+      .from("activities")
+      .select("*, photos:activity_photos(id, url)")
+      .eq("status", "approved")
+      .eq("date", parisDate)
+      .gte("time", parisTime)
+      .order("time", { ascending: true })
+      .limit(8),
+
+    // Dernière minute : créées ou mises à jour dans les 48h
+    supabase
+      .from("activities")
+      .select("*, photos:activity_photos(id, url)")
+      .eq("status", "approved")
+      .or(futureOrClause())
+      .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
+      .order("created_at", { ascending: false })
+      .limit(8),
+
+    // Tendances : plus d'inscrits cette semaine
+    supabase
+      .from("activities")
+      .select("*, photos:activity_photos(id, url)")
+      .eq("status", "approved")
+      .or(futureOrClause())
+      .gt("current_participants", 0)
+      .order("current_participants", { ascending: false })
+      .limit(8),
+  ]);
+
+  const activities = featuredRes.data || [];
+  const tonight = tonightRes.data || [];
+  const lastMinute = lastMinuteRes.data || [];
+  const trending = trendingRes.data || [];
 
   return (
     <div className="dark:bg-[#0d111a]">
@@ -210,6 +248,45 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
       </section>
+
+      {/* ── CE SOIR ── */}
+      {tonight.length > 0 && (
+        <div className="bg-brand-cream dark:bg-[#0d111a]">
+          <ActivityRow
+            title="Ce soir à Paris"
+            emoji="🌙"
+            activities={tonight}
+            viewAllHref={`/activities?date=today`}
+            locale={locale}
+          />
+        </div>
+      )}
+
+      {/* ── TENDANCES ── */}
+      {trending.length > 0 && (
+        <div className="bg-white dark:bg-gray-900/30">
+          <ActivityRow
+            title="Tendances cette semaine"
+            emoji="🔥"
+            activities={trending}
+            viewAllHref={`/activities?sort=popularity`}
+            locale={locale}
+          />
+        </div>
+      )}
+
+      {/* ── DERNIÈRE MINUTE ── */}
+      {lastMinute.length > 0 && (
+        <div className="bg-brand-cream dark:bg-[#0d111a]">
+          <ActivityRow
+            title="Ajoutés récemment"
+            emoji="⚡"
+            activities={lastMinute}
+            viewAllHref={`/activities`}
+            locale={locale}
+          />
+        </div>
+      )}
 
       {/* ── RECENTLY VIEWED ── */}
       <RecentlyViewed />

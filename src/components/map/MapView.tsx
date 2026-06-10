@@ -196,7 +196,7 @@ export default function MapView({
     renderMarkers();
     map.on("zoomend moveend", renderMarkers);
     return () => { map.off("zoomend moveend", renderMarkers); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [activities, selectedId, onActivityClick, mapReady]);
 
   // ── User location dot ────────────────────────────────────────────────────

@@ -44,6 +44,7 @@ export interface Activity {
   price: number | null;
   external_url: string | null;
   status: ActivityStatus;
+  moderation_note?: string | null;
   creator_id: string;
   creator?: Profile;
   photos?: ActivityPhoto[];

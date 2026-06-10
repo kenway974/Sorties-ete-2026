@@ -30,6 +30,20 @@ export async function GET(request: NextRequest) {
     );
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // First-time users (empty preferences) → onboarding
+      if (next === "/") {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("preferences")
+            .eq("id", user.id)
+            .single();
+          if (profile && (!profile.preferences || profile.preferences.length === 0)) {
+            return NextResponse.redirect(`${origin}/fr/onboarding`);
+          }
+        }
+      }
       return NextResponse.redirect(`${origin}/fr${next}`);
     }
   }

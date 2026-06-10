@@ -38,7 +38,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const { date: parisDate, time: parisTime } = parisNow();
 
-  const [featuredRes, tonightRes, lastMinuteRes, trendingRes] = await Promise.all([
+  const [featuredRes, tonightRes, lastMinuteRes, trendingRes, { data: { user } }] = await Promise.all([
     supabase
       .from("activities")
       .select("*, photos:activity_photos(id, url)")
@@ -77,12 +77,31 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       .gt("current_participants", 0)
       .order("current_participants", { ascending: false })
       .limit(8),
+
+    supabase.auth.getUser(),
   ]);
 
   const activities = featuredRes.data || [];
   const tonight = tonightRes.data || [];
   const lastMinute = lastMinuteRes.data || [];
   const trending = trendingRes.data || [];
+
+  // Personalized "Pour vous" section
+  let personalizedActivities: typeof activities = [];
+  if (user) {
+    const { data: userProfile } = await supabase.from("profiles").select("preferences").eq("id", user.id).single();
+    if (userProfile?.preferences && userProfile.preferences.length > 0) {
+      const { data: persoData } = await supabase
+        .from("activities")
+        .select("*, photos:activity_photos(id, url)")
+        .eq("status", "approved")
+        .in("category", userProfile.preferences)
+        .or(futureOrClause())
+        .order("date", { ascending: true })
+        .limit(8);
+      personalizedActivities = persoData || [];
+    }
+  }
 
   return (
     <div className="dark:bg-[#0d111a]">
@@ -257,6 +276,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             emoji="🌙"
             activities={tonight}
             viewAllHref={`/activities?date=today`}
+            locale={locale}
+          />
+        </div>
+      )}
+
+      {/* ── POUR VOUS ── */}
+      {personalizedActivities.length > 0 && (
+        <div className="bg-white dark:bg-gray-900/30">
+          <ActivityRow
+            title="Pour vous"
+            emoji="🎯"
+            activities={personalizedActivities}
+            viewAllHref={`/activities`}
             locale={locale}
           />
         </div>

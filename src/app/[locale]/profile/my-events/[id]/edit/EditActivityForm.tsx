@@ -1,6 +1,5 @@
 "use client";
 import { useState, type ChangeEventHandler } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
@@ -24,7 +23,6 @@ interface Props {
 }
 
 export default function EditActivityForm({ activity, locale }: Props) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");

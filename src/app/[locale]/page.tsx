@@ -64,6 +64,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       .select("*, photos:activity_photos(id, url)")
       .eq("status", "approved")
       .or(futureOrClause())
+      // eslint-disable-next-line react-hooks/purity -- server component, Date.now() is fine per request
       .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
       .order("created_at", { ascending: false })
       .limit(8),

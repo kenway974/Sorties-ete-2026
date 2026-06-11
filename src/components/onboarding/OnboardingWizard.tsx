@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Sparkles, ChevronRight, X, Check } from "lucide-react";
+import { Sparkles, ChevronRight, X, Check } from "lucide-react";
 
 const ARRONDISSEMENTS = [
   "1er", "2e", "3e", "4e", "5e", "6e", "7e", "8e", "9e", "10e",

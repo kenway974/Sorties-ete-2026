@@ -48,6 +48,7 @@ export default function GlobalError({
             >
               Réessayer
             </button>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Next/Link unavailable in global-error boundary */}
             <a
               href="/fr"
               style={{

@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Heart, MapPin, Users, Calendar, Star, Flame } from "lucide-react";
+import { Heart, MapPin, Flame, Star } from "lucide-react";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import type { Activity } from "@/types";
 
@@ -14,31 +14,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  soirees: "from-purple-600 to-pink-600",
-  concerts: "from-rose-500 to-red-600",
-  expositions: "from-amber-500 to-orange-500",
-  restaurants: "from-orange-500 to-red-500",
-  bars: "from-yellow-500 to-amber-600",
-  sport: "from-emerald-500 to-teal-600",
-  culture: "from-blue-500 to-indigo-600",
-  famille: "from-cyan-500 to-blue-500",
-  etudiants: "from-violet-500 to-purple-600",
-  networking: "from-sky-500 to-blue-600",
-  loisirs: "from-teal-500 to-green-500",
-};
-
-const CATEGORY_BG: Record<string, string> = {
-  soirees: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-  concerts: "bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
-  expositions: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  restaurants: "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  bars: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  sport: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  culture: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  famille: "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
-  etudiants: "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
-  networking: "bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300",
-  loisirs: "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+  soirees:     "from-purple-500 to-pink-500",
+  concerts:    "from-rose-500 to-red-500",
+  expositions: "from-amber-400 to-orange-500",
+  restaurants: "from-orange-400 to-red-500",
+  bars:        "from-yellow-400 to-amber-500",
+  sport:       "from-emerald-400 to-teal-500",
+  culture:     "from-blue-500 to-indigo-500",
+  famille:     "from-cyan-400 to-blue-500",
+  etudiants:   "from-violet-500 to-purple-500",
+  networking:  "from-sky-400 to-blue-500",
+  loisirs:     "from-teal-400 to-green-500",
 };
 
 interface ActivityCardProps {
@@ -60,11 +46,10 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
     ? activity.max_participants - activity.current_participants
     : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
-  const isPopular = activity.current_participants > 0 && spotsLeft !== null && spotsLeft < 5 && !isFull;
-  const gradientClass = CATEGORY_COLORS[activity.category] ?? "from-brand-navy to-brand-navy-light";
-  const categoryBg = CATEGORY_BG[activity.category] ?? "bg-gray-100 text-gray-700";
+  const isHot = activity.current_participants > 0 && spotsLeft !== null && spotsLeft < 5 && !isFull;
+  const gradient = CATEGORY_COLORS[activity.category] ?? "from-gray-400 to-gray-600";
 
-  const handleFavToggle = (e: React.MouseEvent) => {
+  const handleFav = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setFavPulse(true);
@@ -73,57 +58,63 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-800/80 rounded-2xl shadow-card border border-gray-100/80 dark:border-gray-700/60 overflow-hidden card-hover">
+    <Link
+      href={`/${locale}/activities/${activity.id}`}
+      className="group block bg-white dark:bg-[#1a1a1a] rounded-2xl overflow-hidden hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-shadow duration-300"
+    >
+      {/* Image — 16:9 */}
       {!compact && (
-        <div className="relative h-40 overflow-hidden">
+        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
           {hasPhoto && photoUrl ? (
-            <>
-              <Image
-                src={photoUrl}
-                alt={activity.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={() => setImgError(true)}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            </>
+            <Image
+              src={photoUrl}
+              alt={activity.title}
+              fill
+              className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+              onError={() => setImgError(true)}
+            />
           ) : (
-            <div className={`h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center`}>
-              <MapPin className="w-10 h-10 text-white/30" />
+            <div className={`w-full h-full bg-gradient-to-br ${gradient}`}>
+              <div className="w-full h-full flex items-center justify-center">
+                <MapPin className="w-10 h-10 text-white/25" />
+              </div>
             </div>
           )}
-          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 shadow-sm">
+
+          {/* Category + hot badge */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-[11px] font-semibold tracking-wide">
               {CATEGORY_LABELS[activity.category] || activity.category}
             </span>
-            <div className="flex items-center gap-1">
-              {isPopular && (
-                <span className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full bg-orange-500/90 backdrop-blur-sm text-white shadow-sm">
-                  <Flame className="w-3 h-3" />
-                  Chaud
-                </span>
-              )}
-              {isFull && (
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-500/90 backdrop-blur-sm text-white shadow-sm">
-                  Complet
-                </span>
-              )}
-            </div>
+            {isHot && (
+              <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500 text-white text-[11px] font-semibold">
+                <Flame className="w-2.5 h-2.5" /> Chaud
+              </span>
+            )}
+            {isFull && (
+              <span className="px-2 py-1 rounded-full bg-red-500 text-white text-[11px] font-semibold">
+                Complet
+              </span>
+            )}
           </div>
+
+          {/* Price */}
           <div className="absolute bottom-2.5 left-2.5">
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/90 dark:bg-gray-900/80 text-brand-navy dark:text-brand-gold backdrop-blur-sm shadow-sm">
+            <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold">
               {formatPrice(activity.price, "Gratuit")}
             </span>
           </div>
+
+          {/* Favorite */}
           {onFavoriteToggle && (
             <button
-              onClick={handleFavToggle}
-              className="absolute bottom-2.5 right-2.5 p-1.5 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:scale-110 active:scale-95 transition-transform"
+              onClick={handleFav}
               aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+              className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors"
             >
               <Heart
                 className={`w-4 h-4 transition-all duration-200 ${
-                  isFavorite ? "fill-brand-red text-brand-red" : "text-gray-400 dark:text-gray-500"
+                  isFavorite ? "fill-red-400 text-red-400" : "text-white"
                 } ${favPulse ? "scale-125" : "scale-100"}`}
               />
             </button>
@@ -131,80 +122,37 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
         </div>
       )}
 
-      <div className="p-4">
+      {/* Text content */}
+      <div className={compact ? "p-3" : "px-3 pt-3 pb-3.5"}>
         {compact && (
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryBg}`}>
-              {CATEGORY_LABELS[activity.category] || activity.category}
-            </span>
-            {activity.avg_rating && activity.avg_rating > 0 && (
-              <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
-                <Star className="w-3.5 h-3.5 fill-amber-400" />
-                {activity.avg_rating.toFixed(1)}
-              </div>
-            )}
-          </div>
+          <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1 block">
+            {CATEGORY_LABELS[activity.category] || activity.category}
+          </span>
         )}
 
-        <Link href={`/${locale}/activities/${activity.id}`}>
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 leading-snug mb-2.5 hover:text-brand-navy dark:hover:text-brand-gold transition-colors line-clamp-2 text-sm">
-            {activity.title}
-          </h3>
-        </Link>
+        <h3 className="font-semibold text-[14px] text-gray-900 dark:text-white leading-snug line-clamp-2 mb-1.5">
+          {activity.title}
+        </h3>
 
-        <div className="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-3.5 h-3.5 shrink-0 text-brand-navy/50 dark:text-brand-gold/50" />
-            <span>{formatDate(activity.date, "fr")} · {formatTime(activity.time)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-brand-navy/50 dark:text-brand-gold/50" />
-            <span className="truncate">{activity.address}</span>
-          </div>
-          {!compact && (
-            <div className="flex items-center gap-2">
-              <Users className="w-3.5 h-3.5 shrink-0 text-brand-navy/50 dark:text-brand-gold/50" />
-              <span>
-                {isFull ? (
-                  <span className="text-brand-red font-medium">Complet</span>
-                ) : spotsLeft !== null ? (
-                  <span className={isPopular ? "text-orange-600 dark:text-orange-400 font-medium" : ""}>
-                    {spotsLeft} place{spotsLeft !== 1 ? "s" : ""} restante{spotsLeft !== 1 ? "s" : ""}
-                  </span>
-                ) : activity.current_participants > 0 ? (
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-                    {activity.current_participants} participant{activity.current_participants !== 1 ? "s" : ""}
-                  </span>
-                ) : (
-                  <span className="text-gray-400 italic">Soyez le premier !</span>
-                )}
-              </span>
-            </div>
-          )}
-        </div>
+        <p className="text-[12px] text-gray-400 dark:text-gray-500 line-clamp-1">
+          {formatDate(activity.date, "fr")}
+          {activity.time ? ` · ${formatTime(activity.time)}` : ""}
+          {" · "}
+          {activity.address.split(",")[0]}
+        </p>
 
-        {!compact && (
-          <div className="flex items-center justify-between mt-3.5 pt-3 border-t border-gray-50 dark:border-gray-700/50">
-            {activity.avg_rating && activity.avg_rating > 0 ? (
-              <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
-                <Star className="w-3.5 h-3.5 fill-amber-400" />
-                {activity.avg_rating.toFixed(1)}
-                {activity.review_count && activity.review_count > 0 && (
-                  <span className="text-gray-400 dark:text-gray-500">({activity.review_count})</span>
-                )}
-              </div>
-            ) : (
-              <span />
-            )}
-            <Link
-              href={`/${locale}/activities/${activity.id}`}
-              className="text-xs font-semibold text-brand-navy dark:text-brand-gold hover:underline"
-            >
-              Voir →
-            </Link>
+        {(activity.avg_rating ?? 0) > 0 && (
+          <div className="flex items-center gap-1 mt-1.5">
+            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
+              {activity.avg_rating?.toFixed(1)}
+              {(activity.review_count ?? 0) > 0 && (
+                <span className="text-gray-400"> ({activity.review_count})</span>
+              )}
+            </span>
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }

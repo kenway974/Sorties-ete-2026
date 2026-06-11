@@ -10,41 +10,37 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-brand-cream text-gray-900 antialiased;
-    @apply dark:bg-[#0d111a] dark:text-gray-100;
+    @apply bg-white text-gray-900 antialiased;
+    @apply dark:bg-black dark:text-gray-100;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   *:focus-visible {
-    @apply outline-none ring-2 ring-brand-navy/50 ring-offset-2;
+    @apply outline-none ring-2 ring-gray-900/30 dark:ring-white/30 ring-offset-2;
   }
   ::selection {
-    @apply bg-brand-navy/20 text-brand-navy dark:bg-brand-gold/30 dark:text-brand-gold;
+    @apply bg-gray-900/10 text-gray-900 dark:bg-white/20 dark:text-white;
   }
 }
 
 @layer components {
   .glass {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
   .dark .glass {
-    background: rgba(15, 20, 35, 0.8);
-    border-color: rgba(255, 255, 255, 0.08);
-  }
-  .card-hover {
-    @apply transition-all duration-300 ease-out;
-    @apply hover:-translate-y-1 hover:shadow-card-hover;
+    background: rgba(10, 10, 10, 0.85);
+    border-color: rgba(255, 255, 255, 0.06);
   }
   .shimmer-bg {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #f4f4f4 25%, #eaeaea 50%, #f4f4f4 75%);
     background-size: 200% 100%;
     animation: shimmer 1.8s linear infinite;
   }
   .dark .shimmer-bg {
-    background: linear-gradient(90deg, #1e2533 25%, #252d3d 50%, #1e2533 75%);
+    background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
     background-size: 200% 100%;
   }
 }
@@ -54,9 +50,8 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -69,25 +64,17 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-balance { text-wrap: balance; }
 }
 
-/* Leaflet overrides */
+/* Leaflet */
 .leaflet-container {
   font-family: var(--font-inter), system-ui, sans-serif !important;
   z-index: 0;
 }
 .leaflet-popup-content-wrapper {
   border-radius: 1rem !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
 }
-.leaflet-popup-tip-container {
-  display: none;
-}
-.leaflet-pill-marker {
-  background: none !important;
-  border: none !important;
-  overflow: visible !important;
-}
+.leaflet-popup-tip-container { display: none; }
+.leaflet-pill-marker { background: none !important; border: none !important; overflow: visible !important; }

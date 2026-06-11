@@ -42,14 +42,24 @@ export default function LoginForm({ locale }: LoginFormProps) {
         required
         autoComplete="email"
       />
-      <Input
-        label="Mot de passe"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        autoComplete="current-password"
-      />
+      <div>
+        <Input
+          label="Mot de passe"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+        />
+        <div className="text-right mt-1">
+          <Link
+            href={`/${locale}/auth/forgot-password`}
+            className="text-xs text-gray-400 hover:text-brand-navy transition-colors"
+          >
+            Mot de passe oublié ?
+          </Link>
+        </div>
+      </div>
       {error && <p className="text-sm text-brand-red">{error}</p>}
       <Button type="submit" loading={loading} className="w-full">
         Se connecter

@@ -129,7 +129,7 @@ export default async function QuartierPage({
             <MapPin className="w-12 h-12 mx-auto mb-4 opacity-30" />
             <p className="text-xl font-semibold mb-2">Aucune activité à venir</p>
             <p className="text-sm">
-              Pas encore d'activités prévues dans ce quartier. Revenez bientôt !
+              Pas encore d&apos;activités prévues dans ce quartier. Revenez bientôt !
             </p>
             <Link
               href={`/${locale}/activities`}

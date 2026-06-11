@@ -16,7 +16,7 @@ interface Col {
   has: boolean;
 }
 
-export default function AddToCollectionButton({ activityId, userId, locale }: Props) {
+export default function AddToCollectionButton({ activityId, userId, locale: _locale }: Props) {
   const [open, setOpen] = useState(false);
   const [cols, setCols] = useState<Col[]>([]);
   const [loading, setLoading] = useState(false);

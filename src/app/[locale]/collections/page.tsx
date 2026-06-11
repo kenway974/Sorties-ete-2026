@@ -81,7 +81,16 @@ export default async function CollectionsPage({ params }: { params: Promise<{ lo
   );
 }
 
-function CollectionCard({ collection, locale, mine }: { collection: any; locale: string; mine?: boolean }) {
+interface CollectionRow {
+  id: string;
+  title: string;
+  description?: string | null;
+  is_public: boolean;
+  collection_items?: { count: number }[];
+  user?: { username: string } | null;
+}
+
+function CollectionCard({ collection, locale, mine }: { collection: CollectionRow; locale: string; mine?: boolean }) {
   const count = collection.collection_items?.[0]?.count ?? 0;
   return (
     <Link

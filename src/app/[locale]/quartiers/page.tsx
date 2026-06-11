@@ -57,7 +57,7 @@ export default async function QuartiersPage({
           <h1 className="text-4xl font-extrabold mb-3">Quartiers de Paris</h1>
           <p className="text-white/80 text-lg max-w-2xl">
             Découvrez les activités, sorties et événements par quartier. Choisissez votre coin de Paris
-            et trouvez ce qu'il s'y passe.
+            et trouvez ce qu&apos;il s&apos;y passe.
           </p>
         </div>
       </div>

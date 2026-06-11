@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -24,7 +24,7 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 4);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -43,51 +43,52 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
     try { localStorage.setItem("ps_theme", next ? "dark" : "light"); } catch {}
   };
 
-  const isActive = (href: string) => pathname === href || (href !== base && pathname.startsWith(href));
+  const isActive = (href: string) =>
+    pathname === href || (href !== base && pathname.startsWith(href));
+
+  const navItems = [
+    { href: base,                  label: "Accueil" },
+    { href: `${base}/activities`,  label: "Activités" },
+    { href: `${base}/collections`, label: "Collections" },
+    { href: `${base}/itinerary`,   label: "Itinéraire" },
+    ...(user ? [{ href: `${base}/favorites`, label: "Favoris" }] : []),
+    ...(user ? [{ href: `${base}/propose`,   label: "Proposer" }] : []),
+    ...((user?.role === "admin" || user?.role === "moderator")
+      ? [{ href: `${base}/admin`, label: "Admin" }]
+      : []),
+  ];
 
   return (
     <header
       role="banner"
-      className={`sticky top-0 z-30 transition-all duration-300 ${
-        scrolled
-          ? "bg-brand-navy/95 backdrop-blur-md shadow-lg"
-          : "bg-brand-navy"
-      } text-white`}
+      className={`sticky top-0 z-30 bg-white/95 dark:bg-black/95 backdrop-blur-md transition-all duration-200 ${
+        scrolled ? "border-b border-gray-100 dark:border-white/[0.06] shadow-[0_1px_0_rgba(0,0,0,0.04)]" : ""
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+
         {/* Logo */}
-        <Link href={base} className="flex items-center gap-2 font-bold text-lg shrink-0 group">
-          <div className="relative">
-            <MapPin className="w-5 h-5 text-brand-gold transition-transform group-hover:scale-110" />
-          </div>
-          <span className="hidden sm:inline tracking-tight">ParisSorties</span>
-          <span className="sm:hidden font-black text-brand-gold">PS</span>
+        <Link href={base} className="flex items-center gap-1.5 shrink-0">
+          <MapPin className="w-4.5 h-4.5 text-brand-navy dark:text-brand-gold" style={{width:"18px",height:"18px"}} />
+          <span className="font-extrabold text-[15px] tracking-tight text-gray-900 dark:text-white hidden sm:inline">
+            Paris<span className="text-brand-navy dark:text-brand-gold">Sorties</span>
+          </span>
+          <span className="font-black text-[15px] tracking-tight text-brand-navy dark:text-brand-gold sm:hidden">PS</span>
         </Link>
 
         {/* Desktop nav */}
-        <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-1 flex-1 justify-center">
-          {[
-            { href: base, label: "Accueil" },
-            { href: `${base}/activities`, label: "Activités" },
-            { href: `${base}/collections`, label: "Collections" },
-            { href: `${base}/itinerary`, label: "Itinéraire" },
-            ...(user ? [{ href: `${base}/favorites`, label: "Favoris" }] : []),
-            ...(user ? [{ href: `${base}/propose`, label: "Proposer" }] : []),
-            ...((user?.role === "admin" || user?.role === "moderator") ? [{ href: `${base}/admin`, label: "Admin" }] : []),
-          ].map(({ href, label }) => (
+        <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-0.5 flex-1 justify-center">
+          {navItems.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`relative px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                 isActive(href)
-                  ? "text-white bg-white/15"
-                  : "text-white/70 hover:text-white hover:bg-white/10"
+                  ? "text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5"
               }`}
             >
               {label}
-              {isActive(href) && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-gold" />
-              )}
             </Link>
           ))}
         </nav>
@@ -96,10 +97,10 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
         <div className="flex items-center gap-1">
           <button
             onClick={toggleDark}
-            className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/70 hover:text-white"
             aria-label={dark ? "Mode clair" : "Mode sombre"}
+            className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
           >
-            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {dark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
           </button>
 
           {user ? (
@@ -107,39 +108,45 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
               <NotificationBell userId={user.id} />
               <Link
                 href={`${base}/profile`}
-                className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-white/10 text-sm font-medium transition-colors text-white/80 hover:text-white"
+                className="hidden md:flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
               >
-                <div className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 flex items-center justify-center text-brand-gold text-xs font-bold">
-                  {user.username?.[0]?.toUpperCase() ?? <User className="w-3 h-3" />}
-                </div>
-                <span>{user.username}</span>
+                {user.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.avatar_url} alt={user.username || ""} className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-gray-900 text-[10px] font-bold">
+                    {user.username?.[0]?.toUpperCase() ?? <User className="w-3 h-3" />}
+                  </div>
+                )}
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user.username}</span>
               </Link>
               <button
                 onClick={onLogout}
-                className="hidden md:flex p-2 rounded-xl hover:bg-white/10 transition-colors text-white/60 hover:text-white"
                 aria-label="Se déconnecter"
+                className="hidden md:flex p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-[18px] h-[18px]" />
               </button>
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-2">
               <Link
                 href={`${base}/auth/login`}
-                className="px-4 py-1.5 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
               >
-                Se connecter
+                Connexion
               </Link>
               <Link
                 href={`${base}/auth/register`}
-                className="px-4 py-1.5 rounded-xl text-sm font-bold bg-brand-gold text-brand-navy hover:bg-brand-gold-light transition-colors shadow-sm"
+                className="px-4 py-1.5 rounded-xl text-sm font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors"
               >
                 S&apos;inscrire
               </Link>
             </div>
           )}
+
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-white/10 transition-colors"
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={menuOpen}
@@ -151,52 +158,49 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <nav aria-label="Menu mobile" className="md:hidden bg-brand-navy-dark border-t border-white/10 py-3 px-4 flex flex-col gap-0.5 animate-slide-down">
-          {[
-            { href: base, label: "Accueil" },
-            { href: `${base}/activities`, label: "Activités" },
-            { href: `${base}/collections`, label: "Collections" },
-            { href: `${base}/itinerary`, label: "Itinéraire" },
-            ...(user ? [{ href: `${base}/favorites`, label: "Favoris" }] : []),
-            ...(user ? [{ href: `${base}/propose`, label: "Proposer" }] : []),
-            ...((user?.role === "admin" || user?.role === "moderator") ? [{ href: `${base}/admin`, label: "Admin" }] : []),
-          ].map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              className={`block py-2.5 px-3 rounded-xl text-sm font-medium transition-colors ${
-                isActive(href) ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-          <div className="pt-2 mt-2 border-t border-white/10">
+        <div className="md:hidden border-t border-gray-100 dark:border-white/[0.06] bg-white dark:bg-black animate-slide-down">
+          <nav aria-label="Menu mobile" className="py-2 px-3 flex flex-col gap-0.5">
+            {navItems.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className={`block py-2.5 px-3 rounded-xl text-sm font-medium transition-colors ${
+                  isActive(href)
+                    ? "text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5"
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <div className="py-2 px-3 border-t border-gray-100 dark:border-white/[0.06] flex flex-col gap-0.5">
             {user ? (
               <>
-                <Link href={`${base}/profile`} onClick={() => setMenuOpen(false)} className="block py-2.5 px-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+                <Link href={`${base}/profile`} onClick={() => setMenuOpen(false)}
+                  className="block py-2.5 px-3 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                   Mon profil
                 </Link>
-                <button
-                  onClick={() => { onLogout(); setMenuOpen(false); }}
-                  className="w-full text-left py-2.5 px-3 rounded-xl text-sm font-medium text-red-300 hover:bg-white/10 transition-colors"
-                >
+                <button onClick={() => { onLogout(); setMenuOpen(false); }}
+                  className="text-left py-2.5 px-3 rounded-xl text-sm font-medium text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                   Se déconnecter
                 </button>
               </>
             ) : (
               <>
-                <Link href={`${base}/auth/login`} onClick={() => setMenuOpen(false)} className="block py-2.5 px-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+                <Link href={`${base}/auth/login`} onClick={() => setMenuOpen(false)}
+                  className="block py-2.5 px-3 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                   Se connecter
                 </Link>
-                <Link href={`${base}/auth/register`} onClick={() => setMenuOpen(false)} className="block py-2.5 px-3 rounded-xl text-sm font-bold text-brand-gold hover:bg-white/10 transition-colors">
+                <Link href={`${base}/auth/register`} onClick={() => setMenuOpen(false)}
+                  className="block py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
                   S&apos;inscrire
                 </Link>
               </>
             )}
           </div>
-        </nav>
+        </div>
       )}
     </header>
   );

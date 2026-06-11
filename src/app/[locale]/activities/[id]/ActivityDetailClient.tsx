@@ -141,7 +141,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
         <div className="md:col-span-2 space-y-4">
           {activity.photos && activity.photos.length > 0 && !imgError ? (
             <div className="rounded-2xl overflow-hidden h-64 bg-gradient-to-br from-brand-navy to-brand-navy-light relative">
-              <Image src={activity.photos[0].url} alt={activity.title} fill className="object-cover" onError={() => setImgError(true)} />
+              <Image src={activity.photos[0].url} alt={activity.title} fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover" onError={() => setImgError(true)} />
             </div>
           ) : (
             <div className="rounded-2xl h-48 bg-gradient-to-br from-brand-navy to-brand-navy-light flex items-center justify-center">

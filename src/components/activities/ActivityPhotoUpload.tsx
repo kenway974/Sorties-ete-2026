@@ -99,7 +99,7 @@ export default function ActivityPhotoUpload({ activityId, userId, initialPhotos,
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {photos.map((photo) => (
           <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden group">
-            <Image src={photo.url} alt={activityTitle ? `Photo — ${activityTitle}` : "Photo de l'activité"} fill className="object-cover" />
+            <Image src={photo.url} alt={activityTitle ? `Photo — ${activityTitle}` : "Photo de l'activité"} fill sizes="(max-width: 640px) 33vw, 25vw" className="object-cover" />
             <button
               type="button"
               onClick={() => handleDelete(photo)}

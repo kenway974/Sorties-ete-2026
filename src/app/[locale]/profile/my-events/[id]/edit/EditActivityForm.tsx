@@ -185,6 +185,7 @@ export default function EditActivityForm({ activity, locale }: Props) {
         activityId={activity.id}
         userId={activity.creator_id}
         initialPhotos={(activity.photos ?? []) as { id: string; url: string }[]}
+        activityTitle={activity.title}
       />
 
       {error && <p className="text-sm text-brand-red">{error}</p>}

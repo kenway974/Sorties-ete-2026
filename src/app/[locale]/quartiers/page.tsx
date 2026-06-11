@@ -2,19 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
-
-const QUARTIERS = [
-  { slug: "marais",        name: "Le Marais",             lat: 48.8566, lng: 2.3522, desc: "Galeries d'art, bars branchés et histoire au cœur de Paris." },
-  { slug: "montmartre",    name: "Montmartre",             lat: 48.8867, lng: 2.3431, desc: "Le village dans la ville, entre artistes et vue panoramique." },
-  { slug: "bastille",      name: "Bastille",               lat: 48.8533, lng: 2.3692, desc: "La vie nocturne la plus animée de Paris." },
-  { slug: "saint-germain", name: "Saint-Germain-des-Prés", lat: 48.8539, lng: 2.3334, desc: "Cafés littéraires, librairies et culture rive gauche." },
-  { slug: "oberkampf",     name: "Oberkampf",              lat: 48.8648, lng: 2.3747, desc: "Bars, concerts et street art dans le 11e arrondissement." },
-  { slug: "pigalle",       name: "Pigalle",                lat: 48.8826, lng: 2.3327, desc: "Cabarets légendaires et nouvelle scène musicale." },
-  { slug: "republique",    name: "République",             lat: 48.8674, lng: 2.3634, desc: "Place emblématique, expositions et vie culturelle." },
-  { slug: "latin",         name: "Quartier Latin",         lat: 48.8501, lng: 2.3475, desc: "Étudiants, musées et terrasses au bord de la Seine." },
-  { slug: "belleville",    name: "Belleville",             lat: 48.8725, lng: 2.3791, desc: "Art urbain, scène alternative et diversité culinaire." },
-  { slug: "champs-elysees",name: "Champs-Élysées",        lat: 48.8698, lng: 2.3078, desc: "La plus belle avenue du monde et ses événements." },
-] as const;
+import { QUARTIERS } from "@/lib/data/quartiers";
 
 export async function generateMetadata({
   params,
@@ -51,7 +39,6 @@ export default async function QuartiersPage({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Header */}
       <div className="bg-brand-navy text-white py-12 px-4">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-extrabold mb-3">Quartiers de Paris</h1>
@@ -62,7 +49,6 @@ export default async function QuartiersPage({
         </div>
       </div>
 
-      {/* Grid */}
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {QUARTIERS.map((quartier) => (

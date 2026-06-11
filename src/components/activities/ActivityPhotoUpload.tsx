@@ -13,9 +13,20 @@ interface Props {
   activityId: string;
   userId: string;
   initialPhotos: Photo[];
+  activityTitle?: string;
 }
 
-export default function ActivityPhotoUpload({ activityId, userId, initialPhotos }: Props) {
+function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 40);
+}
+
+export default function ActivityPhotoUpload({ activityId, userId, initialPhotos, activityTitle }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [photos, setPhotos] = useState<Photo[]>(initialPhotos);
   const [uploading, setUploading] = useState(false);
@@ -37,7 +48,8 @@ export default function ActivityPhotoUpload({ activityId, userId, initialPhotos 
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) { setError(`${file.name} dépasse 10 Mo.`); continue; }
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `${activityId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const prefix = activityTitle ? `${slugify(activityTitle)}-` : "";
+      const path = `${activityId}/${prefix}${Date.now()}.${ext}`;
 
       const { error: upErr } = await supabase.storage
         .from("activity-photos")
@@ -87,7 +99,7 @@ export default function ActivityPhotoUpload({ activityId, userId, initialPhotos 
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {photos.map((photo) => (
           <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden group">
-            <Image src={photo.url} alt="" fill className="object-cover" />
+            <Image src={photo.url} alt={activityTitle ? `Photo — ${activityTitle}` : "Photo de l'activité"} fill className="object-cover" />
             <button
               type="button"
               onClick={() => handleDelete(photo)}

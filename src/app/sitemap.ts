@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
+import { QUARTIERS } from "@/lib/data/quartiers";
 
 export const revalidate = 3600;
 
@@ -14,14 +15,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${base}/fr`,             lastModified: now, changeFrequency: "daily",   priority: 1.0 },
-    { url: `${base}/fr/activities`,  lastModified: now, changeFrequency: "hourly",  priority: 0.9 },
-    { url: `${base}/fr/propose`,     lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${base}/fr/collections`, lastModified: now, changeFrequency: "daily",   priority: 0.6 },
-    { url: `${base}/fr/legal/mentions-legales`,  lastModified: now, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${base}/fr/legal/cgu`,              lastModified: now, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${base}/fr/legal/confidentialite`,  lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/fr`,                                   lastModified: now, changeFrequency: "daily",   priority: 1.0 },
+    { url: `${base}/fr/activities`,                        lastModified: now, changeFrequency: "hourly",  priority: 0.9 },
+    { url: `${base}/fr/activites-gratuites-paris`,         lastModified: now, changeFrequency: "daily",   priority: 0.85 },
+    { url: `${base}/fr/concerts-paris-weekend`,            lastModified: now, changeFrequency: "daily",   priority: 0.85 },
+    { url: `${base}/fr/sorties-enfants-paris`,             lastModified: now, changeFrequency: "daily",   priority: 0.85 },
+    { url: `${base}/fr/quartiers`,                         lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${base}/fr/propose`,                           lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/fr/collections`,                       lastModified: now, changeFrequency: "daily",   priority: 0.6 },
+    { url: `${base}/fr/legal/mentions-legales`,            lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
+    { url: `${base}/fr/legal/cgu`,                         lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
+    { url: `${base}/fr/legal/confidentialite`,             lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
   ];
+
+  const quartierRoutes: MetadataRoute.Sitemap = QUARTIERS.map((q) => ({
+    url: `${base}/fr/quartiers/${q.slug}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.75,
+  }));
 
   const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map((cat) => ({
     url: `${base}/fr/activities?category=${cat}`,
@@ -69,5 +81,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Never block the build on sitemap errors.
   }
 
-  return [...staticRoutes, ...categoryRoutes, ...activityRoutes, ...collectionRoutes];
+  return [...staticRoutes, ...quartierRoutes, ...categoryRoutes, ...activityRoutes, ...collectionRoutes];
 }

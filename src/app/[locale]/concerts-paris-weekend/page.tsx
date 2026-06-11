@@ -89,9 +89,29 @@ export default async function ConcertsParisWeekendPage({
   }
 
   const isWeekendOnly = weekendItems.length >= 6;
+  const siteUrl = getSiteUrl();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Concerts à Paris ce week-end",
+    description: "Le programme complet des concerts parisiens du week-end",
+    url: `${siteUrl}/${locale}/concerts-paris-weekend`,
+    numberOfItems: items.length,
+    itemListElement: items.slice(0, 10).map((a, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/${locale}/activities/${a.id}`,
+      name: a.title,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <div className="bg-brand-navy text-white py-12 px-4">
         <div className="max-w-5xl mx-auto">

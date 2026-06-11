@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { z } from "zod";
 import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
+
+const uuidSchema = z.string().uuid();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CookieToSet = { name: string; value: string; options?: any };
@@ -11,6 +14,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (limited) return limited;
 
   const { id } = await params;
+  if (!uuidSchema.safeParse(id).success) return NextResponse.json({ error: "ID invalide" }, { status: 400 });
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -70,6 +74,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (limited) return limited;
 
   const { id } = await params;
+  if (!uuidSchema.safeParse(id).success) return NextResponse.json({ error: "ID invalide" }, { status: 400 });
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

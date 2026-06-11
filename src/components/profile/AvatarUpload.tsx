@@ -74,7 +74,7 @@ export default function AvatarUpload({ userId, currentUrl, username, onUploaded 
         aria-label="Changer la photo de profil"
       >
         {displayUrl ? (
-          <Image src={displayUrl} alt={username} fill className="object-cover" />
+          <Image src={displayUrl} alt={username} fill sizes="64px" className="object-cover" />
         ) : (
           <div className="w-full h-full bg-brand-navy flex items-center justify-center text-white text-xl font-bold">
             {initials}

@@ -70,6 +70,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
               src={photoUrl}
               alt={activity.title}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
               onError={() => setImgError(true)}
             />

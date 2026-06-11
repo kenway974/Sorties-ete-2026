@@ -6,22 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import ActivityCard from "@/components/activities/ActivityCard";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
 import { futureOrClause } from "@/lib/utils/parisTime";
+import { QUARTIERS, type QuartierSlug } from "@/lib/data/quartiers";
 import type { Activity } from "@/types";
-
-const QUARTIERS = [
-  { slug: "marais",        name: "Le Marais",             lat: 48.8566, lng: 2.3522, desc: "Galeries d'art, bars branchés et histoire au cœur de Paris." },
-  { slug: "montmartre",    name: "Montmartre",             lat: 48.8867, lng: 2.3431, desc: "Le village dans la ville, entre artistes et vue panoramique." },
-  { slug: "bastille",      name: "Bastille",               lat: 48.8533, lng: 2.3692, desc: "La vie nocturne la plus animée de Paris." },
-  { slug: "saint-germain", name: "Saint-Germain-des-Prés", lat: 48.8539, lng: 2.3334, desc: "Cafés littéraires, librairies et culture rive gauche." },
-  { slug: "oberkampf",     name: "Oberkampf",              lat: 48.8648, lng: 2.3747, desc: "Bars, concerts et street art dans le 11e arrondissement." },
-  { slug: "pigalle",       name: "Pigalle",                lat: 48.8826, lng: 2.3327, desc: "Cabarets légendaires et nouvelle scène musicale." },
-  { slug: "republique",    name: "République",             lat: 48.8674, lng: 2.3634, desc: "Place emblématique, expositions et vie culturelle." },
-  { slug: "latin",         name: "Quartier Latin",         lat: 48.8501, lng: 2.3475, desc: "Étudiants, musées et terrasses au bord de la Seine." },
-  { slug: "belleville",    name: "Belleville",             lat: 48.8725, lng: 2.3791, desc: "Art urbain, scène alternative et diversité culinaire." },
-  { slug: "champs-elysees",name: "Champs-Élysées",        lat: 48.8698, lng: 2.3078, desc: "La plus belle avenue du monde et ses événements." },
-] as const;
-
-type QuartierSlug = (typeof QUARTIERS)[number]["slug"];
 
 export function generateStaticParams() {
   return QUARTIERS.map((q) => ({ slug: q.slug }));
@@ -36,7 +22,7 @@ export async function generateMetadata({
   const quartier = QUARTIERS.find((q) => q.slug === slug);
   if (!quartier) return { title: "Quartier introuvable", robots: { index: false, follow: false } };
 
-  const title = `Activités ${quartier.name} Paris | ParisSorties`;
+  const title = `Activités ${quartier.name} Paris — Sorties & Événements | ParisSorties`;
   const description = `${quartier.desc} Concerts, soirées, expos et sorties à ${quartier.name} — toutes les activités à Paris sur ParisSorties.`;
   const canonical = `${getSiteUrl()}/${locale}/quartiers/${slug}`;
 
@@ -52,15 +38,11 @@ export async function generateMetadata({
       siteName: "ParisSorties",
       locale: "fr_FR",
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
-const BBOX = 0.015; // ±0.015° lat/lng bounding box
+const BBOX = 0.015;
 
 export default async function QuartierPage({
   params,
@@ -91,7 +73,6 @@ export default async function QuartierPage({
     .limit(24);
 
   const items = (activities ?? []) as Activity[];
-
   const mapsUrl = `https://www.google.com/maps/search/activités+paris/@${quartier.lat},${quartier.lng},15z`;
 
   return (
@@ -125,7 +106,7 @@ export default async function QuartierPage({
       {/* Content */}
       <div className="max-w-5xl mx-auto px-4 py-10">
         {items.length === 0 ? (
-          <div className="text-center py-20 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
             <MapPin className="w-12 h-12 mx-auto mb-4 opacity-30" />
             <p className="text-xl font-semibold mb-2">Aucune activité à venir</p>
             <p className="text-sm">
@@ -151,14 +132,30 @@ export default async function QuartierPage({
           </>
         )}
 
-        {/* Back link */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <Link
-            href={`/${locale}/quartiers`}
-            className="text-brand-navy dark:text-brand-gold font-medium hover:underline text-sm"
-          >
-            ← Tous les quartiers de Paris
-          </Link>
+        {/* SEO description */}
+        <div className="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            {quartier.name} : que faire et que voir ?
+          </h2>
+          <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed space-y-4 max-w-3xl">
+            {quartier.longDesc.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href={`/${locale}/activities`}
+              className="px-4 py-2 rounded-full text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy/90 transition-colors"
+            >
+              Toutes les activités à Paris
+            </Link>
+            <Link
+              href={`/${locale}/quartiers`}
+              className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+            >
+              ← Tous les quartiers
+            </Link>
+          </div>
         </div>
       </div>
     </div>

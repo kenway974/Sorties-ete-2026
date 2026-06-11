@@ -54,9 +54,29 @@ export default async function ActivitesGratuitesPage({
     .limit(36);
 
   const items = (activities ?? []) as Activity[];
+  const siteUrl = getSiteUrl();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Activités gratuites à Paris",
+    description: "Les meilleures activités et sorties gratuites à Paris",
+    url: `${siteUrl}/${locale}/activites-gratuites-paris`,
+    numberOfItems: items.length,
+    itemListElement: items.slice(0, 10).map((a, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/${locale}/activities/${a.id}`,
+      name: a.title,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <div className="bg-brand-navy text-white py-12 px-4">
         <div className="max-w-5xl mx-auto">

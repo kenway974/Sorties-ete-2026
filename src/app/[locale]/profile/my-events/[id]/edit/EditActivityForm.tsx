@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Link from "next/link";
+import ActivityPhotoUpload from "@/components/activities/ActivityPhotoUpload";
 import type { Activity, ActivityCategory } from "@/types";
 
 const CATEGORIES: ActivityCategory[] = [
@@ -179,6 +180,12 @@ export default function EditActivityForm({ activity, locale }: Props) {
       </div>
 
       <Input label="Lien externe" type="url" value={form.external_url} onChange={set("external_url")} placeholder="https://..." />
+
+      <ActivityPhotoUpload
+        activityId={activity.id}
+        userId={activity.creator_id}
+        initialPhotos={(activity.photos ?? []) as { id: string; url: string }[]}
+      />
 
       {error && <p className="text-sm text-brand-red">{error}</p>}
 

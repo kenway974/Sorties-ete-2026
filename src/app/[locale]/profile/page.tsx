@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PushToggle from "@/components/notifications/PushToggle";
 import DeleteAccountButton from "@/components/auth/DeleteAccountButton";
 import UserBadges from "@/components/profile/UserBadges";
+import AvatarUpload from "@/components/profile/AvatarUpload";
 import type { BadgeStats } from "@/components/profile/UserBadges";
 import type { Profile, ActivityCategory } from "@/types";
 
@@ -91,6 +92,14 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Mon profil</h1>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-5">
+        {profile && (
+          <AvatarUpload
+            userId={profile.id}
+            currentUrl={profile.avatar_url}
+            username={form.username}
+            onUploaded={(url) => setProfile((p) => p ? { ...p, avatar_url: url } : p)}
+          />
+        )}
         <Input
           label="Pseudo"
           value={form.username}

@@ -1,30 +1,32 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { z } from "zod";
 import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CookieToSet = { name: string; value: string; options?: any };
 
-const VALID_CONTENT_TYPES = ["activity", "review", "photo"] as const;
-const VALID_REASONS = ["spam", "offensive", "wrong_info", "advertising"] as const;
+const bodySchema = z.object({
+  content_type: z.enum(["activity", "review", "photo"]),
+  content_id:   z.string().uuid(),
+  reason:       z.enum(["spam", "offensive", "wrong_info", "advertising"]),
+  description:  z.string().max(500).optional(),
+});
 
 export async function POST(request: NextRequest) {
   const limited = rateLimit(getRateLimitKey(request, "reports"), { limit: 5, windowSecs: 300 });
   if (limited) return limited;
 
-  const body = await request.json();
-  const { content_type, content_id, reason, description } = body;
+  let raw: unknown;
+  try { raw = await request.json(); }
+  catch { return NextResponse.json({ error: "Corps de requête invalide" }, { status: 400 }); }
 
-  if (!VALID_CONTENT_TYPES.includes(content_type)) {
-    return NextResponse.json({ error: "content_type invalide" }, { status: 400 });
+  const parsed = bodySchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Données invalides", details: parsed.error.flatten() }, { status: 400 });
   }
-  if (!VALID_REASONS.includes(reason)) {
-    return NextResponse.json({ error: "reason invalide" }, { status: 400 });
-  }
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(content_id ?? "")) {
-    return NextResponse.json({ error: "content_id invalide" }, { status: 400 });
-  }
+  const { content_type, content_id, reason, description } = parsed.data;
 
   const cookieStore = await cookies();
   const supabase = createServerClient(

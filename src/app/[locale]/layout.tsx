@@ -6,6 +6,7 @@ import CookieConsent from "@/components/layout/CookieConsent";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import SkipNav from "@/components/layout/SkipNav";
 import BottomNav from "@/components/layout/BottomNav";
+import PushPrompt from "@/components/notifications/PushPrompt";
 
 export default async function LocaleLayout({
   children,
@@ -40,6 +41,7 @@ export default async function LocaleLayout({
       <Footer locale={locale} />
       <CookieConsent locale={locale} />
       <OnboardingWizard locale={locale} />
+      <PushPrompt userId={profile?.id ?? null} />
       <BottomNav />
     </div>
   );

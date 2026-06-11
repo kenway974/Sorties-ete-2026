@@ -1,4 +1,4 @@
-function ActivityCardSkeleton() {
+function ActivitySkeleton() {
   return (
     <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl overflow-hidden">
       <div className="aspect-video shimmer-bg" />
@@ -11,12 +11,12 @@ function ActivityCardSkeleton() {
   );
 }
 
-export default function Loading() {
+export default function FavoritesLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <div className="h-7 shimmer-bg rounded-full w-48" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {Array.from({ length: 8 }).map((_, i) => <ActivityCardSkeleton key={i} />)}
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <div className="h-7 shimmer-bg rounded-full w-32" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => <ActivitySkeleton key={i} />)}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ const CACHE_NAME = 'paris-sorties-v3';
 
 const STATIC_ASSETS = [
   '/manifest.json',
+  '/offline.html',
 ];
 
 self.addEventListener('install', (event) => {
@@ -28,10 +29,12 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname.includes('cartocdn.com')) return;
   if (url.hostname.includes('openstreetmap.org')) return;
 
-  // Network-first for HTML navigation — always fetch fresh page/JS references
+  // Network-first for HTML navigation — fall back to offline.html when unreachable
   if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
+      fetch(event.request).catch(() =>
+        caches.match(event.request).then((cached) => cached || caches.match('/offline.html'))
+      )
     );
     return;
   }

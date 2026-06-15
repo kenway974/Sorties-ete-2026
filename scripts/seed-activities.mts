@@ -77,6 +77,47 @@ const ACTIVITIES: SeedActivity[] = [
   // ── Aquatique / Plein air ────────────────────────────────────────────────────
 
   {
+    title: "Friday Night Fever — Roller en masse dans Paris",
+    description: "Chaque vendredi soir, des milliers de rollers envahissent les rues de Paris pour une balade nocturne de 3h à travers la ville. Point de départ place Raoul Dautry, parcours différent chaque semaine sur routes fermées à la circulation. Roller obligatoire, protections recommandées.",
+    category: "sport",
+    tags: ["roller", "nocturne", "friday night", "paris", "sport", "groupe", "rue", "gratuit"],
+    address: "Place Raoul Dautry, 75015 Paris",
+    lat: 48.8416,
+    lng: 2.3207,
+    date: "2026-06-19",
+    time: "21:30",
+    price: 0,
+    external_url: "https://www.pari-roller.com",
+  },
+
+  {
+    title: "Lancer de Haches — Bar Adrénaline Indoor",
+    description: "Le sport tendance venu du Canada débarque à Paris ! Lancez des haches sur des cibles en bois dans une salle dédiée, avec ou sans instructeur. Session de 45 min pour 1 à 6 joueurs, bières artisanales au bar. Idéal en groupe pour une soirée qui sort de l'ordinaire.",
+    category: "loisirs",
+    tags: ["lancer de haches", "axe throwing", "bar", "insolite", "adrénaline", "groupe", "sport"],
+    address: "15 Rue de la Fontaine au Roi, 75011 Paris",
+    lat: 48.864,
+    lng: 2.372,
+    date: "2026-06-19",
+    time: "18:00",
+    price: 20,
+    max_participants: 6,
+  },
+
+  {
+    title: "Mini-Golf Street Art — Parcours Artistique Indoor",
+    description: "Un mini-golf nouvelle génération dans un univers street art fluorescent ! 18 trous décorés par des artistes urbains, peintures UV et installations lumineuses. Accessible à tous les âges, bar et snack sur place. Le rendez-vous hipster de l'été parisien.",
+    category: "loisirs",
+    tags: ["mini-golf", "street art", "uv", "insolite", "jeu", "famille", "bar", "lumière"],
+    address: "30 Boulevard de Bonne Nouvelle, 75010 Paris",
+    lat: 48.8681,
+    lng: 2.3507,
+    date: "2026-06-19",
+    time: "14:00",
+    price: 12,
+  },
+
+  {
     title: "Base de Loisirs de Cergy-Pontoise — Aquaparc & Plage",
     description:
       "Le plus grand lac de baignade d'Île-de-France ! Plage de sable fin, toboggans aquatiques, kayak, pédalo, voile et aires de jeux pour toute la famille. L'aquaparc de Cergy est l'adresse incontournable de l'été en région parisienne.",
@@ -92,21 +133,6 @@ const ACTIVITIES: SeedActivity[] = [
   },
 
   {
-    title: "Paris Plages — Rives de Seine 2026",
-    description:
-      "Chaque été, les quais de Seine se transforment en véritable station balnéaire urbaine : sable, transats, animations sportives, concerts et jeux d'eau gratuits. L'événement estival emblématique de Paris, ouvert à tous et entièrement gratuit.",
-    category: "loisirs",
-    tags: ["plage", "seine", "gratuit", "été", "paris", "outdoor", "famille"],
-    address: "Quai de Gesvres, 75004 Paris",
-    lat: 48.8571,
-    lng: 2.3482,
-    date: "2026-07-19",
-    time: "08:00",
-    price: 0,
-    external_url: "https://www.paris.fr/paris-plages",
-  },
-
-  {
     title: "Stand Up Paddle sur la Seine — Session guidée",
     description:
       "Explorez Paris depuis la Seine sur un paddle board ! Session de 2h encadrée par des moniteurs diplômés, au départ du Pont de l'Alma. Idéal pour les débutants comme pour les pratiquants confirmés. Vue imprenable sur la Tour Eiffel.",
@@ -119,11 +145,10 @@ const ACTIVITIES: SeedActivity[] = [
     time: "09:00",
     price: 35,
     max_participants: 12,
-    external_url: null,
   },
 
   {
-    title: "Wake Park — Glisse sur câble à Jablines",
+    title: "Wake Park sur câble — Lac de Jablines",
     description:
       "Le wake park de Jablines offre la sensation du wakeboard et du wakesurf sans bateau, grâce à un câble téléski qui tire les riders sur un lac de 14 hectares. Casque et gilet fournis, niveau débutant accepté. Le spot de glisse aquatique le plus populaire d'Île-de-France.",
     category: "sport",
@@ -134,11 +159,10 @@ const ACTIVITIES: SeedActivity[] = [
     date: "2026-06-28",
     time: "10:00",
     price: 28,
-    external_url: null,
   },
 
   {
-    title: "Aqualagon — Parc aquatique Villages Nature Paris",
+    title: "Aqualagon — Parc Aquatique Villages Nature Paris",
     description:
       "Le plus grand parc aquatique couvert d'Europe sous une canopée géante ! 5 500 m² de piscines tropicales, vagues, toboggans géants, rivière à courant et spa. Température garantie 29°C toute l'année. Un dépaysement total à 35 min de Paris.",
     category: "famille",
@@ -165,7 +189,6 @@ const ACTIVITIES: SeedActivity[] = [
     time: "20:30",
     price: 42,
     max_participants: 16,
-    external_url: null,
   },
 
   // ── Festivals & Concerts ─────────────────────────────────────────────────────
@@ -186,24 +209,39 @@ const ACTIVITIES: SeedActivity[] = [
   },
 
   {
-    title: "We Love Green 2026 — Festival éco-responsable",
+    title: "Solidays 2026 — Festival de la Solidarité",
     description:
-      "Le festival incontournable de la scène électro et indie en plein cœur du Bois de Vincennes. Scènes multiples, artistes internationaux, restauration bio et zéro plastique. Un week-end de musique dans un écrin de verdure à deux pas de Paris.",
+      "Le festival de musique engagé qui soutient la lutte contre le Sida. Trois jours de concerts sur l'Hippodrome de Longchamp avec une programmation électro, pop et world music. Des milliers de bénévoles, un état d'esprit unique de solidarité et de fête.",
     category: "concerts",
-    tags: ["festival", "électro", "indie", "bois de vincennes", "éco", "outdoor"],
-    address: "Bois de Vincennes, Pelouse de Reuilly, 75012 Paris",
-    lat: 48.8327,
-    lng: 2.4447,
-    date: "2026-06-05",
+    tags: ["solidays", "festival", "solidarité", "électro", "pop", "longchamp", "outdoor", "engagement"],
+    address: "Hippodrome de Paris Longchamp, 75016 Paris",
+    lat: 48.8554,
+    lng: 2.2421,
+    date: "2026-06-26",
     time: "14:00",
-    price: 69,
-    external_url: "https://www.welovegreen.fr",
+    price: 49,
+    external_url: "https://www.solidays.org",
+  },
+
+  {
+    title: "Lollapalooza Paris 2026",
+    description:
+      "Le festival américain iconique débarque à nouveau à Paris ! Deux jours de concerts avec les plus grandes stars de la pop, du hip-hop, de l'électro et du rock internationale sur 4 scènes simultanées à l'Hippodrome de Longchamp. L'événement musical de l'été parisien.",
+    category: "concerts",
+    tags: ["lollapalooza", "festival", "pop", "hip-hop", "électro", "longchamp", "outdoor", "été"],
+    address: "Hippodrome de Paris Longchamp, Route des Tribunes, 75016 Paris",
+    lat: 48.8554,
+    lng: 2.2421,
+    date: "2026-07-17",
+    time: "14:00",
+    price: 89,
+    external_url: "https://www.lollapaloozafr.com",
   },
 
   {
     title: "Cinéma en Plein Air — La Villette",
     description:
-      "Chaque été depuis 30 ans, la Géode de La Villette se transforme en ciné-parc géant sous les étoiles. Apportez votre couverture, votre pique-nique et installez-vous sur la grande pelouse pour des projections gratuites de films cultes et récents.",
+      "Chaque été depuis 30 ans, la pelouse de La Villette se transforme en ciné-parc géant sous les étoiles. Apportez votre couverture, votre pique-nique et installez-vous pour des projections gratuites de films cultes et récents.",
     category: "culture",
     tags: ["cinéma", "plein air", "gratuit", "la villette", "film", "outdoor", "été"],
     address: "Parc de la Villette, 211 Avenue Jean Jaurès, 75019 Paris",
@@ -260,7 +298,6 @@ const ACTIVITIES: SeedActivity[] = [
     time: "06:00",
     price: 220,
     max_participants: 8,
-    external_url: null,
   },
 
   {
@@ -276,11 +313,10 @@ const ACTIVITIES: SeedActivity[] = [
     time: "14:00",
     price: 18,
     max_participants: 8,
-    external_url: null,
   },
 
   {
-    title: "Yoga sur paddle — Session matinale sur la Marne",
+    title: "Yoga sur Paddle — Session matinale sur la Marne",
     description:
       "Démarrez votre journée en douceur sur un paddle board amarré en pleine Marne. 1h de yoga guidé au-dessus de l'eau, avec le calme de la rivière et les chants d'oiseaux comme fond sonore. Cours adaptés à tous niveaux, matériel fourni.",
     category: "sport",
@@ -292,7 +328,6 @@ const ACTIVITIES: SeedActivity[] = [
     time: "08:00",
     price: 28,
     max_participants: 10,
-    external_url: null,
   },
 
   {
@@ -308,11 +343,10 @@ const ACTIVITIES: SeedActivity[] = [
     time: "21:00",
     price: 24,
     max_participants: 15,
-    external_url: null,
   },
 
   {
-    title: "Dîner-croisière sur la Seine — Soirée Belle Époque",
+    title: "Dîner-Croisière sur la Seine — Soirée Belle Époque",
     description:
       "Montez à bord d'une péniche de charme pour un dîner avec spectacle tout en naviguant sur la Seine. Menu 4 plats, show de jazz et chansons françaises, et défilé devant tous les monuments illuminés de Paris. La sortie romantique parisienne par excellence.",
     category: "soirees",
@@ -320,11 +354,10 @@ const ACTIVITIES: SeedActivity[] = [
     address: "Port de la Bourdonnais, 75007 Paris",
     lat: 48.8612,
     lng: 2.2987,
-    date: "2026-07-18",
+    date: "2026-07-17",
     time: "19:30",
     price: 95,
     max_participants: 80,
-    external_url: null,
   },
 
   {
@@ -339,13 +372,12 @@ const ACTIVITIES: SeedActivity[] = [
     date: "2026-07-12",
     time: "10:00",
     price: 22,
-    external_url: null,
   },
 
   {
-    title: "Rooftop Party — Soirée coucher de soleil sur les toits de Paris",
+    title: "Rooftop Party — Coucher de soleil sur les toits de Paris",
     description:
-      "Rejoignez une soirée exclusive sur un rooftop panoramique du 8e arrondissement avec vue à 360° sur les toits de Paris. DJ set, cocktails de saison et finger food premium. Le lieu le plus instagrammable de l'été parisien.",
+      "Rejoignez une soirée exclusive sur un rooftop panoramique du 8e avec vue à 360° sur les toits de Paris. DJ set, cocktails de saison et finger food premium. Le lieu le plus instagrammable de l'été parisien.",
     category: "soirees",
     tags: ["rooftop", "soirée", "coucher de soleil", "cocktail", "dj", "paris", "vue"],
     address: "Avenue des Champs-Élysées, 75008 Paris",
@@ -355,13 +387,12 @@ const ACTIVITIES: SeedActivity[] = [
     time: "19:00",
     price: 20,
     max_participants: 150,
-    external_url: null,
   },
 
   {
-    title: "Peinture en plein air — Atelier impressionniste à Giverny",
+    title: "Atelier Peinture en Plein Air — Impressionnisme à Giverny",
     description:
-      "Installez votre chevalet face aux jardins qui ont inspiré Monet ! Un atelier peinture de 3h dans le village de Giverny, encadré par un artiste professionnel. Matériel fourni, aucune expérience requise. Transport depuis Paris inclus.",
+      "Installez votre chevalet face aux jardins qui ont inspiré Monet ! Atelier peinture de 3h dans le village de Giverny, encadré par un artiste professionnel. Matériel fourni, aucune expérience requise. Transport depuis Paris inclus.",
     category: "culture",
     tags: ["peinture", "atelier", "giverny", "monet", "impressionnisme", "art", "nature"],
     address: "Musée des Impressionnismes, 99 Rue Claude Monet, 27620 Giverny",
@@ -371,13 +402,12 @@ const ACTIVITIES: SeedActivity[] = [
     time: "10:00",
     price: 65,
     max_participants: 12,
-    external_url: null,
   },
 
   {
-    title: "Soirée Pétanque & Pastis — Tournoi nocturne",
+    title: "Pétanque Nocturne & Pastis — Tournoi en soirée",
     description:
-      "Un tournoi de pétanque en nocturne sur les boulins illuminés du Bois de Boulogne ! Équipes de 3 joueurs, boulettes dorées, pastis et ambiance provençale garantie. Inscription sur place, ouvert à tous niveaux. Le bar est ouvert toute la soirée.",
+      "Un tournoi de pétanque en nocturne sur des boulins illuminés ! Équipes de 3 joueurs, ambiance provençale garantie. Inscription sur place, ouvert à tous niveaux. Le bar est ouvert toute la soirée.",
     category: "soirees",
     tags: ["pétanque", "boulodrome", "bois de boulogne", "soirée", "jeu", "convivial"],
     address: "Bois de Boulogne, Route de la Grande Cascade, 75016 Paris",
@@ -387,7 +417,6 @@ const ACTIVITIES: SeedActivity[] = [
     time: "19:00",
     price: 8,
     max_participants: 60,
-    external_url: null,
   },
 
   {
@@ -402,7 +431,6 @@ const ACTIVITIES: SeedActivity[] = [
     date: "2026-07-25",
     time: "18:00",
     price: 0,
-    external_url: null,
   },
 
   {
@@ -418,7 +446,6 @@ const ACTIVITIES: SeedActivity[] = [
     time: "14:00",
     price: 30,
     max_participants: 20,
-    external_url: null,
   },
 
   {
@@ -438,9 +465,9 @@ const ACTIVITIES: SeedActivity[] = [
   },
 
   {
-    title: "Karting Électrique Indoor — Paris",
+    title: "Karting Électrique Indoor — Vitesse sans pollution",
     description:
-      "Du karting 100% électrique en intérieur sur une piste de 600 m avec virages relevés et dos d'âne ! Sensations de pilote sans odeur d'essence. Sessions de 10 minutes chronométrées, classement en temps réel. Accessible dès 14 ans.",
+      "Du karting 100% électrique en intérieur sur une piste de 600m avec virages relevés et dos d'âne ! Sensations de pilote sans odeur d'essence. Sessions de 10 minutes chronométrées, classement en temps réel. Accessible dès 14 ans.",
     category: "loisirs",
     tags: ["karting", "électrique", "indoor", "vitesse", "sport", "compétition"],
     address: "3 Rue Jules Guesde, 93100 Montreuil",
@@ -449,29 +476,27 @@ const ACTIVITIES: SeedActivity[] = [
     date: "2026-07-05",
     time: "10:00",
     price: 25,
-    external_url: null,
   },
 
   {
-    title: "Randonnée Nocturne Bioluminescente — Forêt de Fontainebleau",
+    title: "Randonnée Nocturne — Forêt de Fontainebleau sous les étoiles",
     description:
-      "Une randonnée nocturne de 8 km guidée en pleine forêt de Fontainebleau avec observation de champignons bioluminescents et étoiles filantes. Lampes frontales fournies, guide naturaliste. Une sortie contemplative et scientifique qui fascine petits et grands.",
+      "Une randonnée nocturne de 8 km guidée en pleine forêt de Fontainebleau avec observation de la faune nocturne et étoiles filantes. Lampes frontales fournies, guide naturaliste. Une sortie contemplative qui fascine petits et grands.",
     category: "loisirs",
-    tags: ["randonnée", "nocturne", "forêt", "fontainebleau", "nature", "bioluminescence", "étoiles"],
+    tags: ["randonnée", "nocturne", "forêt", "fontainebleau", "nature", "étoiles", "insolite"],
     address: "Parking du Cul du Chaudron, 77300 Fontainebleau",
-    lat: 48.3990,
+    lat: 48.399,
     lng: 2.6897,
     date: "2026-07-18",
     time: "21:30",
     price: 15,
     max_participants: 20,
-    external_url: null,
   },
 
   {
-    title: "Visite du Marché Rungis — Le plus grand marché du monde",
+    title: "Visite Exclusive du Marché de Rungis à l'Aube",
     description:
-      "Accédez au mythique MIN de Rungis, le plus grand marché de produits frais au monde, lors d'une visite guidée exclusive à l'aube. Pavillons de la viande, de la marée, des fruits et légumes, des fleurs... Un spectacle fascinant réservé aux lève-tôt.",
+      "Accédez au mythique MIN de Rungis, le plus grand marché de produits frais au monde, lors d'une visite guidée à l'aube. Pavillons de la viande, de la marée, des fruits et légumes, des fleurs... Un spectacle fascinant réservé aux lève-tôt.",
     category: "culture",
     tags: ["rungis", "marché", "gastronomie", "insolite", "visite", "cuisine", "aube"],
     address: "Marché International de Rungis, 94150 Rungis",
@@ -481,13 +506,12 @@ const ACTIVITIES: SeedActivity[] = [
     time: "04:00",
     price: 45,
     max_participants: 20,
-    external_url: null,
   },
 
   {
-    title: "Quad & Moto-Cross — Circuit en forêt",
+    title: "Quad & Moto-Cross — Circuit hors-piste en forêt",
     description:
-      "Prenez les commandes d'un quad ou d'une moto-cross sur un circuit hors-piste de 5 km en forêt. Initiation ou perfectionnement, instructeur disponible. Équipement complet fourni (casque, gants, bottes). Une adrénaline garantie en pleine nature.",
+      "Prenez les commandes d'un quad ou d'une moto-cross sur un circuit hors-piste de 5 km en forêt. Initiation ou perfectionnement, instructeur disponible. Équipement complet fourni. Une adrénaline garantie en pleine nature.",
     category: "sport",
     tags: ["quad", "moto-cross", "circuit", "forêt", "adrénaline", "outdoor", "vitesse"],
     address: "Circuit de Loisirs de Mortefontaine, 60128 Mortefontaine",
@@ -497,29 +521,42 @@ const ACTIVITIES: SeedActivity[] = [
     time: "10:00",
     price: 55,
     max_participants: 15,
-    external_url: null,
   },
 
   {
-    title: "Atelier Mosaïque Romaine — Musée de l'Arles Antique",
+    title: "Atelier Poterie — Créez votre Bol à la Main",
     description:
-      "Créez votre propre mosaïque dans les ateliers d'un artisan spécialisé en techniques romaines antiques. 3h d'atelier pour repartir avec une œuvre authentique aux motifs inspirés de l'Antiquité. Matériaux et outillage fournis, aucune expérience requise.",
+      "Découvrez la technique du tournage de la poterie lors d'un atelier de 2h animé par une céramiste professionnelle. Vous repartez avec votre propre création (bol, vase ou tasse) cuite et émaillée à votre couleur. L'atelier créatif le plus satisfaisant de Paris.",
     category: "culture",
-    tags: ["mosaïque", "atelier", "art", "romain", "créatif", "artisanat"],
-    address: "12 Rue du Faubourg Saint-Antoine, 75011 Paris",
-    lat: 48.8530,
-    lng: 2.3726,
-    date: "2026-07-26",
+    tags: ["poterie", "céramique", "atelier", "argile", "créatif", "artisanat", "manuel"],
+    address: "18 Rue de la Roquette, 75011 Paris",
+    lat: 48.8548,
+    lng: 2.374,
+    date: "2026-07-22",
     time: "14:00",
     price: 55,
     max_participants: 8,
-    external_url: null,
   },
 
   {
-    title: "Beach Volley Tournament — Paris Plages",
+    title: "Atelier Cuisine Gastronomique — Avec un Chef Étoilé",
     description:
-      "Rejoignez le tournoi de beach volley estival sur le sable de Paris Plages ! Équipes de 2 ou 4 joueurs, matchs en poule puis élimination directe. Trophée et prix pour les vainqueurs. Inscription gratuite, venir avec votre équipe ou être mis en relation sur place.",
+      "Apprenez les techniques de la grande cuisine française avec un chef diplômé lors d'un atelier de 3h. Au menu : amuse-bouche, plat principal et dessert que vous dégusterez à table avec un verre de vin. Tablier et livret de recettes fournis.",
+    category: "culture",
+    tags: ["cuisine", "atelier", "chef", "gastronomie", "france", "apprentissage", "dégustation", "vin"],
+    address: "28 Rue Saint-Paul, 75004 Paris",
+    lat: 48.853,
+    lng: 2.3574,
+    date: "2026-07-04",
+    time: "14:00",
+    price: 95,
+    max_participants: 10,
+  },
+
+  {
+    title: "Beach Volley Tournoi Estival — Paris Plages",
+    description:
+      "Rejoignez le tournoi de beach volley sur le sable de Paris Plages ! Équipes de 2 ou 4 joueurs, matchs en poule puis élimination directe. Inscription gratuite, venir avec votre équipe ou être mis en relation sur place.",
     category: "sport",
     tags: ["beach volley", "tournoi", "paris plages", "sport", "été", "compétition", "gratuit"],
     address: "Quai de la Tournelle, 75005 Paris",
@@ -529,13 +566,42 @@ const ACTIVITIES: SeedActivity[] = [
     time: "10:00",
     price: 0,
     max_participants: 64,
-    external_url: null,
+  },
+
+  {
+    title: "Float Therapy — Caisson de Privation Sensorielle",
+    description:
+      "Flottez dans l'obscurité totale dans un caisson rempli d'eau saturée de sel d'Epsom. La privation sensorielle de 60 à 90 minutes procure une relaxation profonde, réduit le stress et favorise la créativité. L'expérience bien-être la plus insolite et efficace de Paris.",
+    category: "loisirs",
+    tags: ["float", "privation sensorielle", "bien-être", "méditation", "relaxation", "insolite", "spa"],
+    address: "27 Rue du Faubourg Poissonnière, 75009 Paris",
+    lat: 48.8757,
+    lng: 2.3483,
+    date: "2026-06-20",
+    time: "10:00",
+    price: 65,
+    max_participants: 1,
+  },
+
+  {
+    title: "Réalité Virtuelle Immersive — Expérience Multi-Univers",
+    description:
+      "Plongez dans des univers virtuels bluffants : combats spatiaux, exploration de fonds marins, jeux d'équipe en arène VR, ou expérience d'art numérique immersive. Les casques de dernière génération offrent une immersion totale. Parfait pour les curieux de technologie.",
+    category: "loisirs",
+    tags: ["réalité virtuelle", "vr", "immersif", "technologie", "insolite", "jeu", "futuriste"],
+    address: "10 Rue de la Paix, 75002 Paris",
+    lat: 48.8694,
+    lng: 2.3305,
+    date: "2026-06-20",
+    time: "11:00",
+    price: 18,
+    max_participants: 8,
   },
 
   {
     title: "Escape Game «L'Affaire du Louvre» — Paris",
     description:
-      "Un escape game immersif de 60 minutes dans un décor reproduisant les couloirs secrets du Louvre. Résolvez une enquête policière mêlant œuvres d'art volées, codes secrets et mécanismes cachés. 2 à 6 joueurs, 3 niveaux de difficulté disponibles.",
+      "Un escape game immersif de 60 minutes dans un décor reproduisant les couloirs secrets du Louvre. Résolvez une enquête policière mêlant œuvres d'art volées, codes secrets et mécanismes cachés. 2 à 6 joueurs.",
     category: "loisirs",
     tags: ["escape game", "louvre", "enquête", "insolite", "puzzle", "paris"],
     address: "42 Rue de Rivoli, 75001 Paris",
@@ -545,8 +611,318 @@ const ACTIVITIES: SeedActivity[] = [
     time: "11:00",
     price: 28,
     max_participants: 6,
-    external_url: null,
   },
+
+  {
+    title: "Tour de Paris en Segway — Monuments & Secrets",
+    description:
+      "Explorez Paris sur un Segway électrique en 2h ! Itinéraire guidé à travers les plus beaux monuments : Notre-Dame, Sainte-Chapelle, Hôtel de Ville, Centre Pompidou. Guide audio bluetooth, casque fourni. Une façon moderne et ludique de découvrir la capitale.",
+    category: "loisirs",
+    tags: ["segway", "paris", "visite", "monuments", "guide", "électrique", "tourisme", "insolite"],
+    address: "Parvis de Notre-Dame, 75004 Paris",
+    lat: 48.853,
+    lng: 2.3499,
+    date: "2026-06-22",
+    time: "10:00",
+    price: 45,
+    max_participants: 10,
+  },
+
+  {
+    title: "Parcours Ninja Warrior — Franchissez tous les obstacles",
+    description:
+      "Testez votre force, agilité et endurance sur un parcours Ninja Warrior indoor avec obstacles aquatiques, murs d'escalade, poutres et filets. Sessions de 90 minutes, plusieurs niveaux de difficulté. Accessible dès 8 ans, buvette et vestiaires sur place.",
+    category: "sport",
+    tags: ["ninja warrior", "obstacles", "sport", "indoor", "parcours", "force", "agilité"],
+    address: "14 Rue Cadet, 75009 Paris",
+    lat: 48.8748,
+    lng: 2.3445,
+    date: "2026-07-01",
+    time: "10:00",
+    price: 18,
+  },
+
+  {
+    title: "Salsa en Plein Air — Cours et Soirée Dansante sur les Berges",
+    description:
+      "Cours de salsa cubaine de niveau débutant sur les berges de Seine, suivi d'une soirée dansante jusqu'à minuit. Orchestre live ou DJ, ambiance latine garantie, partenaires rotatifs pour progresser vite. La meilleure soirée pour danser à Paris cet été.",
+    category: "soirees",
+    tags: ["salsa", "danse", "berges", "seine", "cours", "soirée", "musique latine", "outdoor"],
+    address: "Berges de la Seine, Quai d'Anjou, 75004 Paris",
+    lat: 48.852,
+    lng: 2.357,
+    date: "2026-07-10",
+    time: "19:00",
+    price: 10,
+    max_participants: 80,
+  },
+
+  {
+    title: "Escape Boat — Enquête policière sur la Seine",
+    description:
+      "Un escape game original sur une péniche amarrée sur la Seine ! 60 minutes pour résoudre l'enquête avant que la \"bombe\" explose et que le bateau coule. 3 à 8 joueurs, ambiance thriller, acteurs présents. Le seul escape game flottant de Paris.",
+    category: "loisirs",
+    tags: ["escape game", "péniche", "seine", "enquête", "insolite", "thriller", "puzzle", "original"],
+    address: "Port du Louvre, Quai François Mitterrand, 75001 Paris",
+    lat: 48.8604,
+    lng: 2.34,
+    date: "2026-07-11",
+    time: "15:00",
+    price: 32,
+    max_participants: 8,
+  },
+
+  {
+    title: "Tyrolienne de la Tour Montparnasse — Vol au-dessus de Paris",
+    description:
+      "Pour la première fois, une tyrolienne géante est installée depuis le sommet de la Tour Montparnasse ! Glissez à 210m de hauteur au-dessus des toits de Paris à plus de 60 km/h sur 300 mètres. Une sensation inédite et vertigineuse au cœur de la capitale.",
+    category: "loisirs",
+    tags: ["tyrolienne", "montparnasse", "hauteur", "vertige", "insolite", "adrénaline", "paris", "vue"],
+    address: "Tour Montparnasse, 33 Avenue du Maine, 75015 Paris",
+    lat: 48.8421,
+    lng: 2.3219,
+    date: "2026-07-11",
+    time: "10:00",
+    price: 65,
+  },
+
+  {
+    title: "Bal des Pompiers — Nuit du 13 au 14 Juillet",
+    description:
+      "La tradition parisienne par excellence : les casernes de pompiers ouvrent leurs portes pour une nuit de bal populaire festif et bon enfant. Musique live, buvette, ambiance conviviale dans une cour de caserne. Entrée gratuite ou modique selon les casernes.",
+    category: "soirees",
+    tags: ["bal des pompiers", "14 juillet", "fête nationale", "gratuit", "populaire", "dancing", "tradition"],
+    address: "Caserne des Sapeurs-Pompiers, 75011 Paris",
+    lat: 48.8613,
+    lng: 2.378,
+    date: "2026-07-13",
+    time: "21:00",
+    price: 3,
+  },
+
+  {
+    title: "Défilé Militaire du 14 Juillet — Champs-Élysées",
+    description:
+      "Le défilé militaire national du 14 juillet sur les Champs-Élysées : parade des armées de terre, de mer et de l'air, défilé des formations militaires et survol de la Patrouille de France. Le spectacle patriotique le plus impressionnant de l'année, gratuit sur invitation ou depuis les trottoirs.",
+    category: "culture",
+    tags: ["14 juillet", "défilé", "armée", "champs-élysées", "fête nationale", "gratuit", "patrouille de france"],
+    address: "Avenue des Champs-Élysées, 75008 Paris",
+    lat: 48.8698,
+    lng: 2.3078,
+    date: "2026-07-14",
+    time: "10:00",
+    price: 0,
+  },
+
+  {
+    title: "Feux d'Artifice du 14 Juillet — Tour Eiffel",
+    description:
+      "Le plus beau feu d'artifice du monde illumine le ciel de Paris chaque 14 juillet ! Tiré depuis le Champ-de-Mars, le spectacle pyrotechnique de 40 minutes attire plus d'un million de spectateurs. Installez-vous tôt pour avoir la meilleure place face à la Tour Eiffel.",
+    category: "loisirs",
+    tags: ["14 juillet", "feux d'artifice", "tour eiffel", "fête nationale", "gratuit", "spectacle"],
+    address: "Champ-de-Mars, 75007 Paris",
+    lat: 48.8566,
+    lng: 2.2922,
+    date: "2026-07-14",
+    time: "23:00",
+    price: 0,
+  },
+
+  {
+    title: "Grandes Eaux Musicales de Versailles",
+    description:
+      "Chaque week-end d'été, les fontaines du château de Versailles s'animent au son de la musique baroque dans les jardins royaux. Une expérience majestueuse et immersive dans l'un des plus beaux jardins du monde, illuminé et animé comme au temps du Roi Soleil.",
+    category: "culture",
+    tags: ["versailles", "fontaines", "jardins", "baroque", "musique", "classique", "château", "été"],
+    address: "Château de Versailles, Place d'Armes, 78000 Versailles",
+    lat: 48.8049,
+    lng: 2.1204,
+    date: "2026-07-18",
+    time: "11:00",
+    price: 11,
+    external_url: "https://chateauversailles-spectacles.fr",
+  },
+
+  {
+    title: "Paris Plages 2026 — Rives de Seine",
+    description:
+      "Chaque été, les quais de Seine se transforment en véritable station balnéaire urbaine : sable, transats, animations sportives, concerts et jeux d'eau gratuits. L'événement estival emblématique de Paris, ouvert à tous et entièrement gratuit.",
+    category: "loisirs",
+    tags: ["plage", "seine", "gratuit", "été", "paris", "outdoor", "famille"],
+    address: "Quai de Gesvres, 75004 Paris",
+    lat: 48.8571,
+    lng: 2.3482,
+    date: "2026-07-19",
+    time: "08:00",
+    price: 0,
+    external_url: "https://www.paris.fr/paris-plages",
+  },
+
+  {
+    title: "Soirée Péniche — DJ Set au fil de la Seine",
+    description:
+      "Montez à bord d'une péniche pour une soirée électro et house en naviguant sur la Seine. Le bateau fait des aller-retours entre la Bastille et le Pont de l'Alma pendant 4h. Bar ouvert toute la nuit, DJ set non-stop, terrasse extérieure sur le pont.",
+    category: "soirees",
+    tags: ["péniche", "dj set", "seine", "électro", "house", "soirée", "bateau", "nocturne"],
+    address: "Port de Plaisance de Paris-Arsenal, 75012 Paris",
+    lat: 48.8497,
+    lng: 2.3635,
+    date: "2026-07-24",
+    time: "22:00",
+    price: 15,
+    max_participants: 200,
+  },
+
+  {
+    title: "Paintball en Forêt — Scénarios Tactiques",
+    description:
+      "Une partie de paintball intense dans un terrain boisé de 3 hectares avec décors militaires, bunkers et véhicules. 6 scénarios différents : capture de drapeau, assaut de base, zombie mode... Équipement complet fourni, 200 billes incluses par joueur.",
+    category: "sport",
+    tags: ["paintball", "forêt", "tactique", "adrénaline", "groupe", "team building", "jeu"],
+    address: "Forêt de Sénart, 91350 Brunoy",
+    lat: 48.6808,
+    lng: 2.4917,
+    date: "2026-07-25",
+    time: "10:00",
+    price: 35,
+    max_participants: 30,
+  },
+
+  {
+    title: "Dégustation Champagne & Visite Cave — Épernay",
+    description:
+      "Rejoignez une excursion d'une journée à Épernay, capitale mondiale du champagne. Visite des caves souterraines d'une grande maison de champagne, dégustation de 5 cuvées différentes commentées par un sommelier. Transport depuis Paris inclus.",
+    category: "loisirs",
+    tags: ["champagne", "dégustation", "épernay", "vin", "cave", "excursion", "gastronomie"],
+    address: "Avenue de Champagne, 51200 Épernay",
+    lat: 49.0453,
+    lng: 3.958,
+    date: "2026-07-26",
+    time: "08:30",
+    price: 89,
+    max_participants: 25,
+  },
+
+  {
+    title: "Catacombes de Paris — Visite Guidée Nocturne",
+    description:
+      "Descendez à 20m sous Paris dans l'ossuaire municipal qui abrite les restes de 6 millions de Parisiens. En visite guidée nocturne aux flambeaux, les galeries prennent une atmosphère encore plus mystérieuse. La visite souterraine la plus troublante et fascinante de la capitale.",
+    category: "culture",
+    tags: ["catacombes", "souterrain", "nocturne", "histoire", "insolite", "mystère", "paris", "mort"],
+    address: "1 Avenue du Colonel Henri Rol-Tanguy, 75014 Paris",
+    lat: 48.8338,
+    lng: 2.3322,
+    date: "2026-07-31",
+    time: "19:00",
+    price: 29,
+    max_participants: 20,
+    external_url: "https://www.catacombes.paris.fr",
+  },
+
+  {
+    title: "Nuit des Étoiles — Observation astronomique en forêt",
+    description:
+      "La nuit des étoiles filantes de l'été : sortie astronomique en forêt de Fontainebleau pour observer les Perséides avec des télescopes professionnels. Astronome bénévole présent pour guider les observations. Apportez une couverture et vos yeux grand ouverts !",
+    category: "loisirs",
+    tags: ["astronomie", "étoiles", "perséides", "forêt", "fontainebleau", "observation", "nuit", "gratuit"],
+    address: "Forêt de Fontainebleau, 77300 Fontainebleau",
+    lat: 48.399,
+    lng: 2.6897,
+    date: "2026-08-08",
+    time: "22:00",
+    price: 0,
+  },
+
+  {
+    title: "Cirque Électrique — Nouveau Cirque Contemporain",
+    description:
+      "Un spectacle de cirque contemporain époustouflant qui mêle acrobaties, danse, vidéo-mapping et musique électronique live. Loin des cirques traditionnels, ce show de 90 minutes surprend par sa créativité visuelle et ses performances athlétiques extrêmes.",
+    category: "culture",
+    tags: ["cirque", "contemporain", "acrobatie", "spectacle", "danse", "insolite", "vidéo-mapping"],
+    address: "La Villette, 75019 Paris",
+    lat: 48.8938,
+    lng: 2.3887,
+    date: "2026-08-14",
+    time: "20:00",
+    price: 28,
+    max_participants: 300,
+  },
+
+  {
+    title: "Concert Classique — Symphonie sous les Étoiles à Versailles",
+    description:
+      "L'Orchestre National de France joue sous les étoiles dans le parc du Château de Versailles lors des Grandes Nuits de Versailles. Œuvres de Mozart, Beethoven et Debussy interprétées devant les fontaines illuminées. Le concert le plus majestueux de l'été.",
+    category: "concerts",
+    tags: ["classique", "symphonie", "versailles", "orchestre", "étoiles", "outdoor", "majestueux"],
+    address: "Parc du Château de Versailles, 78000 Versailles",
+    lat: 48.8049,
+    lng: 2.1204,
+    date: "2026-08-21",
+    time: "21:00",
+    price: 48,
+    external_url: "https://chateauversailles-spectacles.fr",
+  },
+
+  {
+    title: "Trail des Châteaux — Course Nature à Versailles",
+    description:
+      "Une course à pied de 10 ou 20 km à travers les forêts et jardins autour du Château de Versailles. Parcours balisé, ravitaillements, médaille finisher. Ouverte aux coureurs de tous niveaux, ambiance conviviale et décor royal. La course la plus belle d'Île-de-France.",
+    category: "sport",
+    tags: ["trail", "running", "versailles", "nature", "course", "forêt", "châteaux", "sport"],
+    address: "Château de Versailles, 78000 Versailles",
+    lat: 48.8049,
+    lng: 2.1204,
+    date: "2026-09-06",
+    time: "09:00",
+    price: 25,
+    max_participants: 500,
+  },
+
+  {
+    title: "Journées Européennes du Patrimoine — Paris",
+    description:
+      "Chaque 3e week-end de septembre, des centaines de monuments habituellement fermés ouvrent leurs portes gratuitement : ministères, palais, ambassades, châteaux, ateliers d'artistes, coulisses de théâtres. La plus grande fête culturelle populaire de France.",
+    category: "culture",
+    tags: ["patrimoine", "monuments", "gratuit", "visites", "histoire", "architecture", "culture"],
+    address: "Hôtel de Ville de Paris, 75004 Paris",
+    lat: 48.8566,
+    lng: 2.3522,
+    date: "2026-09-19",
+    time: "09:00",
+    price: 0,
+    external_url: "https://journeesdupatrimoine.culture.gouv.fr",
+  },
+
+  {
+    title: "Techno Parade Paris 2026",
+    description:
+      "Le plus grand défilé de musique électronique au monde revient dans les rues de Paris ! Des chars musicaux traversent la capitale de la Bastille à Montparnasse, suivis par des dizaines de milliers de fêtards. La fête de la musique électronique parisienne, gratuite et ouverte à tous.",
+    category: "soirees",
+    tags: ["techno parade", "électro", "défilé", "gratuit", "fête", "rue", "danse", "techno"],
+    address: "Place de la Bastille, 75011 Paris",
+    lat: 48.8533,
+    lng: 2.3692,
+    date: "2026-09-19",
+    time: "14:00",
+    price: 0,
+    external_url: "https://www.technoparade.fr",
+  },
+
+  {
+    title: "Nuit Blanche 2026 — Art et Culture toute la nuit",
+    description:
+      "La nuit où Paris ne dort pas ! Des dizaines d'installations artistiques, performances et expositions envahissent les rues et monuments de la capitale de la nuit tombée jusqu'au lever du soleil. Entrée libre dans tous les lieux participants. La nuit culturelle la plus folle de l'année.",
+    category: "culture",
+    tags: ["nuit blanche", "art", "installations", "gratuit", "nuit", "culture", "paris", "contemporain"],
+    address: "Centre Pompidou, Place Georges Pompidou, 75004 Paris",
+    lat: 48.8607,
+    lng: 2.3523,
+    date: "2026-10-03",
+    time: "19:00",
+    price: 0,
+    external_url: "https://www.paris.fr/nuitblanche",
+  },
+
 ];
 // ═══════════════════════════════════════════════════════════════════════════════
 

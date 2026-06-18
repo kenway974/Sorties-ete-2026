@@ -33,8 +33,19 @@ const config: Config = {
         "shimmer":       "shimmer 1.8s linear infinite",
         "bounce-gentle": "bounce-gentle 2.5s ease-in-out infinite",
         "pulse-ring":    "pulse-ring 1.5s ease-out infinite",
+        "ken-burns":     "ken-burns 24s ease-in-out infinite alternate",
+        "float-slow":    "float-slow 14s ease-in-out infinite",
+        "float-slower":  "float-slow 20s ease-in-out infinite",
       },
       keyframes: {
+        "ken-burns": {
+          "0%":   { transform: "scale(1) translate(0, 0)" },
+          "100%": { transform: "scale(1.12) translate(-1.5%, -1.5%)" },
+        },
+        "float-slow": {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "50%":      { transform: "translate(20px, -30px)" },
+        },
         "slide-up": {
           "0%":   { transform: "translateY(120%)", opacity: "0" },
           "100%": { transform: "translateY(0)",    opacity: "1" },

@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import {
   MapPin, Calendar, ArrowRight, Zap, Users, Star,
@@ -108,10 +109,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <div className="dark:bg-[#0d111a]">
       {/* ── HERO ── */}
       <section className="relative bg-brand-navy overflow-hidden min-h-[88vh] flex items-center">
+        {/* Animated Paris backdrop (Ken Burns) */}
         <div className="absolute inset-0 pointer-events-none select-none">
-          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-brand-gold/8 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -right-16 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-brand-gold/5 rounded-full blur-2xl" />
+          <Image
+            src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=80&auto=format&fit=crop"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-25 animate-ken-burns"
+          />
+          {/* Navy gradient overlay so text stays readable over the photo */}
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/80 via-brand-navy/70 to-brand-navy" />
+        </div>
+        {/* Floating colored blobs */}
+        <div className="absolute inset-0 pointer-events-none select-none">
+          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-brand-gold/8 rounded-full blur-3xl animate-float-slow" />
+          <div className="absolute -bottom-24 -right-16 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-3xl animate-float-slower" />
+          <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-brand-gold/5 rounded-full blur-2xl animate-float-slow" />
         </div>
 
         <div className="relative w-full max-w-4xl mx-auto px-4 py-24 text-center">

@@ -17,6 +17,7 @@ import { useItinerary } from "@/lib/hooks/useItinerary";
 import { Route } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
 import ActivityStories from "@/components/activities/ActivityStories";
+import Markdown from "@/components/ui/Markdown";
 import type { Activity, Review, Profile, ActivityRegistration } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -196,7 +197,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
           {activeTab === "info" && (
             <div className="space-y-4">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{activity.description}</p>
+              <Markdown>{activity.description || ""}</Markdown>
               {activity.tags && activity.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {activity.tags.map((tag) => (

@@ -43,6 +43,28 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     setError("");
     try {
       const supabase = createClient();
+
+      // Block unverified emails
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email_confirmed_at) {
+        setError("Vous devez vérifier votre adresse email avant de proposer une activité. Consultez votre boîte mail.");
+        setLoading(false);
+        return;
+      }
+
+      // Daily proposal limit — max 3 per user per day
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const { count } = await supabase
+        .from("activities")
+        .select("id", { count: "exact", head: true })
+        .eq("creator_id", userId)
+        .gte("created_at", todayStart.toISOString());
+      if ((count ?? 0) >= 3) {
+        setError("Vous avez atteint la limite de 3 propositions par jour. Réessayez demain.");
+        setLoading(false);
+        return;
+      }
       let lat = 48.8566;
       let lng = 2.3522;
       try {

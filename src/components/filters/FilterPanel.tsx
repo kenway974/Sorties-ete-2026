@@ -59,16 +59,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors ${
+        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium border transition-all active:scale-95 ${
           hasFilters
-            ? "bg-brand-navy text-white border-brand-navy"
-            : "bg-white dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 text-gray-600 hover:border-brand-navy"
+            ? "bg-brand-navy text-white border-brand-navy shadow-md shadow-brand-navy/20 dark:bg-brand-gold dark:text-brand-navy dark:border-brand-gold"
+            : "bg-white dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 text-gray-600 hover:border-brand-navy dark:hover:border-brand-gold"
         }`}
       >
         <SlidersHorizontal className="w-4 h-4" />
         Filtres
         {hasFilters && (
-          <span className="bg-white/20 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+          <span className="bg-white/25 text-current text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
             {activeCount}
           </span>
         )}

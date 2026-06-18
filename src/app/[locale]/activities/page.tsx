@@ -62,9 +62,9 @@ export default function ActivitiesPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-56px-64px)] md:h-[calc(100vh-56px)]">
+    <div className="flex flex-col h-[calc(100dvh-56px-64px)] md:h-[calc(100dvh-56px)]">
       {/* Toolbar */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-3 py-2.5 space-y-2 z-10 shrink-0">
+      <div className="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 px-3 py-2.5 space-y-2.5 z-20 shrink-0">
         <div className="flex items-center gap-2">
           <div className="flex-1">
             <SearchBar
@@ -132,7 +132,7 @@ export default function ActivitiesPage() {
                     <button
                       onClick={loadMore}
                       disabled={loadingMore}
-                      className="px-8 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-60 shadow-sm"
+                      className="px-8 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 transition-all disabled:opacity-60 shadow-sm"
                     >
                       {loadingMore ? (
                         <span className="flex items-center gap-2">

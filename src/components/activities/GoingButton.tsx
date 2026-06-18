@@ -20,7 +20,7 @@ export default function GoingButton({ activityId, userId, className = "" }: Goin
         ${going
           ? "bg-emerald-50 text-emerald-700 border-2 border-emerald-400 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-600"
           : "bg-gray-50 text-gray-600 border-2 border-gray-200 hover:border-brand-navy hover:text-brand-navy dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
-        } disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        } disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
     >
       <Users2 className="w-4 h-4" />
       <span>{going ? "J'y vais ✓" : "J'y vais"}</span>

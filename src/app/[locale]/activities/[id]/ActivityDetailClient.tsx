@@ -132,7 +132,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <Link href={`/${locale}/activities`} className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-navy mb-4">
+      <Link href={`/${locale}/activities`} className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" />
         Retour
       </Link>
@@ -154,7 +154,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
           <div className="flex items-start justify-between gap-4">
             <div>
               <Badge variant="navy" className="mb-2">{CATEGORY_LABELS[activity.category] || activity.category}</Badge>
-              <h1 className="text-2xl font-bold text-gray-900">{activity.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activity.title}</h1>
             </div>
             <div className="flex gap-2 shrink-0">
               <button
@@ -178,15 +178,15 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
             </div>
           </div>
 
-          <div className="flex gap-4 border-b border-gray-200">
+          <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700">
             {(["info", "reviews"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab
-                    ? "border-brand-navy text-brand-navy"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-brand-navy text-brand-navy dark:border-white dark:text-white"
+                    : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
                 {tab === "info" ? "Informations" : `Avis (${localReviews.length})`}
@@ -196,15 +196,15 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
           {activeTab === "info" && (
             <div className="space-y-4">
-              <p className="text-gray-700 leading-relaxed">{activity.description}</p>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{activity.description}</p>
               {activity.tags && activity.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {activity.tags.map((tag) => (
-                    <span key={tag} className="px-2.5 py-1 bg-gray-100 rounded-full text-xs text-gray-600">#{tag}</span>
+                    <span key={tag} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-600 dark:text-gray-300">#{tag}</span>
                   ))}
                 </div>
               )}
-              <div className="h-48 rounded-2xl overflow-hidden border border-gray-100">
+              <div className="h-48 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
                 <MapView activities={[activity]} />
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
           {activeTab === "reviews" && (
             <div className="space-y-4">
               {userId && (
-                <div className="bg-white rounded-2xl p-4 border border-gray-100">
+                <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
                   <h3 className="font-medium mb-3">Écrire un avis</h3>
                   <StarRating value={reviewRating} onChange={setReviewRating} size="lg" />
                   <textarea
@@ -232,7 +232,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
                 <p className="text-gray-400 text-center py-8">Aucun avis pour le moment.</p>
               )}
               {localReviews.map((review) => (
-                <div key={review.id} className="bg-white rounded-2xl p-4 border border-gray-100">
+                <div key={review.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-sm font-medium">
                       {review.user?.username?.[0]?.toUpperCase() || "?"}
@@ -250,22 +250,22 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 space-y-3">
             <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-brand-navy shrink-0" />
-              <span className="text-sm">{formatDate(activity.date, "fr")}</span>
+              <Calendar className="w-5 h-5 text-brand-navy dark:text-blue-400 shrink-0" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">{formatDate(activity.date, "fr")}</span>
             </div>
             <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-brand-navy shrink-0" />
-              <span className="text-sm">{formatTime(activity.time)}</span>
+              <Clock className="w-5 h-5 text-brand-navy dark:text-blue-400 shrink-0" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">{formatTime(activity.time)}</span>
             </div>
             <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-brand-navy shrink-0" />
-              <span className="text-sm">{activity.address}</span>
+              <MapPin className="w-5 h-5 text-brand-navy dark:text-blue-400 shrink-0" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">{activity.address}</span>
             </div>
             <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-brand-navy shrink-0" />
-              <span className="text-sm">
+              <Users className="w-5 h-5 text-brand-navy dark:text-blue-400 shrink-0" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">
                 {participants} participant(s)
                 {spotsLeft !== null && (
                   <span className={`ml-1 ${isFull ? "text-brand-red" : "text-green-600"} font-medium`}>
@@ -280,8 +280,8 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
                 <span className="text-sm font-medium">{avgRating.toFixed(1)}/5</span>
               </div>
             )}
-            <div className="pt-2 border-t border-gray-100">
-              <span className="text-xl font-bold text-brand-navy">
+            <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+              <span className="text-xl font-bold text-brand-navy dark:text-white">
                 {formatPrice(activity.price, "Gratuit")}
               </span>
             </div>
@@ -326,7 +326,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
               href={activity.external_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl border-2 border-brand-navy text-brand-navy font-medium hover:bg-brand-navy hover:text-white transition-colors text-sm"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl border-2 border-brand-navy text-brand-navy font-medium hover:bg-brand-navy hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-brand-navy transition-colors text-sm"
             >
               <ExternalLink className="w-4 h-4" />
               Réserver / Plus d&apos;infos
@@ -365,9 +365,9 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
           )}
 
           {activity.creator && (
-            <div className="bg-white rounded-2xl p-3 border border-gray-100">
-              <p className="text-xs text-gray-500 mb-1">Organisé par</p>
-              <p className="text-sm font-medium">{activity.creator.username}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Organisé par</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.creator.username}</p>
             </div>
           )}
         </div>

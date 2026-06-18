@@ -23,7 +23,7 @@ export default function GoingButton({ activityId, userId, className = "" }: Goin
         } disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       <Users2 className="w-4 h-4" />
-      <span>{going ? "J&apos;y vais ✓" : "J&apos;y vais"}</span>
+      <span>{going ? "J'y vais ✓" : "J'y vais"}</span>
       {count > 0 && (
         <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold
           ${going ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200" : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"}`}>

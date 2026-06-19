@@ -109,18 +109,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <div className="dark:bg-[#0d111a]">
       {/* ── HERO ── */}
       <section className="relative bg-brand-navy overflow-hidden min-h-[88vh] flex items-center">
-        {/* Animated Paris backdrop (Ken Burns) */}
+        {/* Animated Paris illustration (Ken Burns) */}
         <div className="absolute inset-0 pointer-events-none select-none">
           <Image
-            src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=80&auto=format&fit=crop"
+            src="/hero-paris.webp"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-25 animate-ken-burns"
+            className="object-cover object-top opacity-40 animate-ken-burns"
           />
-          {/* Navy gradient overlay so text stays readable over the photo */}
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/80 via-brand-navy/70 to-brand-navy" />
+          {/* Gradient overlay: lighter at top to show illustration, solid at bottom for text */}
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/30 via-brand-navy/65 to-brand-navy" />
         </div>
         {/* Floating colored blobs */}
         <div className="absolute inset-0 pointer-events-none select-none">

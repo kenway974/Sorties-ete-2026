@@ -16,7 +16,7 @@ const DEPARTMENT_CODES = ["75", "77", "78", "91", "92", "93", "94", "95"];
 
 type Category =
   | "soirees" | "concerts" | "expositions" | "restaurants" | "bars"
-  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs";
+  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs" | "salons";
 
 interface OALocation {
   name: string | null;
@@ -109,6 +109,7 @@ function mapCategory(keywords: string[], title: string, description: string): Ca
   if (has("soirée", "soiree", "clubbing", "nuit blanche", "after", "boîte de nuit")) return "soirees";
   if (has("restaurant", "gastronomie", "dégustation", "cuisine", "repas")) return "restaurants";
   if (has("bar", "apéro", "guinguette", "cocktail", "brasserie")) return "bars";
+  if (has("salon", "convention", "foire", "japan expo", "comic con", "games week", "maison & objet", "fashion week", "trade show")) return "salons";
   if (has("sport", "running", "yoga", "fitness", "tennis", "football", "natation", "randonnée")) return "sport";
   if (has("enfant", "famille", "jeune public", "kids", "bébé")) return "famille";
   if (has("étudiant", "etudiant", "université", "campus", "bde", "jeune")) return "etudiants";

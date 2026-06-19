@@ -14,6 +14,7 @@ const CATEGORIES: { key: ActivityCategory | "all"; emoji: string; label: string 
   { key: "etudiants", emoji: "🎓", label: "Étudiants" },
   { key: "networking", emoji: "🤝", label: "Networking" },
   { key: "loisirs", emoji: "🎮", label: "Loisirs" },
+  { key: "salons", emoji: "🎪", label: "Salons & Conventions" },
 ];
 
 interface CategoryFilterProps {

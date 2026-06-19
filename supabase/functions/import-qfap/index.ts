@@ -14,7 +14,7 @@ const MAX_RECORDS = 4000;
 
 type Category =
   | "soirees" | "concerts" | "expositions" | "restaurants" | "bars"
-  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs";
+  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs" | "salons";
 
 // Infer vibe tags from category + raw tags + text content
 function inferVibeTags(category: Category, rawTags: string[], title: string, desc: string): string[] {
@@ -56,6 +56,7 @@ function mapCategory(tags: string | null): Category {
   if (has("bar", "apéro", "apero", "guinguette")) return "bars";
   if (has("sport", "running", "yoga", "vélo", "velo", "randonnée", "randonnee")) return "sport";
   if (has("famille", "enfant", "jeune public", "jeunesse")) return "famille";
+  if (has("salon", "convention", "foire", "japan expo", "comic con", "games week", "maison & objet", "fashion week")) return "salons";
   if (has("atelier", "brocante", "marché", "marche", "loisir", "jeu")) return "loisirs";
   if (has("networking", "rencontre pro", "conférence métier")) return "networking";
   // theatre, danse, cinema, conférence, histoire, littérature, patrimoine, visite, balade…

@@ -7,13 +7,14 @@ import type { ActivityCategory } from "@/types";
 
 const CATEGORIES: ActivityCategory[] = [
   "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
+  "sport", "culture", "famille", "etudiants", "networking", "loisirs", "salons",
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
   soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
   restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+  famille: "Famille", etudiants: "Étudiants", networking: "Networking",
+  loisirs: "Loisirs", salons: "Salons & Conventions",
 };
 
 const VIBE_TAGS = [

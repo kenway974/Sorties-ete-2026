@@ -9,7 +9,8 @@ export type ActivityCategory =
   | "famille"
   | "etudiants"
   | "networking"
-  | "loisirs";
+  | "loisirs"
+  | "salons";
 
 export type ActivityStatus = "pending" | "approved" | "rejected";
 export type UserRole = "user" | "moderator" | "admin";

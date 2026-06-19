@@ -24,6 +24,7 @@ const CATEGORIES = [
   { key: "etudiants", emoji: "🎓", label: "Étudiants",  color: "hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-300" },
   { key: "networking", emoji: "🤝", label: "Network",   color: "hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300" },
   { key: "loisirs",   emoji: "🎮", label: "Loisirs",    color: "hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:border-teal-300" },
+  { key: "salons",    emoji: "🎪", label: "Salons",     color: "hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:border-pink-300" },
 ];
 
 const HOW_IT_WORKS = [

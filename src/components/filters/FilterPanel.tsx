@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import type { ActivityFilters } from "@/types";
 
@@ -200,9 +201,9 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         )}
       </button>
 
-      {/* Bottom sheet modal */}
-      {open && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end md:justify-center md:items-center">
+      {/* Bottom sheet modal — rendered via portal to escape backdrop-filter stacking context */}
+      {open && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col justify-end md:justify-center md:items-center">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -385,7 +386,8 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

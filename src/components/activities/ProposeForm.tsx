@@ -16,6 +16,29 @@ const CATEGORY_LABELS: Record<string, string> = {
   famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
 };
 
+const VIBE_TAGS = [
+  { key: "festif", emoji: "🎉", label: "Festif" },
+  { key: "live-music", emoji: "🎵", label: "Live Music" },
+  { key: "art", emoji: "🎨", label: "Art & Créatif" },
+  { key: "gastronomie", emoji: "🍽️", label: "Gastro" },
+  { key: "sport", emoji: "💪", label: "Sportif" },
+  { key: "plein-air", emoji: "🌿", label: "Plein air" },
+  { key: "culture", emoji: "🏛️", label: "Culture" },
+  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
+];
+
+// Suggest vibe tags based on selected category
+const CATEGORY_VIBES: Partial<Record<ActivityCategory, string[]>> = {
+  soirees: ["festif"],
+  concerts: ["live-music", "festif"],
+  expositions: ["art", "culture"],
+  restaurants: ["gastronomie"],
+  bars: ["festif"],
+  sport: ["sport"],
+  culture: ["culture"],
+  famille: ["famille"],
+};
+
 interface ProposeFormProps {
   userId: string;
   onSuccess: () => void;
@@ -26,12 +49,31 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     title: "", description: "", category: "" as ActivityCategory | "",
-    tags: "", address: "", date: "", time: "",
+    tags: [] as string[], address: "", date: "", time: "",
     max_participants: "", price: "", external_url: "",
   });
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set = (k: keyof typeof form) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const cat = e.target.value as ActivityCategory | "";
+    // Auto-suggest vibe tags when category changes (non-destructive: only adds, doesn't remove)
+    const suggested = cat ? (CATEGORY_VIBES[cat as ActivityCategory] ?? []) : [];
+    setForm((f) => ({
+      ...f,
+      category: cat,
+      tags: [...new Set([...f.tags, ...suggested])],
+    }));
+  };
+
+  const toggleTag = (key: string) => {
+    setForm((f) => ({
+      ...f,
+      tags: f.tags.includes(key) ? f.tags.filter((t) => t !== key) : [...f.tags, key],
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +86,6 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     try {
       const supabase = createClient();
 
-      // Block unverified emails
       const { data: { user } } = await supabase.auth.getUser();
       if (!user?.email_confirmed_at) {
         setError("Vous devez vérifier votre adresse email avant de proposer une activité. Consultez votre boîte mail.");
@@ -52,7 +93,6 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         return;
       }
 
-      // Daily proposal limit — max 3 per user per day
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const { count } = await supabase
@@ -65,6 +105,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         setLoading(false);
         return;
       }
+
       let lat = 48.8566;
       let lng = 2.3522;
       try {
@@ -80,14 +121,14 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
           if (geoData[0]) { lat = parseFloat(geoData[0].lat); lng = parseFloat(geoData[0].lon); }
         }
       } catch {
-        // Nominatim timeout or error — fallback to Paris center, carry on
+        // Nominatim timeout or error — fallback to Paris center
       }
 
       const { data: inserted, error: err } = await supabase.from("activities").insert({
         title: form.title,
         description: form.description,
         category: form.category,
-        tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+        tags: form.tags,
         address: form.address,
         lat,
         lng,
@@ -102,7 +143,6 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       }).select("id").single();
       if (err) throw err;
 
-      // Trigger AI moderation asynchronously — failure is non-blocking
       if (inserted?.id) {
         supabase.functions.invoke("moderate-activity", {
           body: { activityId: inserted.id },
@@ -121,23 +161,23 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       <Input label="Titre" value={form.title} onChange={set("title")} required />
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">Description</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
         <textarea
           value={form.description}
           onChange={set("description") as ChangeEventHandler<HTMLTextAreaElement>}
           rows={4}
           required
-          className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none"
+          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy dark:focus:ring-brand-gold resize-none"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">Catégorie</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Catégorie</label>
         <select
           value={form.category}
-          onChange={set("category") as ChangeEventHandler<HTMLSelectElement>}
+          onChange={handleCategoryChange}
           required
-          className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
+          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy dark:focus:ring-brand-gold"
         >
           <option value="">--</option>
           {CATEGORIES.map((c) => (
@@ -146,7 +186,30 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         </select>
       </div>
 
-      <Input label="Tags" value={form.tags} onChange={set("tags")} placeholder="musique, dj, électro" />
+      {/* Vibe tags */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Ambiance{" "}
+          <span className="font-normal text-gray-400">(optionnel · aide les utilisateurs à trouver ton événement)</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {VIBE_TAGS.map(({ key, emoji, label }) => (
+            <button
+              type="button"
+              key={key}
+              onClick={() => toggleTag(key)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
+                form.tags.includes(key)
+                  ? "bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy shadow-sm"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              {emoji} {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Input label="Adresse" value={form.address} onChange={set("address")} required placeholder="10 rue de Rivoli, Paris" />
 
       <div className="grid grid-cols-2 gap-3">

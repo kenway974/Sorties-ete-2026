@@ -71,6 +71,35 @@ function pickKeywords(obj: Record<string, string[]> | null): string[] {
   return arr.slice(0, 6);
 }
 
+// Infer vibe tags from category + keywords + text
+function inferVibeTags(category: Category, keywords: string[], title: string, desc: string): string[] {
+  const vibes: string[] = [];
+  const text = [...keywords, title, desc].join(" ").toLowerCase();
+
+  const categoryVibes: Partial<Record<Category, string[]>> = {
+    soirees: ["festif"],
+    concerts: ["live-music", "festif"],
+    expositions: ["art", "culture"],
+    restaurants: ["gastronomie"],
+    bars: ["festif"],
+    sport: ["sport"],
+    culture: ["culture"],
+    famille: ["famille"],
+  };
+  vibes.push(...(categoryVibes[category] ?? []));
+
+  if (/concert|live music|jazz|rock|électro|dj|musique live/.test(text)) vibes.push("live-music");
+  if (/plein.air|outdoor|parc|jardin|extérieur|forêt|nature/.test(text)) vibes.push("plein-air");
+  if (/expo|galerie|musée|peinture|sculpture|vernissage/.test(text)) vibes.push("art");
+  if (/gastro|dégustation|chef|cuisine raffinée/.test(text)) vibes.push("gastronomie");
+  if (/famille|enfant|kids|junior|bébé/.test(text)) vibes.push("famille");
+  if (/sport|fitness|yoga|running|marathon|football|basketball|tennis|natation/.test(text)) vibes.push("sport");
+  if (/festival|fête|party|danse|bal/.test(text)) vibes.push("festif");
+  if (/patrimoine|histoire|monument|visite guidée|château/.test(text)) vibes.push("culture");
+
+  return [...new Set(vibes)];
+}
+
 function mapCategory(keywords: string[], title: string, description: string): Category {
   const text = [...keywords, title, description].join(" ").toLowerCase();
   const has = (...k: string[]) => k.some((x) => text.includes(x));
@@ -192,13 +221,17 @@ Deno.serve(async () => {
         const coverUrl = buildImageUrl(e.image);
         const externalUrl = extractRegistrationUrl(e.registration);
 
+        const category = mapCategory(keywords, title, description);
+        const vibeTags = inferVibeTags(category, keywords, title, description);
+        const tags = [...new Set([...keywords, ...vibeTags])].slice(0, 12);
+
         rows.push({
           source: "openagenda",
           external_id: externalId,
           title: title.slice(0, 300),
           description: description.slice(0, 4000),
-          category: mapCategory(keywords, title, description),
-          tags: keywords,
+          category,
+          tags,
           address: address.slice(0, 300),
           lat,
           lng,

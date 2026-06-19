@@ -1,5 +1,5 @@
 // Supabase Edge Function: cleanup-stories
-// Deletes expired activity_stories rows and their storage objects.
+// Deletes expired activity_stories + global_stories rows and their storage objects.
 // Runs every hour via pg_cron → net.http_post().
 
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -67,9 +67,35 @@ Deno.serve(async () => {
     });
   }
 
-  console.log(`[cleanup-stories] deleted ${expired.length} expired stories`);
+  // Also clean expired global_stories
+  const { data: expiredGlobal } = await supabase
+    .from("global_stories")
+    .select("id, media_url")
+    .lt("expires_at", new Date().toISOString());
+
+  let deletedGlobal = 0;
+  if (expiredGlobal && expiredGlobal.length > 0) {
+    const globalPaths: string[] = expiredGlobal
+      .map((s) => {
+        try {
+          const url = new URL(s.media_url);
+          const marker = "/object/public/global-stories/";
+          const idx = url.pathname.indexOf(marker);
+          return idx !== -1 ? url.pathname.slice(idx + marker.length) : null;
+        } catch { return null; }
+      })
+      .filter(Boolean) as string[];
+
+    for (let i = 0; i < globalPaths.length; i += BATCH) {
+      await supabase.storage.from("global-stories").remove(globalPaths.slice(i, i + BATCH));
+    }
+    await supabase.from("global_stories").delete().in("id", expiredGlobal.map((s) => s.id));
+    deletedGlobal = expiredGlobal.length;
+  }
+
+  console.log(`[cleanup-stories] activity: ${expired.length}, global: ${deletedGlobal}`);
   return new Response(
-    JSON.stringify({ ok: true, deleted: expired.length, ms: Date.now() - startedAt }),
+    JSON.stringify({ ok: true, deleted: expired.length, deletedGlobal, ms: Date.now() - startedAt }),
     { headers: { "Content-Type": "application/json" } },
   );
 });

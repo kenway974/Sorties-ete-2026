@@ -10,6 +10,7 @@ import ActivityRow from "@/components/home/ActivityRow";
 import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
+import GlobalStoriesBar from "@/components/stories/GlobalStoriesBar";
 import { futureOrClause, parisNow } from "@/lib/utils/parisTime";
 
 const CATEGORIES = [
@@ -190,6 +191,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           ))}
         </div>
       </div>
+
+      {/* ── GLOBAL STORIES ── */}
+      <GlobalStoriesBar userId={user?.id ?? null} />
 
       {/* ── HOW IT WORKS ── */}
       <section className="bg-white dark:bg-gray-900/50 py-16">

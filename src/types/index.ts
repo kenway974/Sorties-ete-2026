@@ -126,4 +126,6 @@ export interface ActivityFilters {
   /** Time-of-day range (HH:MM), applies across all matching dates. */
   timeFrom?: string | null;
   timeTo?: string | null;
+  /** Vibe/ambiance tags to filter by (overlaps with activity tags). */
+  tags?: string[] | null;
 }

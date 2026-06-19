@@ -35,6 +35,7 @@ export function useActivities(filters: ActivityFilters = {}) {
     if (filters.search) query = query.ilike("title", `%${filters.search}%`);
     if (filters.priceFilter === "free") query = query.is("price", null);
     if (filters.priceFilter === "paid") query = query.not("price", "is", null);
+    if (filters.tags && filters.tags.length > 0) query = query.overlaps("tags", filters.tags);
 
     // Custom date range
     if (filters.dateFrom) query = query.gte("date", filters.dateFrom);

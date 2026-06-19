@@ -26,6 +26,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
   restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
   famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
+  salons: "Salons & Conventions",
 };
 
 interface Props {

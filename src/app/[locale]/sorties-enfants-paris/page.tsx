@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = "Sorties Enfants Paris — Activités Famille | ParisSorties";
+  const title = "Sorties Enfants Paris — Activités Famille | MoodMap";
   const description =
     "Les meilleures sorties enfants à Paris : ateliers créatifs, spectacles jeunesse, visites de musées, parcs d'attractions. Idées d'activités en famille à Paris ce week-end.";
   const canonical = `${getSiteUrl()}/${locale}/sorties-enfants-paris`;
@@ -26,7 +26,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "website",
-      siteName: "ParisSorties",
+      siteName: "MoodMap",
       locale: "fr_FR",
     },
     twitter: { card: "summary_large_image", title, description },
@@ -135,7 +135,7 @@ export default async function SortiesEnfantsPage({
               Les parcs parisiens se prêtent merveilleusement aux sorties en famille : le Bois de Boulogne avec le Jardin d&apos;Acclimatation, le Bois de Vincennes avec son zoo renommé, ou encore les nombreux jardins à jeux dispersés dans toute la ville. En été, les guinguettes et piscines municipales complètent cette offre. Le Parc Astérix et Disneyland Paris, accessibles en moins d&apos;une heure depuis le centre de Paris, restent les destinations fétiches des familles pour les grandes occasions.
             </p>
             <p>
-              ParisSorties référence toutes les activités famille organisées par des associations, des artistes et des structures jeunesse de la région parisienne. Ateliers cuisine pour enfants, cours de cirque, spectacles de marionnettes, chasses au trésor urbaines — découvrez chaque semaine de nouvelles idées de sorties originales pour passer un moment inoubliable en famille à Paris.
+              MoodMap référence toutes les activités famille organisées par des associations, des artistes et des structures jeunesse de la région parisienne. Ateliers cuisine pour enfants, cours de cirque, spectacles de marionnettes, chasses au trésor urbaines — découvrez chaque semaine de nouvelles idées de sorties originales pour passer un moment inoubliable en famille à Paris.
             </p>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">

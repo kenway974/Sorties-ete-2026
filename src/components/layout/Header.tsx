@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, MapPin, User, LogOut, Moon, Sun } from "lucide-react";
+import { Menu, X, User, LogOut, Moon, Sun } from "lucide-react";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import type { Profile } from "@/types";
 
@@ -68,12 +69,11 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <Link href={base} className="flex items-center gap-1.5 shrink-0">
-          <MapPin className="w-4.5 h-4.5 text-brand-navy dark:text-brand-gold" style={{width:"18px",height:"18px"}} />
-          <span className="font-extrabold text-[15px] tracking-tight text-gray-900 dark:text-white hidden sm:inline">
-            Paris<span className="text-brand-navy dark:text-brand-gold">Sorties</span>
+        <Link href={base} className="flex items-center gap-2 shrink-0">
+          <Image src="/logo.webp" alt="MoodMap" width={28} height={28} priority className="rounded-lg shadow-sm" />
+          <span className="font-extrabold text-[15px] tracking-tight text-gray-900 dark:text-white">
+            Mood<span className="text-brand-navy dark:text-brand-gold">Map</span>
           </span>
-          <span className="font-black text-[15px] tracking-tight text-brand-navy dark:text-brand-gold sm:hidden">PS</span>
         </Link>
 
         {/* Desktop nav */}

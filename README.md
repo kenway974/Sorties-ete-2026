@@ -1,4 +1,4 @@
-# ParisSorties — Découverte de sorties à Paris
+# MoodMap — Découverte de sorties à Paris
 
 PWA de découverte d'activités, événements et sorties à Paris et en Île-de-France.
 

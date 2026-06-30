@@ -34,7 +34,7 @@ export async function generateMetadata({
 
   const description =
     activity.description?.slice(0, 200) ??
-    `${cat} à Paris — ${when}, ${activity.address}. ${price}. À découvrir sur ParisSorties.`;
+    `${cat} à Paris — ${when}, ${activity.address}. ${price}. À découvrir sur MoodMap.`;
 
   const canonical = `${getSiteUrl()}/${locale}/activities/${id}`;
   const siteUrl = getSiteUrl();
@@ -51,7 +51,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "article",
-      siteName: "ParisSorties",
+      siteName: "MoodMap",
       locale: "fr_FR",
       images: [{ url: ogImageUrl, width: 1200, height: 630, alt: activity.title }],
     },

@@ -12,8 +12,8 @@ const SITE_URL = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "ParisSorties — Toutes les sorties à Paris cet été",
-    template: "%s · ParisSorties",
+    default: "MoodMap — Toutes les sorties à Paris cet été",
+    template: "%s · MoodMap",
   },
   description:
     "Concerts, expos, soirées, sport, restos… Découvrez et filtrez toutes les activités et événements à Paris et en Île-de-France. Gratuit, sans inscription.",
@@ -21,21 +21,21 @@ export const metadata: Metadata = {
     "sorties Paris", "que faire à Paris", "événements Paris", "concerts Paris",
     "expositions Paris", "activités Paris", "agenda Paris", "soirées Paris",
   ],
-  applicationName: "ParisSorties",
+  applicationName: "MoodMap",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "ParisSorties" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "MoodMap" },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "ParisSorties — Toutes les sorties à Paris cet été",
+    title: "MoodMap — Toutes les sorties à Paris cet été",
     description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
     url: SITE_URL,
-    siteName: "ParisSorties",
+    siteName: "MoodMap",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ParisSorties — Toutes les sorties à Paris cet été",
+    title: "MoodMap — Toutes les sorties à Paris cet été",
     description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
   },
   robots: { index: true, follow: true },
@@ -55,7 +55,7 @@ const websiteJsonLd = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: "ParisSorties",
+      name: "MoodMap",
       description: "Découvrez et filtrez toutes les activités et événements à Paris.",
       inLanguage: "fr-FR",
       potentialAction: {
@@ -67,7 +67,7 @@ const websiteJsonLd = {
     {
       "@type": "WebApplication",
       "@id": `${SITE_URL}/#webapp`,
-      name: "ParisSorties",
+      name: "MoodMap",
       url: SITE_URL,
       applicationCategory: "LifestyleApplication",
       operatingSystem: "All",
@@ -76,7 +76,7 @@ const websiteJsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "ParisSorties",
+      name: "MoodMap",
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: `${SITE_URL}/icons/icon-512.png` },
     },

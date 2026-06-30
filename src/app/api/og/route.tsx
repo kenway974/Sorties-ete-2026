@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
         {/* Top: logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: 28, color: "#D4AF37", fontWeight: 800, letterSpacing: "-0.5px" }}>
-            ParisSorties
+            MoodMap
           </span>
         </div>
 

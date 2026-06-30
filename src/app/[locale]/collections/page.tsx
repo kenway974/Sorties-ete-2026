@@ -5,11 +5,11 @@ import { BookMarked, Plus, Lock, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Collections",
-  description: "Explorez les listes d'activités partagées par la communauté ParisSorties ou créez la vôtre.",
+  description: "Explorez les listes d'activités partagées par la communauté MoodMap ou créez la vôtre.",
   alternates: { canonical: "/fr/collections" },
   openGraph: {
-    title: "Collections · ParisSorties",
-    description: "Explorez les listes d'activités partagées par la communauté ParisSorties.",
+    title: "Collections · MoodMap",
+    description: "Explorez les listes d'activités partagées par la communauté MoodMap.",
     type: "website",
   },
 };

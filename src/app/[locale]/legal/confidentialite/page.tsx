@@ -2,7 +2,7 @@
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
-  description: "Comment ParisSorties collecte et protège vos données personnelles (RGPD).",
+  description: "Comment MoodMap collecte et protège vos données personnelles (RGPD).",
   robots: { index: true, follow: true },
 };
 
@@ -12,7 +12,7 @@ export default function ConfidentialitePage() {
       <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Politique de confidentialité</h1>
       <p className="text-sm text-gray-400">Dernière mise à jour : {new Date().toLocaleDateString("fr-FR")}</p>
       <p>
-        La présente politique décrit comment <strong>ParisSorties</strong> traite vos données personnelles,
+        La présente politique décrit comment <strong>MoodMap</strong> traite vos données personnelles,
         conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.
       </p>
 
@@ -55,7 +55,7 @@ export default function ConfidentialitePage() {
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">7. Cookies</h2>
       <p>
-        ParisSorties utilise uniquement des cookies <strong>strictement nécessaires</strong> au fonctionnement
+        MoodMap utilise uniquement des cookies <strong>strictement nécessaires</strong> au fonctionnement
         (session d&apos;authentification). La mesure d&apos;audience est réalisée sans cookie et de façon anonyme.
         Aucun cookie publicitaire ou de pistage tiers n&apos;est déposé.
       </p>

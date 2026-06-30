@@ -6,12 +6,12 @@ test.describe("Home page", () => {
   });
 
   test("loads with correct title", async ({ page }) => {
-    await expect(page).toHaveTitle(/ParisSorties/);
+    await expect(page).toHaveTitle(/MoodMap/);
   });
 
   test("renders the header with logo", async ({ page }) => {
     await expect(page.getByRole("banner")).toBeVisible();
-    await expect(page.getByText("ParisSorties")).toBeVisible();
+    await expect(page.getByText("MoodMap")).toBeVisible();
   });
 
   test("renders category filter buttons", async ({ page }) => {

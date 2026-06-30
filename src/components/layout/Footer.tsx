@@ -9,7 +9,7 @@ export default function Footer({ locale = "fr" }: { locale?: string }) {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link href={base} className="flex items-center gap-2 font-medium text-white">
             <MapPin className="w-4 h-4 text-brand-gold" />
-            <span>ParisSorties</span>
+            <span>MoodMap</span>
           </Link>
           <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
             <Link href={`${base}/activities`} className="hover:text-white transition-colors">Activités</Link>
@@ -21,7 +21,7 @@ export default function Footer({ locale = "fr" }: { locale?: string }) {
           </nav>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-4 border-t border-white/10 text-xs">
-          <p>© {new Date().getFullYear()} ParisSorties — Paris &amp; Île-de-France 🇫🇷</p>
+          <p>© {new Date().getFullYear()} MoodMap — Paris &amp; Île-de-France 🇫🇷</p>
           <p className="text-white/40">Données événements : Open Data Ville de Paris</p>
         </div>
       </div>

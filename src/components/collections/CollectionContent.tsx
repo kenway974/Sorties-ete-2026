@@ -24,7 +24,7 @@ export default function CollectionContent({ collectionId, title, activities: ini
   const share = async () => {
     const url = window.location.href;
     if (navigator.share) {
-      try { await navigator.share({ title, text: `Découvre ma collection « ${title} » sur ParisSorties`, url }); } catch {}
+      try { await navigator.share({ title, text: `Découvre ma collection « ${title} » sur MoodMap`, url }); } catch {}
     } else {
       await navigator.clipboard.writeText(url);
       setCopied(true);

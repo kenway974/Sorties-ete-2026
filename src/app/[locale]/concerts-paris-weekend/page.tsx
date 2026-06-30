@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = "Concerts à Paris ce Week-end — Programme & Billets | ParisSorties";
+  const title = "Concerts à Paris ce Week-end — Programme & Billets | MoodMap";
   const description =
     "Tous les concerts à Paris ce week-end : rock, jazz, électro, classique, rap. Trouvez les meilleurs concerts parisiens du moment et réservez votre place.";
   const canonical = `${getSiteUrl()}/${locale}/concerts-paris-weekend`;
@@ -26,7 +26,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "website",
-      siteName: "ParisSorties",
+      siteName: "MoodMap",
       locale: "fr_FR",
     },
     twitter: { card: "summary_large_image", title, description },
@@ -170,7 +170,7 @@ export default async function ConcertsParisWeekendPage({
               La scène rock et indie parisienne est également très vivace, avec des salles comme le Zénith, Bercy Arena ou les Trois Baudets qui accueillent des artistes français et internationaux. La musique électronique a ses temples au Trabendo, au Rex Club et lors des festivals comme Techno Parade ou We Love Green. Le rap et les musiques urbaines trouvent quant à eux leurs scènes à l&apos;Accor Arena et dans de nombreux clubs du 18e et du 19e arrondissement.
             </p>
             <p>
-              ParisSorties recense en temps réel tous les concerts organisés par des passionnés de musique à Paris, des petits concerts de salle aux événements plus confidentiels. Découvrez de nouveaux artistes, soutenez la scène locale et ne manquez plus un seul concert à Paris ce week-end grâce à notre sélection mise à jour quotidiennement.
+              MoodMap recense en temps réel tous les concerts organisés par des passionnés de musique à Paris, des petits concerts de salle aux événements plus confidentiels. Découvrez de nouveaux artistes, soutenez la scène locale et ne manquez plus un seul concert à Paris ce week-end grâce à notre sélection mise à jour quotidiennement.
             </p>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">

@@ -43,18 +43,18 @@ const CATEGORY_VIBES: Partial<Record<ActivityCategory, string[]>> = {
 
 // Suggest moods based on selected category (mirrors the import inference defaults)
 const CATEGORY_MOODS: Partial<Record<ActivityCategory, ActivityMood[]>> = {
-  soirees: ["rencontrer", "decompresser"],
-  concerts: ["decompresser", "solo", "decouvrir"],
-  expositions: ["solo", "esprit", "decouvrir"],
-  restaurants: ["rencontrer"],
-  bars: ["rencontrer", "decompresser"],
-  sport: ["ressourcer", "air"],
-  culture: ["esprit", "solo", "decouvrir"],
-  famille: ["air"],
-  etudiants: ["rencontrer", "decompresser"],
+  soirees: ["rencontrer", "entre-amis", "decompresser", "nocturne"],
+  concerts: ["decompresser", "decouvrir", "entre-amis", "nocturne"],
+  expositions: ["solo", "esprit", "decouvrir", "date-chill"],
+  restaurants: ["gourmand", "date-romantique", "entre-amis"],
+  bars: ["entre-amis", "decompresser", "nocturne", "rencontrer"],
+  sport: ["air", "sensations", "decompresser"],
+  culture: ["esprit", "decouvrir", "solo", "date-chill"],
+  famille: ["famille", "air", "creatif"],
+  etudiants: ["rencontrer", "entre-amis", "decompresser"],
   networking: ["rencontrer", "esprit"],
-  loisirs: ["decompresser", "decouvrir"],
-  salons: ["decouvrir", "rencontrer"],
+  loisirs: ["date-fun", "entre-amis", "decompresser", "creatif"],
+  salons: ["decouvrir", "insolite", "entre-amis"],
 };
 
 interface ProposeFormProps {

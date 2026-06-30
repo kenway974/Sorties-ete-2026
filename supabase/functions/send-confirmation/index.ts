@@ -143,7 +143,7 @@ serve(async (req: Request) => {
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#0a1832 0%,#1e3a5f 100%);padding:32px 40px;text-align:center;">
-              <h1 style="margin:0;color:#f5c842;font-size:28px;letter-spacing:-.5px;">ParisSorties</h1>
+              <h1 style="margin:0;color:#f5c842;font-size:28px;letter-spacing:-.5px;">MoodMap</h1>
               <p style="margin:8px 0 0;color:rgba(255,255,255,.7);font-size:14px;">Votre agenda des sorties parisiennes</p>
             </td>
           </tr>
@@ -187,8 +187,8 @@ serve(async (req: Request) => {
               </p>
 
               <p style="margin:0;color:#aaa;font-size:12px;text-align:center;">
-                Vous recevez cet e-mail car vous êtes inscrit sur ParisSorties.<br/>
-                © ${new Date().getFullYear()} ParisSorties — paris-sorties.fr
+                Vous recevez cet e-mail car vous êtes inscrit sur MoodMap.<br/>
+                © ${new Date().getFullYear()} MoodMap — paris-sorties.fr
               </p>
             </td>
           </tr>
@@ -208,7 +208,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "ParisSorties <noreply@paris-sorties.fr>",
+        from: "MoodMap <noreply@paris-sorties.fr>",
         to: [userEmail],
         subject: `Inscription confirmée — ${activity.title}`,
         html: htmlBody,

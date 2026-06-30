@@ -9,7 +9,7 @@ test.describe("Navigation", () => {
   test("home page is accessible at /fr", async ({ page }) => {
     await page.goto("/fr");
     await expect(page).toHaveURL("/fr");
-    await expect(page).toHaveTitle(/ParisSorties/);
+    await expect(page).toHaveTitle(/MoodMap/);
   });
 
   test("activities page is accessible", async ({ page }) => {
@@ -56,7 +56,7 @@ test.describe("Navigation", () => {
   test("English locale renders translated content", async ({ page }) => {
     await page.goto("/en");
     await expect(page).toHaveURL("/en");
-    await expect(page).toHaveTitle(/ParisSorties/);
+    await expect(page).toHaveTitle(/MoodMap/);
   });
 
   test("Spanish locale is accessible", async ({ page }) => {

@@ -5,7 +5,7 @@ import EditActivityForm from "./EditActivityForm";
 import type { Activity } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Modifier l'activité | ParisSorties",
+  title: "Modifier l'activité | MoodMap",
   robots: { index: false, follow: false },
 };
 

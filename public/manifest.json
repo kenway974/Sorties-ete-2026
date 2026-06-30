@@ -1,6 +1,6 @@
 {
-  "name": "ParisSorties",
-  "short_name": "ParisSorties",
+  "name": "MoodMap",
+  "short_name": "MoodMap",
   "description": "Découvrez les activités, événements et sorties à Paris",
   "start_url": "/fr",
   "display": "standalone",

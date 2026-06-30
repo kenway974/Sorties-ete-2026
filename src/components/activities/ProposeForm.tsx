@@ -140,7 +140,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         const timeout = setTimeout(() => controller.abort(), 5000);
         const geoRes = await fetch(
           `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(form.address + ", Paris, France")}&format=json&limit=1`,
-          { headers: { "User-Agent": "ParisSorties/1.0 (contact@paris-sorties.fr)" }, signal: controller.signal }
+          { headers: { "User-Agent": "MoodMap/1.0 (contact@paris-sorties.fr)" }, signal: controller.signal }
         );
         clearTimeout(timeout);
         if (geoRes.ok) {

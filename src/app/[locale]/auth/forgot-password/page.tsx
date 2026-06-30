@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 bg-brand-navy rounded-2xl mb-4">
             <MapPin className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ParisSorties</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">MoodMap</h1>
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
           {done ? (

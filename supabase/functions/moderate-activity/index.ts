@@ -24,7 +24,7 @@ async function moderateWithClaude(title: string, description: string, category: 
     return { decision: "review", confidence: 0, reason: "ANTHROPIC_API_KEY not configured" };
   }
 
-  const prompt = `You are a content moderator for ParisSorties, a Paris activities platform for a French audience.
+  const prompt = `You are a content moderator for MoodMap, a Paris activities platform for a French audience.
 
 Evaluate this activity submission and decide whether to APPROVE, REJECT, or flag for REVIEW.
 

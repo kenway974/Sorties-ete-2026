@@ -45,6 +45,42 @@ function inferVibeTags(category: Category, rawTags: string[], title: string, des
   return [...new Set(vibes)];
 }
 
+type Mood =
+  | "rencontrer" | "solo" | "ressourcer" | "air" | "decouvrir" | "decompresser" | "esprit";
+
+// Infer "envie/mood" — the state of mind an event suits. Category defaults + keyword refinements.
+function inferMoods(category: Category, tags: string[], title: string, desc: string): Mood[] {
+  const moods = new Set<Mood>();
+  const text = [...tags, title, desc].join(" ").toLowerCase();
+
+  const byCategory: Partial<Record<Category, Mood[]>> = {
+    soirees:     ["rencontrer", "decompresser"],
+    concerts:    ["decompresser", "solo", "decouvrir"],
+    expositions: ["solo", "esprit", "decouvrir"],
+    restaurants: ["rencontrer"],
+    bars:        ["rencontrer", "decompresser"],
+    sport:       ["ressourcer", "air"],
+    culture:     ["esprit", "solo", "decouvrir"],
+    famille:     ["air"],
+    etudiants:   ["rencontrer", "decompresser"],
+    networking:  ["rencontrer", "esprit"],
+    loisirs:     ["decompresser", "decouvrir"],
+    salons:      ["decouvrir", "rencontrer"],
+  };
+  for (const m of byCategory[category] ?? []) moods.add(m);
+
+  if (/rencontre|speed.dating|afterwork|after.work|c[ée]libataire|blind.test|karaok[ée]|mixer|networking|[ée]change/.test(text)) moods.add("rencontrer");
+  if (/plein.air|parc|jardin|nature|for[êe]t|terrasse|balade|promenade|ext[ée]rieur|rivi[èe]re|quai|bois|p[ée]niche/.test(text)) moods.add("air");
+  if (/yoga|m[ée]ditation|spa|bien.[êe]tre|massage|relaxation|d[ée]tente|sophrologie|sieste|zen|bain sonore|th[ée]rapie/.test(text)) moods.add("ressourcer");
+  if (/d[ée]couverte|insolite|nouveaut[ée]|initiation|atelier|exp[ée]rience|immersi|surprise/.test(text)) moods.add("decouvrir");
+  if (/festi|f[êe]te|party|\bdj\b|club|dancefloor|danse|\bbal\b|guinguette|ap[ée]ro|open.bar/.test(text)) moods.add("decompresser");
+  if (/conf[ée]rence|d[ée]bat|philo|histoire|mus[ée]e|exposition|litt[ée]rature|lecture|sciences|table ronde|masterclass/.test(text)) moods.add("esprit");
+  if (/visite libre|[àa] votre rythme|sans inscription|en autonomie|individuel/.test(text)) moods.add("solo");
+
+  if (moods.size === 0) moods.add("decouvrir");
+  return [...moods];
+}
+
 // Map QFAP tags (semicolon separated) to our categories. First match wins.
 function mapCategory(tags: string | null): Category {
   const t = (tags ?? "").toLowerCase();
@@ -153,6 +189,7 @@ Deno.serve(async (req) => {
         const category = mapCategory(r.qfap_tags);
         const vibeTags = inferVibeTags(category, rawTags, r.title ?? "", desc);
         const tags = [...new Set([...rawTags, ...vibeTags])].slice(0, 12);
+        const moods = inferMoods(category, rawTags, r.title ?? "", desc);
 
         rows.push({
           source: "qfap",
@@ -161,6 +198,7 @@ Deno.serve(async (req) => {
           description: desc.slice(0, 4000),
           category,
           tags,
+          moods,
           address: address.slice(0, 300),
           lat,
           lng,

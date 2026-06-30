@@ -18,6 +18,7 @@ import { Route } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
 import ActivityStories from "@/components/activities/ActivityStories";
 import Markdown from "@/components/ui/Markdown";
+import { MOOD_LABELS, MOOD_EMOJIS } from "@/lib/constants/moods";
 import type { Activity, Review, Profile, ActivityRegistration } from "@/types";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
@@ -198,6 +199,16 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
           {activeTab === "info" && (
             <div className="space-y-4">
+              {activity.moods && activity.moods.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {activity.moods.map((mood) => (
+                    <span key={mood} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-brand-navy/5 dark:bg-brand-gold/10 text-brand-navy dark:text-brand-gold border border-brand-navy/10 dark:border-brand-gold/20">
+                      <span>{MOOD_EMOJIS[mood] ?? "💭"}</span>
+                      {MOOD_LABELS[mood] ?? mood}
+                    </span>
+                  ))}
+                </div>
+              )}
               <Markdown>{activity.description || ""}</Markdown>
               {activity.tags && activity.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">

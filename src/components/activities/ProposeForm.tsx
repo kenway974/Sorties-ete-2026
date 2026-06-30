@@ -3,7 +3,8 @@ import { useState, type ChangeEventHandler } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import type { ActivityCategory } from "@/types";
+import { MOODS } from "@/lib/constants/moods";
+import type { ActivityCategory, ActivityMood } from "@/types";
 
 const CATEGORIES: ActivityCategory[] = [
   "soirees", "concerts", "expositions", "restaurants", "bars",
@@ -40,6 +41,22 @@ const CATEGORY_VIBES: Partial<Record<ActivityCategory, string[]>> = {
   famille: ["famille"],
 };
 
+// Suggest moods based on selected category (mirrors the import inference defaults)
+const CATEGORY_MOODS: Partial<Record<ActivityCategory, ActivityMood[]>> = {
+  soirees: ["rencontrer", "decompresser"],
+  concerts: ["decompresser", "solo", "decouvrir"],
+  expositions: ["solo", "esprit", "decouvrir"],
+  restaurants: ["rencontrer"],
+  bars: ["rencontrer", "decompresser"],
+  sport: ["ressourcer", "air"],
+  culture: ["esprit", "solo", "decouvrir"],
+  famille: ["air"],
+  etudiants: ["rencontrer", "decompresser"],
+  networking: ["rencontrer", "esprit"],
+  loisirs: ["decompresser", "decouvrir"],
+  salons: ["decouvrir", "rencontrer"],
+};
+
 interface ProposeFormProps {
   userId: string;
   onSuccess: () => void;
@@ -50,7 +67,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     title: "", description: "", category: "" as ActivityCategory | "",
-    tags: [] as string[], address: "", date: "", time: "",
+    tags: [] as string[], moods: [] as ActivityMood[], address: "", date: "", time: "",
     max_participants: "", price: "", external_url: "",
   });
 
@@ -60,12 +77,14 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const cat = e.target.value as ActivityCategory | "";
-    // Auto-suggest vibe tags when category changes (non-destructive: only adds, doesn't remove)
-    const suggested = cat ? (CATEGORY_VIBES[cat as ActivityCategory] ?? []) : [];
+    // Auto-suggest vibe tags + moods when category changes (non-destructive: only adds)
+    const suggestedTags = cat ? (CATEGORY_VIBES[cat as ActivityCategory] ?? []) : [];
+    const suggestedMoods = cat ? (CATEGORY_MOODS[cat as ActivityCategory] ?? []) : [];
     setForm((f) => ({
       ...f,
       category: cat,
-      tags: [...new Set([...f.tags, ...suggested])],
+      tags: [...new Set([...f.tags, ...suggestedTags])],
+      moods: [...new Set([...f.moods, ...suggestedMoods])],
     }));
   };
 
@@ -73,6 +92,13 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     setForm((f) => ({
       ...f,
       tags: f.tags.includes(key) ? f.tags.filter((t) => t !== key) : [...f.tags, key],
+    }));
+  };
+
+  const toggleMood = (key: ActivityMood) => {
+    setForm((f) => ({
+      ...f,
+      moods: f.moods.includes(key) ? f.moods.filter((m) => m !== key) : [...f.moods, key],
     }));
   };
 
@@ -130,6 +156,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
         description: form.description,
         category: form.category,
         tags: form.tags,
+        moods: form.moods,
         address: form.address,
         lat,
         lng,
@@ -201,6 +228,30 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
               onClick={() => toggleTag(key)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
                 form.tags.includes(key)
+                  ? "bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy shadow-sm"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              {emoji} {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Moods / envies */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Quelle envie ?{" "}
+          <span className="font-normal text-gray-400">(optionnel · pour qui / quel état d&apos;esprit)</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {MOODS.map(({ key, emoji, label }) => (
+            <button
+              type="button"
+              key={key}
+              onClick={() => toggleMood(key as ActivityMood)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
+                form.moods.includes(key as ActivityMood)
                   ? "bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy shadow-sm"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}

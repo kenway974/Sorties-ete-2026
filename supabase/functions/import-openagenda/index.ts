@@ -100,6 +100,42 @@ function inferVibeTags(category: Category, keywords: string[], title: string, de
   return [...new Set(vibes)];
 }
 
+type Mood =
+  | "rencontrer" | "solo" | "ressourcer" | "air" | "decouvrir" | "decompresser" | "esprit";
+
+// Infer "envie/mood" — the state of mind an event suits. Category defaults + keyword refinements.
+function inferMoods(category: Category, keywords: string[], title: string, desc: string): Mood[] {
+  const moods = new Set<Mood>();
+  const text = [...keywords, title, desc].join(" ").toLowerCase();
+
+  const byCategory: Partial<Record<Category, Mood[]>> = {
+    soirees:     ["rencontrer", "decompresser"],
+    concerts:    ["decompresser", "solo", "decouvrir"],
+    expositions: ["solo", "esprit", "decouvrir"],
+    restaurants: ["rencontrer"],
+    bars:        ["rencontrer", "decompresser"],
+    sport:       ["ressourcer", "air"],
+    culture:     ["esprit", "solo", "decouvrir"],
+    famille:     ["air"],
+    etudiants:   ["rencontrer", "decompresser"],
+    networking:  ["rencontrer", "esprit"],
+    loisirs:     ["decompresser", "decouvrir"],
+    salons:      ["decouvrir", "rencontrer"],
+  };
+  for (const m of byCategory[category] ?? []) moods.add(m);
+
+  if (/rencontre|speed.dating|afterwork|after.work|c[ée]libataire|blind.test|karaok[ée]|mixer|networking|[ée]change|meet/.test(text)) moods.add("rencontrer");
+  if (/plein.air|outdoor|parc|jardin|nature|for[êe]t|terrasse|balade|promenade|ext[ée]rieur|rivi[èe]re|quai|bois|p[ée]niche/.test(text)) moods.add("air");
+  if (/yoga|m[ée]ditation|spa|bien.[êe]tre|wellness|massage|relaxation|d[ée]tente|sophrologie|sieste|zen|bain sonore|th[ée]rapie/.test(text)) moods.add("ressourcer");
+  if (/d[ée]couverte|insolite|nouveaut[ée]|initiation|atelier|workshop|exp[ée]rience|immersi|surprise/.test(text)) moods.add("decouvrir");
+  if (/festi|f[êe]te|party|\bdj\b|club|dancefloor|danse|dance|\bbal\b|guinguette|ap[ée]ro|open.bar/.test(text)) moods.add("decompresser");
+  if (/conf[ée]rence|conference|d[ée]bat|philo|histoire|mus[ée]e|museum|exposition|litt[ée]rature|lecture|sciences|table ronde|masterclass|talk/.test(text)) moods.add("esprit");
+  if (/visite libre|[àa] votre rythme|sans inscription|en autonomie|individuel|self.guided/.test(text)) moods.add("solo");
+
+  if (moods.size === 0) moods.add("decouvrir");
+  return [...moods];
+}
+
 function mapCategory(keywords: string[], title: string, description: string): Category {
   const text = [...keywords, title, description].join(" ").toLowerCase();
   const has = (...k: string[]) => k.some((x) => text.includes(x));
@@ -225,6 +261,7 @@ Deno.serve(async () => {
         const category = mapCategory(keywords, title, description);
         const vibeTags = inferVibeTags(category, keywords, title, description);
         const tags = [...new Set([...keywords, ...vibeTags])].slice(0, 12);
+        const moods = inferMoods(category, keywords, title, description);
 
         rows.push({
           source: "openagenda",
@@ -233,6 +270,7 @@ Deno.serve(async () => {
           description: description.slice(0, 4000),
           category,
           tags,
+          moods,
           address: address.slice(0, 300),
           lat,
           lng,

@@ -12,6 +12,16 @@ export type ActivityCategory =
   | "loisirs"
   | "salons";
 
+// Mood / "envie" — the emotional intent behind going out (see lib/constants/moods.ts)
+export type ActivityMood =
+  | "rencontrer"
+  | "solo"
+  | "ressourcer"
+  | "air"
+  | "decouvrir"
+  | "decompresser"
+  | "esprit";
+
 export type ActivityStatus = "pending" | "approved" | "rejected";
 export type UserRole = "user" | "moderator" | "admin";
 export type ReportReason = "spam" | "offensive" | "wrong_info" | "advertising";
@@ -35,6 +45,7 @@ export interface Activity {
   description: string;
   category: ActivityCategory;
   tags: string[];
+  moods?: ActivityMood[] | null;
   address: string;
   lat: number;
   lng: number;
@@ -129,4 +140,6 @@ export interface ActivityFilters {
   timeTo?: string | null;
   /** Vibe/ambiance tags to filter by (overlaps with activity tags). */
   tags?: string[] | null;
+  /** Mood/envie to filter by (overlaps with activity moods). */
+  moods?: ActivityMood[] | null;
 }

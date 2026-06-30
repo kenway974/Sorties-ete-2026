@@ -11,6 +11,7 @@ import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import GlobalStoriesBar from "@/components/stories/GlobalStoriesBar";
+import { MOODS } from "@/lib/constants/moods";
 import { futureOrClause, parisNow } from "@/lib/utils/parisTime";
 
 const CATEGORIES = [
@@ -226,11 +227,36 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
+      {/* ── MOODS / ENVIES ── */}
+      <section className="bg-white dark:bg-gray-900/30 py-14">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">C&apos;est quoi ton envie&nbsp;?</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Sortir selon ton mood du moment, pas juste par catégorie</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {MOODS.map(({ key, emoji, label, desc }) => (
+              <Link
+                key={key}
+                href={`${base}/activities?mood=${key}`}
+                className="group flex items-center gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-brand-cream/40 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 hover:border-brand-navy/30 dark:hover:border-brand-gold/40 hover:shadow-md transition-all"
+              >
+                <span className="text-2xl shrink-0 group-hover:scale-110 transition-transform">{emoji}</span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{label}</span>
+                  <span className="block text-xs text-gray-400 dark:text-gray-500 truncate">{desc}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CATEGORIES ── */}
       <section className="bg-brand-cream dark:bg-[#0d111a] py-14">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Par envie du moment</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Par catégorie</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm">Clique sur une catégorie pour filtrer</p>
           </div>
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-3">

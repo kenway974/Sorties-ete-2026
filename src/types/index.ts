@@ -12,14 +12,25 @@ export type ActivityCategory =
   | "loisirs"
   | "salons";
 
-// Mood / "envie" — the emotional intent behind going out (see lib/constants/moods.ts)
+// Mood / "envie" — the emotional intent & context behind going out (see lib/constants/moods.ts)
 export type ActivityMood =
   | "rencontrer"
+  | "entre-amis"
   | "solo"
+  | "famille"
+  | "date-romantique"
+  | "date-fun"
+  | "date-chill"
   | "ressourcer"
   | "air"
-  | "decouvrir"
   | "decompresser"
+  | "sensations"
+  | "nocturne"
+  | "chic"
+  | "decouvrir"
+  | "insolite"
+  | "creatif"
+  | "gourmand"
   | "esprit";
 
 export type ActivityStatus = "pending" | "approved" | "rejected";

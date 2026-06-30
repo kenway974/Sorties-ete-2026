@@ -7,7 +7,7 @@ export const revalidate = 3600;
 
 const CATEGORIES = [
   "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
+  "sport", "culture", "famille", "etudiants", "networking", "loisirs", "salons",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

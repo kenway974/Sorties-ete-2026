@@ -2,6 +2,13 @@
 
 PWA de découverte d'activités, événements et sorties à Paris et en Île-de-France.
 
+**Le concept** : trouver quoi faire à Paris *selon son envie du moment*. Les sorties
+sont filtrables par **mood/intention** — date romantique, date fun, entre amis, se
+ressourcer, prendre l'air, sensations fortes, gourmand, insolite… — en plus des
+critères classiques (catégorie, date, quartier, prix). Le tout sur carte interactive,
+avec des stories en temps réel, et l'agenda parisien synchronisé automatiquement
+(Que faire à Paris + OpenAgenda). Installable, gratuit, sans inscription.
+
 ## Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS

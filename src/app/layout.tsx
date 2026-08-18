@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s · MoodMap",
   },
   description:
-    "Concerts, expos, soirées, sport, restos… Découvrez et filtrez toutes les activités et événements à Paris et en Île-de-France. Gratuit, sans inscription.",
+    "Trouvez quoi faire à Paris selon votre envie du moment : date romantique, entre amis, se ressourcer, sensations fortes… Concerts, expos, soirées, sport et restos filtrés par mood, sur carte interactive et en stories. Gratuit, sans inscription.",
   keywords: [
     "sorties Paris", "que faire à Paris", "événements Paris", "concerts Paris",
     "expositions Paris", "activités Paris", "agenda Paris", "soirées Paris",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title: "MoodMap — Toutes les sorties à Paris cet été",
-    description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
+    description: "Sortez à Paris selon votre envie du moment : date, entre amis, se ressourcer, sensations… Filtré par mood, sur carte et en stories.",
     url: SITE_URL,
     siteName: "MoodMap",
     locale: "fr_FR",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MoodMap — Toutes les sorties à Paris cet été",
-    description: "Découvrez les meilleures sorties à Paris : concerts, expos, soirées, sport et plus.",
+    description: "Sortez à Paris selon votre envie du moment : date, entre amis, se ressourcer, sensations… Filtré par mood, sur carte et en stories.",
   },
   robots: { index: true, follow: true },
 };

@@ -1,7 +1,7 @@
 {
   "name": "MoodMap",
   "short_name": "MoodMap",
-  "description": "Découvrez les activités, événements et sorties à Paris",
+  "description": "Trouvez quoi faire à Paris selon votre envie du moment — sorties filtrées par mood, sur carte et en stories.",
   "start_url": "/fr",
   "display": "standalone",
   "background_color": "#F8F7F4",

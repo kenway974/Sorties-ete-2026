@@ -54,7 +54,6 @@ export function useActivities(filters: ActivityFilters = {}) {
       if (filters.priceFilter === "free") query = query.is("price", null);
       if (filters.priceFilter === "paid") query = query.not("price", "is", null);
       if (filters.tags && filters.tags.length > 0) query = query.overlaps("tags", filters.tags);
-      if (filters.moods && filters.moods.length > 0) query = query.overlaps("moods", filters.moods);
 
       if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
       if (filters.dateTo) query = query.lte("date", filters.dateTo);

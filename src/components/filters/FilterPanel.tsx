@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
-import type { ActivityFilters, ActivityMood } from "@/types";
-import { MOODS } from "@/lib/constants/moods";
+import type { ActivityFilters } from "@/types";
 
 const DATE_CHIPS = [
   { key: "today", label: "Aujourd'hui" },
@@ -48,7 +47,6 @@ const EMPTY: Partial<ActivityFilters> = {
   timeFrom: null,
   timeTo: null,
   tags: null,
-  moods: null,
 };
 
 interface FilterPanelProps {
@@ -132,7 +130,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
       f.dateFrom || f.dateTo ? "range" : null,
       f.timeFrom || f.timeTo ? "time" : null,
       ...((f.tags ?? []) as string[]),
-      ...((f.moods ?? []) as string[]),
     ].filter(Boolean).length;
 
   const appliedCount = countActive(filters);
@@ -145,7 +142,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   const timeCount = local.timeFrom || local.timeTo ? 1 : 0;
   const priceCount = local.priceFilter ? 1 : 0;
   const tagsCount = (local.tags ?? []).length;
-  const moodsCount = (local.moods ?? []).length;
   const sortCount = local.sortBy && local.sortBy !== "date" ? 1 : 0;
 
   const openSheet = () => {
@@ -182,13 +178,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
     });
   };
 
-  const toggleMood = (mood: ActivityMood) => {
-    setLocal((l) => {
-      const cur = l.moods ?? [];
-      const next = cur.includes(mood) ? cur.filter((m) => m !== mood) : [...cur, mood];
-      return { ...l, moods: next.length > 0 ? next : null };
-    });
-  };
 
   const inputCls =
     "flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-navy/30 dark:focus:ring-brand-gold/30";
@@ -249,23 +238,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
 
             {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto overscroll-contain">
-              {/* Mon envie */}
-              <Section emoji="💭" title="Mon envie" count={moodsCount} defaultOpen>
-                <div className="flex flex-wrap gap-2">
-                  {MOODS.map(({ key, emoji, label }) => (
-                    <Chip
-                      key={key}
-                      active={(local.moods ?? []).includes(key as ActivityMood)}
-                      onClick={() => toggleMood(key as ActivityMood)}
-                    >
-                      {emoji} {label}
-                    </Chip>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-400 mt-3">
-                  Dans quel état d&apos;esprit veux-tu sortir&nbsp;?
-                </p>
-              </Section>
 
               {/* Quand */}
               <Section emoji="📅" title="Quand" count={dateCount}>

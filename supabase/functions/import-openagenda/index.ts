@@ -100,57 +100,6 @@ function inferVibeTags(category: Category, keywords: string[], title: string, de
   return [...new Set(vibes)];
 }
 
-type Mood =
-  | "rencontrer" | "entre-amis" | "solo" | "famille"
-  | "date-romantique" | "date-fun" | "date-chill"
-  | "ressourcer" | "air" | "decompresser" | "sensations" | "nocturne" | "chic"
-  | "decouvrir" | "insolite" | "creatif" | "gourmand" | "esprit";
-
-// Infer "envie/mood" — intent & context an event suits. Category defaults + keyword refinements.
-function inferMoods(category: Category, keywords: string[], title: string, desc: string): Mood[] {
-  const moods = new Set<Mood>();
-  const text = [...keywords, title, desc].join(" ").toLowerCase();
-
-  const byCategory: Partial<Record<Category, Mood[]>> = {
-    soirees:     ["rencontrer", "entre-amis", "decompresser", "nocturne"],
-    concerts:    ["decompresser", "decouvrir", "entre-amis", "nocturne"],
-    expositions: ["solo", "esprit", "decouvrir", "date-chill"],
-    restaurants: ["gourmand", "date-romantique", "entre-amis"],
-    bars:        ["entre-amis", "decompresser", "nocturne", "rencontrer"],
-    sport:       ["air", "sensations", "decompresser"],
-    culture:     ["esprit", "decouvrir", "solo", "date-chill"],
-    famille:     ["famille", "air", "creatif"],
-    etudiants:   ["rencontrer", "entre-amis", "decompresser"],
-    networking:  ["rencontrer", "esprit"],
-    loisirs:     ["date-fun", "entre-amis", "decompresser", "creatif"],
-    salons:      ["decouvrir", "insolite", "entre-amis"],
-  };
-  for (const m of byCategory[category] ?? []) moods.add(m);
-
-  const add = (re: RegExp, m: Mood) => { if (re.test(text)) moods.add(m); };
-  add(/rencontre|speed.dating|afterwork|after.work|c[ée]libataire|blind.test|mixer|networking|[ée]change|\bmeet\b/, "rencontrer");
-  add(/entre amis|groupe|[ée]quipe|\bteam\b|bowling|billard|quiz|jeux? de soci[ée]t[ée]/, "entre-amis");
-  add(/romantique|amoureux|en couple|aux chandelles|d[îi]ner|cro[îi]si[èe]re|p[ée]niche|rooftop|coucher de soleil|cabaret|tango|s[ée]r[ée]nade|saint.valentin/, "date-romantique");
-  add(/bowling|mini.?golf|karaok[ée]|escape.game|laser.game|arcade|accrobranche|patinoire|r[ée]alit[ée] virtuelle|fl[ée]chettes/, "date-fun");
-  add(/caf[ée]|brunch|salon de th[ée]|balade|promenade|pique.nique|cin[ée]ma|cin[ée]/, "date-chill");
-  add(/famille|enfant|\bkids\b|jeune public|b[ée]b[ée]|parent/, "famille");
-  add(/yoga|m[ée]ditation|spa|bien.[êe]tre|wellness|massage|relaxation|d[ée]tente|sophrologie|sieste|\bzen\b|bain sonore|th[ée]rapie/, "ressourcer");
-  add(/plein.air|outdoor|parc|jardin|nature|for[êe]t|terrasse|balade|promenade|ext[ée]rieur|rivi[èe]re|quai|bois|p[ée]niche|randonn[ée]e/, "air");
-  add(/festi|f[êe]te|party|\bdj\b|club|dancefloor|danse|\bdance\b|\bbal\b|guinguette|ap[ée]ro|open.bar/, "decompresser");
-  add(/sensation|adr[ée]naline|karting|paintball|accrobranche|escalade|\bsaut\b|trampoline|man[èe]ge|frisson|vertige|tyrolienne/, "sensations");
-  add(/\bnuit\b|nocturne|\bclub\b|\bafter\b|soir[ée]e|minuit|nightlife/, "nocturne");
-  add(/rooftop|champagne|\bgala\b|vernissage|[ée]l[ée]gant|cocktail|palace|op[ée]ra|prestige|\bluxe\b|raffin[ée]/, "chic");
-  add(/d[ée]couverte|nouveaut[ée]|initiation|exp[ée]rience|immersi|surprise|premi[èe]re/, "decouvrir");
-  add(/insolite|secret|cach[ée]|dans le noir|\bunique\b|[ée]trange|myst[èe]re/, "insolite");
-  add(/atelier|\bdiy\b|workshop|poterie|c[ée]ramique|peinture|dessin|fabrication|cr[ée]ation|couture|cours de|sculpture/, "creatif");
-  add(/d[ée]gustation|gastronomie|\bfood\b|brunch|chocolat|\bvin\b|fromage|street food|march[ée]|cuisine|\brepas\b|bi[èe]re|cocktail|[œo]enologie/, "gourmand");
-  add(/conf[ée]rence|conference|d[ée]bat|philo|histoire|mus[ée]e|museum|exposition|litt[ée]rature|lecture|sciences|table ronde|masterclass|\btalk\b/, "esprit");
-  add(/visite libre|[àa] votre rythme|sans inscription|en autonomie|individuel|self.guided/, "solo");
-
-  if (moods.size === 0) moods.add("decouvrir");
-  return [...moods];
-}
-
 function mapCategory(keywords: string[], title: string, description: string): Category {
   const text = [...keywords, title, description].join(" ").toLowerCase();
   const has = (...k: string[]) => k.some((x) => text.includes(x));
@@ -276,7 +225,6 @@ Deno.serve(async () => {
         const category = mapCategory(keywords, title, description);
         const vibeTags = inferVibeTags(category, keywords, title, description);
         const tags = [...new Set([...keywords, ...vibeTags])].slice(0, 12);
-        const moods = inferMoods(category, keywords, title, description);
 
         rows.push({
           source: "openagenda",
@@ -285,7 +233,6 @@ Deno.serve(async () => {
           description: description.slice(0, 4000),
           category,
           tags,
-          moods,
           address: address.slice(0, 300),
           lat,
           lng,

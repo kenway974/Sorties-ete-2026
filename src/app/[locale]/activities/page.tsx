@@ -40,16 +40,14 @@ export default function ActivitiesPage() {
     const cat = params.get("category");
     const q = params.get("q");
     const date = params.get("date") as ActivityFilters["dateFilter"] | null;
-    const mood = params.get("mood");
     const viewParam = params.get("view");
     if (viewParam === "map") setView("map");
-    if (cat || q || date || mood) {
+    if (cat || q || date) {
       setFilters((f) => ({
         ...f,
         ...(cat ? { category: cat as ActivityFilters["category"] } : {}),
         ...(q ? { search: q } : {}),
         ...(date ? { dateFilter: date } : {}),
-        ...(mood ? { moods: mood.split(",") as ActivityFilters["moods"] } : {}),
       }));
     }
   }, []);

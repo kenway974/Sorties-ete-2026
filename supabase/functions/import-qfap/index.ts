@@ -5,6 +5,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { inferCuriosity, type CuriosityKey } from "../_shared/curiosites.ts";
+import { scoreEvents, passesFloor } from "../_shared/scoring.ts";
 
 const QFAP_BASE =
   "https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records";
@@ -96,6 +97,7 @@ Deno.serve(async (req) => {
   );
 
   const today = new Date().toISOString().split("T")[0];
+  let tooTame = 0, unscored = 0;
   let imported = 0, skipped = 0, photos = 0, offset = 0;
 
   try {
@@ -111,7 +113,7 @@ Deno.serve(async (req) => {
       const records: QfapRecord[] = json.results ?? [];
       if (records.length === 0) break;
 
-      const rows: Record<string, unknown>[] = [];
+      let rows: Record<string, unknown>[] = [];
       const photoMap: Record<string, string> = {}; // external_id -> cover_url
 
       for (const r of records) {
@@ -156,6 +158,35 @@ Deno.serve(async (req) => {
         if (r.cover_url) photoMap[r.id] = r.cover_url;
       }
 
+
+      // ── Scoring d'insolite ────────────────────────────────────────────────
+      // Chaque lot passe par Claude avant l'insertion : c'est ce qui empêche
+      // l'agenda municipal de reconstituer l'annuaire généraliste.
+      if (rows.length > 0) {
+        const scores = await scoreEvents(
+          rows.map((r) => ({
+            ref: String(r.external_id),
+            title: String(r.title),
+            description: String(r.description),
+            tags: r.tags as string[],
+            price: r.price as number | null,
+          })),
+        );
+
+        rows = rows.filter((r) => {
+          const score = scores.get(String(r.external_id));
+          if (!score) return false;
+          if (score.rarity !== null && !passesFloor(score)) { tooTame++; return false; }
+          r.curiosity = score.curiosity;
+          r.rarity = score.rarity;
+          r.rarity_note = score.note;
+          // Non noté (repli hors ligne) : on ne publie pas à l'aveugle.
+          r.status = score.rarity === null ? "pending" : "approved";
+          if (score.rarity === null) unscored++;
+          return true;
+        });
+      }
+
       if (rows.length > 0) {
         const { data: upserted, error } = await supabase
           .from("activities")
@@ -191,7 +222,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        ok: true, imported, photos, skipped, deleted: deleted ?? 0,
+        ok: true, imported, tooTame, unscored, photos, skipped, deleted: deleted ?? 0,
         ms: Date.now() - startedAt,
       }),
       { headers: { "Content-Type": "application/json" } },

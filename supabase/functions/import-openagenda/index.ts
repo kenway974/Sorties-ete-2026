@@ -7,6 +7,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { inferCuriosity, type CuriosityKey } from "../_shared/curiosites.ts";
+import { scoreEvents, passesFloor } from "../_shared/scoring.ts";
 
 const OA_BASE = "https://api.openagenda.com/v2/events";
 const PAGE = 100;
@@ -146,6 +147,7 @@ Deno.serve(async () => {
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
+  let tooTame = 0, unscored = 0;
   let imported = 0, skipped = 0, photos = 0, after: string | null = null;
   let pages = 0;
 
@@ -173,7 +175,7 @@ Deno.serve(async () => {
 
       after = json.after ?? null;
 
-      const rows: Record<string, unknown>[] = [];
+      let rows: Record<string, unknown>[] = [];
       const photoMap: Record<string, string> = {};
 
       for (const e of events) {
@@ -229,6 +231,35 @@ Deno.serve(async () => {
         if (coverUrl) photoMap[externalId] = coverUrl;
       }
 
+
+      // ── Scoring d'insolite ────────────────────────────────────────────────
+      // Chaque lot passe par Claude avant l'insertion : c'est ce qui empêche
+      // l'agenda municipal de reconstituer l'annuaire généraliste.
+      if (rows.length > 0) {
+        const scores = await scoreEvents(
+          rows.map((r) => ({
+            ref: String(r.external_id),
+            title: String(r.title),
+            description: String(r.description),
+            tags: r.tags as string[],
+            price: r.price as number | null,
+          })),
+        );
+
+        rows = rows.filter((r) => {
+          const score = scores.get(String(r.external_id));
+          if (!score) return false;
+          if (score.rarity !== null && !passesFloor(score)) { tooTame++; return false; }
+          r.curiosity = score.curiosity;
+          r.rarity = score.rarity;
+          r.rarity_note = score.note;
+          // Non noté (repli hors ligne) : on ne publie pas à l'aveugle.
+          r.status = score.rarity === null ? "pending" : "approved";
+          if (score.rarity === null) unscored++;
+          return true;
+        });
+      }
+
       if (rows.length > 0) {
         const { data: upserted, error } = await supabase
           .from("activities")
@@ -267,7 +298,7 @@ Deno.serve(async () => {
 
     return new Response(
       JSON.stringify({
-        ok: true, imported, photos, skipped, deleted: deleted ?? 0,
+        ok: true, imported, tooTame, unscored, photos, skipped, deleted: deleted ?? 0,
         pages, ms: Date.now() - startedAt,
       }),
       { headers: { "Content-Type": "application/json" } },

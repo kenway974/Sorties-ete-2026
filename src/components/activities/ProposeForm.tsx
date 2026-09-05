@@ -8,15 +8,15 @@ import type { CuriosityKey } from "@/types";
 
 
 
+// Doit rester aligné sur CONTEXTE_TAGS de FilterPanel : ce qu'on pose ici est
+// ce sur quoi on filtre là-bas.
 const VIBE_TAGS = [
-  { key: "festif", emoji: "🎉", label: "Festif" },
-  { key: "live-music", emoji: "🎵", label: "Live Music" },
-  { key: "art", emoji: "🎨", label: "Art & Créatif" },
-  { key: "gastronomie", emoji: "🍽️", label: "Gastro" },
-  { key: "sport", emoji: "💪", label: "Sportif" },
-  { key: "plein-air", emoji: "🌿", label: "Plein air" },
-  { key: "culture", emoji: "🏛️", label: "Culture" },
-  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
+  { key: "plein-air", emoji: "🌿", label: "En plein air" },
+  { key: "famille", emoji: "👨‍👩‍👧", label: "Avec des enfants" },
+  { key: "gastronomie", emoji: "🍽️", label: "Ça se mange" },
+  { key: "live-music", emoji: "🎵", label: "Musique live" },
+  { key: "art", emoji: "🎨", label: "Arts visuels" },
+  { key: "sport", emoji: "💪", label: "Physique" },
 ];
 
 
@@ -40,14 +40,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
   ) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const handleCuriosityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const cat = e.target.value as CuriosityKey | "";
-    // Auto-suggest vibe tags when curiosity changes (non-destructive: only adds)
-    const suggestedTags: string[] = [];
-    setForm((f) => ({
-      ...f,
-      curiosity: cat,
-      tags: [...new Set([...f.tags, ...suggestedTags])],
-    }));
+    setForm((f) => ({ ...f, curiosity: e.target.value as CuriosityKey | "" }));
   };
 
   const toggleTag = (key: string) => {
@@ -172,8 +165,8 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       {/* Vibe tags */}
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Ambiance{" "}
-          <span className="font-normal text-gray-400">(optionnel · aide les utilisateurs à trouver ton événement)</span>
+          Contexte{" "}
+          <span className="font-normal text-gray-400">(optionnel · dans quelles conditions ça se vit)</span>
         </label>
         <div className="flex flex-wrap gap-2">
           {VIBE_TAGS.map(({ key, emoji, label }) => (

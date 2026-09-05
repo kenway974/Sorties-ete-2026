@@ -49,7 +49,9 @@ export default function Roulette({ locale, userId }: RouletteProps) {
         const params = new URLSearchParams({ rarity: String(rarity) });
         // On borne l'exclusion : au-delà, l'URL devient déraisonnable et le
         // vivier a de toute façon largement tourné.
-        if (seen.current.length > 0) params.set("vus", seen.current.slice(-60).join(","));
+        // 40 identifiants ≈ 1480 caractères : sous le plafond accepté par la
+        // route. Au-delà le vivier a de toute façon largement tourné.
+        if (seen.current.length > 0) params.set("vus", seen.current.slice(-40).join(","));
 
         const res = await fetch(`/api/activities/roulette?${params}`);
         const json = await res.json();
@@ -57,15 +59,20 @@ export default function Roulette({ locale, userId }: RouletteProps) {
 
         if (reset) {
           setDeck(tirees);
+          setEpuise(tirees.length === 0);
         } else {
           // Le vivier ignore les cartes déjà en main (elles ne sont « vues »
           // qu'une fois passées) : on dédoublonne à l'ajout.
           setDeck((prev) => {
             const deja = new Set(prev.map((a) => a.id));
-            return [...prev, ...tirees.filter((a) => !deja.has(a.id))];
+            const neuves = tirees.filter((a) => !deja.has(a.id));
+            // Un réapprovisionnement qui n'apporte rien de neuf signifie que le
+            // vivier est épuisé. Sans ce test, l'effet de recharge se
+            // redéclenche en boucle sur un petit catalogue.
+            if (neuves.length === 0) setEpuise(true);
+            return [...prev, ...neuves];
           });
         }
-        setEpuise(Boolean(json.epuise) && tirees.length === 0);
       } catch {
         setEpuise(true);
       } finally {
@@ -98,7 +105,12 @@ export default function Roulette({ locale, userId }: RouletteProps) {
   // Au clavier : espace pour enchaîner, G pour garder.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLElement && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+      // La barre d'espace actionne l'élément focalisé : ne pas la confisquer,
+      // sinon le cadran et le bouton « garder » deviennent inutilisables au
+      // clavier.
+      const cible = e.target;
+      if (cible instanceof HTMLElement &&
+          /INPUT|TEXTAREA|BUTTON|SELECT|A/.test(cible.tagName)) return;
       if (e.code === "Space") { e.preventDefault(); encore(); }
       if (e.key.toLowerCase() === "g" && courante && userId) toggle(courante.id);
     };

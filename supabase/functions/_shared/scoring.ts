@@ -24,6 +24,13 @@ export const RARITY_FLOOR = 5;
 /** Nombre d'événements notés par appel. Compromis coût / taille de réponse. */
 const BATCH_SIZE = 20;
 
+/**
+ * Lots menés de front. Un import complet représente des milliers
+ * d'événements : en file indienne, la fonction atteindrait sa limite de temps
+ * d'exécution bien avant la fin. Plafonné pour ne pas se faire limiter côté API.
+ */
+const CONCURRENCE = 5;
+
 export interface ScorableEvent {
   /** Identifiant local, seulement utilisé pour recoller les notes. */
   ref: string;
@@ -139,8 +146,12 @@ export async function scoreEvents(events: ScorableEvent[]): Promise<Map<string, 
   const client = new Anthropic({ apiKey });
   const out = new Map<string, Score>();
 
+  const lots: ScorableEvent[][] = [];
   for (let i = 0; i < events.length; i += BATCH_SIZE) {
-    const batch = events.slice(i, i + BATCH_SIZE);
+    lots.push(events.slice(i, i + BATCH_SIZE));
+  }
+
+  const traiter = async (batch: ScorableEvent[], n: number) => {
     try {
       const scored = await scoreOneBatch(client, batch);
       for (const e of batch) {
@@ -148,9 +159,15 @@ export async function scoreEvents(events: ScorableEvent[]): Promise<Map<string, 
         out.set(e.ref, scored.get(e.ref) ?? fallback([e]).get(e.ref)!);
       }
     } catch (err) {
-      console.error(`[scoring] lot ${i / BATCH_SIZE} en échec :`, String(err));
+      console.error(`[scoring] lot ${n} en échec :`, String(err));
       for (const [ref, score] of fallback(batch)) out.set(ref, score);
     }
+  };
+
+  for (let i = 0; i < lots.length; i += CONCURRENCE) {
+    await Promise.all(
+      lots.slice(i, i + CONCURRENCE).map((lot, k) => traiter(lot, i + k)),
+    );
   }
 
   return out;

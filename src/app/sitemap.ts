@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const curiosityRoutes: MetadataRoute.Sitemap = CURIOSITY_KEYS.map((cat) => ({
-    url: `${base}/fr/activities?curiosity=${cat}`,
+    url: `${base}/fr/activities?curiosite=${cat}`,
     lastModified: now,
     changeFrequency: "daily" as const,
     priority: 0.75,

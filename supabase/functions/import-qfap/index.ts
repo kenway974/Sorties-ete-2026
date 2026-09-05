@@ -12,6 +12,15 @@ const QFAP_BASE =
 const SELECT =
   "id,title,lead_text,description,date_start,date_end,lat_lon,price_type,price_detail,qfap_tags,address_zipcode,address_street,address_name,cover_url,url,access_link";
 const PAGE = 100;
+/**
+ * Budget de temps de l'import. Le scoring appelle Claude, donc un passage
+ * complet peut dépasser la limite d'exécution de la fonction. On s'arrête
+ * proprement avant : mieux vaut importer une partie du catalogue et exécuter
+ * le nettoyage final que se faire couper au milieu et ne rien conclure. Le
+ * cron suivant reprend là où on s'est arrêté (l'upsert est idempotent).
+ */
+const BUDGET_MS = 9 * 60 * 1000;
+
 const MAX_RECORDS = 4000;
 
 
@@ -97,11 +106,15 @@ Deno.serve(async (req) => {
   );
 
   const today = new Date().toISOString().split("T")[0];
-  let tooTame = 0, unscored = 0;
+  let tooTame = 0, unscored = 0, aCourtDeTemps = false;
   let imported = 0, skipped = 0, photos = 0, offset = 0;
 
   try {
     while (offset < MAX_RECORDS) {
+      if (Date.now() - startedAt > BUDGET_MS) {
+        aCourtDeTemps = true;
+        break;
+      }
       const url =
         `${QFAP_BASE}?limit=${PAGE}&offset=${offset}` +
         `&where=${encodeURIComponent("date_end>=now()")}` +
@@ -176,13 +189,19 @@ Deno.serve(async (req) => {
         rows = rows.filter((r) => {
           const score = scores.get(String(r.external_id));
           if (!score) return false;
-          if (score.rarity !== null && !passesFloor(score)) { tooTame++; return false; }
+
+          // Sans note (panne d'API, pas de clé), on n'écrit pas : l'upsert
+          // écraserait une ligne déjà publiée et correctement notée en la
+          // repassant en attente. Une panne de scoring doit faire sauter le
+          // tour, pas dépublier le catalogue. Le prochain cron réessaiera.
+          if (score.rarity === null) { unscored++; return false; }
+
+          if (!passesFloor(score)) { tooTame++; return false; }
+
           r.curiosity = score.curiosity;
           r.rarity = score.rarity;
           r.rarity_note = score.note;
-          // Non noté (repli hors ligne) : on ne publie pas à l'aveugle.
-          r.status = score.rarity === null ? "pending" : "approved";
-          if (score.rarity === null) unscored++;
+          r.status = "approved";
           return true;
         });
       }
@@ -222,7 +241,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        ok: true, imported, tooTame, unscored, photos, skipped, deleted: deleted ?? 0,
+        ok: true, imported, tooTame, unscored, aCourtDeTemps, photos, skipped, deleted: deleted ?? 0,
         ms: Date.now() - startedAt,
       }),
       { headers: { "Content-Type": "application/json" } },

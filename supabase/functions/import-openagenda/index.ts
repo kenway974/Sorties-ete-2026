@@ -11,6 +11,15 @@ import { scoreEvents, passesFloor } from "../_shared/scoring.ts";
 
 const OA_BASE = "https://api.openagenda.com/v2/events";
 const PAGE = 100;
+/**
+ * Budget de temps de l'import. Le scoring appelle Claude, donc un passage
+ * complet peut dépasser la limite d'exécution de la fonction. On s'arrête
+ * proprement avant : mieux vaut importer une partie du catalogue et exécuter
+ * le nettoyage final que se faire couper au milieu et ne rien conclure. Le
+ * cron suivant reprend là où on s'est arrêté (l'upsert est idempotent).
+ */
+const BUDGET_MS = 9 * 60 * 1000;
+
 const MAX_RECORDS = 3000;
 
 // Paris + Île-de-France department codes
@@ -147,12 +156,16 @@ Deno.serve(async () => {
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
-  let tooTame = 0, unscored = 0;
+  let tooTame = 0, unscored = 0, aCourtDeTemps = false;
   let imported = 0, skipped = 0, photos = 0, after: string | null = null;
   let pages = 0;
 
   try {
     while (pages * PAGE < MAX_RECORDS) {
+      if (Date.now() - startedAt > BUDGET_MS) {
+        aCourtDeTemps = true;
+        break;
+      }
       const params = new URLSearchParams({
         key: apiKey,
         size: String(PAGE),
@@ -249,13 +262,19 @@ Deno.serve(async () => {
         rows = rows.filter((r) => {
           const score = scores.get(String(r.external_id));
           if (!score) return false;
-          if (score.rarity !== null && !passesFloor(score)) { tooTame++; return false; }
+
+          // Sans note (panne d'API, pas de clé), on n'écrit pas : l'upsert
+          // écraserait une ligne déjà publiée et correctement notée en la
+          // repassant en attente. Une panne de scoring doit faire sauter le
+          // tour, pas dépublier le catalogue. Le prochain cron réessaiera.
+          if (score.rarity === null) { unscored++; return false; }
+
+          if (!passesFloor(score)) { tooTame++; return false; }
+
           r.curiosity = score.curiosity;
           r.rarity = score.rarity;
           r.rarity_note = score.note;
-          // Non noté (repli hors ligne) : on ne publie pas à l'aveugle.
-          r.status = score.rarity === null ? "pending" : "approved";
-          if (score.rarity === null) unscored++;
+          r.status = "approved";
           return true;
         });
       }
@@ -298,7 +317,7 @@ Deno.serve(async () => {
 
     return new Response(
       JSON.stringify({
-        ok: true, imported, tooTame, unscored, photos, skipped, deleted: deleted ?? 0,
+        ok: true, imported, tooTame, unscored, aCourtDeTemps, photos, skipped, deleted: deleted ?? 0,
         pages, ms: Date.now() - startedAt,
       }),
       { headers: { "Content-Type": "application/json" } },

@@ -46,7 +46,7 @@ export default function OnboardingWizard({ locale }: { locale: string }) {
   const finish = () => {
     dismiss(true);
     const params = new URLSearchParams();
-    if (cats.length === 1) params.set("curiosity", cats[0]);
+    if (cats.length === 1) params.set("curiosite", cats[0]);
     if (budget === "free") params.set("price", "free");
     router.push(`/${locale}/activities${params.toString() ? "?" + params.toString() : ""}`);
   };

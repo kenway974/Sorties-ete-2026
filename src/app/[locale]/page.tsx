@@ -284,11 +284,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             savent que ça existe&nbsp;?
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {RARITY_BANDS.map(({ min, max, label, desc, hex }) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Les paliers sous le plancher ne mènent nulle part : la liste
+                borne le seuil, donc ils renverraient tous le même résultat. */}
+            {RARITY_BANDS.filter((b) => b.max >= RARITY_FLOOR).map(({ min, max, label, desc, hex }) => (
               <Link
                 key={label}
-                href={`${base}/activities?insolite=${min}`}
+                href={`${base}/activities?insolite=${Math.max(min, RARITY_FLOOR)}`}
                 style={{ borderColor: `${hex}55` }}
                 className="group rounded-2xl border bg-ink-soft/60 p-4 text-left hover:bg-ink-soft transition-all hover:-translate-y-1"
               >

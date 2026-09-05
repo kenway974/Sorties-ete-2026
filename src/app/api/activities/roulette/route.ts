@@ -16,7 +16,7 @@ const querySchema = z.object({
   rarity: z.coerce.number().int().min(1).max(10).optional(),
   curiosite: z.enum(CURIOSITY_KEYS as [string, ...string[]]).optional(),
   // Identifiants déjà vus dans la session, séparés par des virgules.
-  vus: z.string().max(2000).optional(),
+  vus: z.string().max(3000).optional(),
 });
 
 export async function GET(request: NextRequest) {

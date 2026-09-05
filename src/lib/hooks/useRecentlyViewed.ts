@@ -7,7 +7,7 @@ const MAX = 10;
 export interface RecentlyViewedItem {
   id: string;
   title: string;
-  category: string;
+  curiosity: string;
   date: string;
   address: string;
   price: number | null;

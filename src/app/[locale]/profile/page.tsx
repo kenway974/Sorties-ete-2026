@@ -12,18 +12,10 @@ import DeleteAccountButton from "@/components/auth/DeleteAccountButton";
 import UserBadges from "@/components/profile/UserBadges";
 import AvatarUpload from "@/components/profile/AvatarUpload";
 import type { BadgeStats } from "@/components/profile/UserBadges";
-import type { Profile, ActivityCategory } from "@/types";
+import { CURIOSITES, curiosity as curiosityOf } from "@/lib/constants/curiosites";
+import type { Profile, CuriosityKey } from "@/types";
 
-const PREFS: ActivityCategory[] = [
-  "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
-];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
-};
 
 export default function ProfilePage() {
   const params = useParams();
@@ -35,7 +27,7 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [form, setForm] = useState({ username: "", bio: "", preferred_language: "fr" });
-  const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
+  const [prefs, setPrefs] = useState<CuriosityKey[]>([]);
   const [badgeStats, setBadgeStats] = useState<BadgeStats | null>(null);
 
   useEffect(() => {
@@ -83,7 +75,7 @@ export default function ProfilePage() {
     }
   };
 
-  const togglePref = (cat: ActivityCategory) =>
+  const togglePref = (cat: CuriosityKey) =>
     setPrefs((p) => (p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]));
 
   if (loading) return <LoadingSpinner />;
@@ -117,7 +109,7 @@ export default function ProfilePage() {
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Mes préférences</label>
           <div className="flex flex-wrap gap-2">
-            {PREFS.map((cat) => (
+            {CURIOSITES.map(({ key: cat }) => (
               <button
                 key={cat}
                 type="button"
@@ -128,7 +120,7 @@ export default function ProfilePage() {
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                {CATEGORY_LABELS[cat]}
+                {curiosityOf(cat).emoji} {curiosityOf(cat).label}
               </button>
             ))}
           </div>

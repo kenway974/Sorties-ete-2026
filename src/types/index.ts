@@ -1,16 +1,6 @@
-export type ActivityCategory =
-  | "soirees"
-  | "concerts"
-  | "expositions"
-  | "restaurants"
-  | "bars"
-  | "sport"
-  | "culture"
-  | "famille"
-  | "etudiants"
-  | "networking"
-  | "loisirs"
-  | "salons";
+import type { CuriosityKey } from "@/lib/constants/curiosites";
+export type { CuriosityKey } from "@/lib/constants/curiosites";
+
 
 export type ActivityStatus = "pending" | "approved" | "rejected";
 export type UserRole = "user" | "moderator" | "admin";
@@ -23,7 +13,7 @@ export interface Profile {
   avatar_url: string | null;
   bio: string | null;
   preferred_language: string;
-  preferences: ActivityCategory[];
+  preferences: CuriosityKey[];
   role: UserRole;
   created_at: string;
   updated_at: string;
@@ -33,7 +23,7 @@ export interface Activity {
   id: string;
   title: string;
   description: string;
-  category: ActivityCategory;
+  curiosity: CuriosityKey;
   tags: string[];
   address: string;
   lat: number;
@@ -114,7 +104,7 @@ export interface Notification {
 }
 
 export interface ActivityFilters {
-  category?: ActivityCategory | null;
+  curiosity?: CuriosityKey | null;
   dateFilter?: "today" | "tomorrow" | "this_week" | "this_weekend" | "this_month" | null;
   priceFilter?: "free" | "paid" | null;
   sortBy?: "distance" | "date" | "popularity" | "rating" | "price";

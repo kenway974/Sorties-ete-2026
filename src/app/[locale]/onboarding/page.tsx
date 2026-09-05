@@ -4,31 +4,19 @@ import { useParams, useRouter } from "next/navigation";
 import { MapPin, ChevronRight, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
-import type { ActivityCategory } from "@/types";
+import { CURIOSITES } from "@/lib/constants/curiosites";
+import type { CuriosityKey } from "@/types";
 
-const CATEGORIES: { key: ActivityCategory; emoji: string; label: string }[] = [
-  { key: "soirees",     emoji: "🎉", label: "Soirées"      },
-  { key: "concerts",   emoji: "🎵", label: "Concerts"     },
-  { key: "expositions", emoji: "🎨", label: "Expositions"  },
-  { key: "restaurants", emoji: "🍽️", label: "Restaurants"  },
-  { key: "bars",       emoji: "🍻", label: "Bars"         },
-  { key: "sport",      emoji: "⚽", label: "Sport"        },
-  { key: "culture",    emoji: "🏛️", label: "Culture"      },
-  { key: "famille",    emoji: "👨‍👩‍👧", label: "Famille"     },
-  { key: "etudiants",  emoji: "🎓", label: "Étudiants"    },
-  { key: "networking", emoji: "🤝", label: "Networking"   },
-  { key: "loisirs",    emoji: "🎮", label: "Loisirs"      },
-];
 
 export default function OnboardingPage() {
   const params = useParams();
   const locale = params.locale as string;
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [prefs, setPrefs] = useState<ActivityCategory[]>([]);
+  const [prefs, setPrefs] = useState<CuriosityKey[]>([]);
   const [saving, setSaving] = useState(false);
 
-  const togglePref = (cat: ActivityCategory) =>
+  const togglePref = (cat: CuriosityKey) =>
     setPrefs((p) => (p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]));
 
   const finish = async () => {
@@ -78,7 +66,7 @@ export default function OnboardingPage() {
               Choisis les catégories qui t&apos;intéressent (optionnel)
             </p>
             <div className="grid grid-cols-3 gap-2 mb-6">
-              {CATEGORIES.map(({ key, emoji, label }) => {
+              {CURIOSITES.map(({ key, emoji, label }) => {
                 const selected = prefs.includes(key);
                 return (
                   <button

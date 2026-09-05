@@ -6,17 +6,9 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Link from "next/link";
 import ActivityPhotoUpload from "@/components/activities/ActivityPhotoUpload";
-import type { Activity, ActivityCategory } from "@/types";
+import { CURIOSITES, curiosity as curiosityOf } from "@/lib/constants/curiosites";
+import type { Activity, CuriosityKey } from "@/types";
 
-const CATEGORIES: ActivityCategory[] = [
-  "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
-];
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
-};
 
 interface Props {
   activity: Activity;
@@ -31,7 +23,7 @@ export default function EditActivityForm({ activity, locale }: Props) {
   const [form, setForm] = useState({
     title:            activity.title,
     description:      activity.description,
-    category:         activity.category as ActivityCategory | "",
+    curiosity:         activity.curiosity as CuriosityKey | "",
     tags:             activity.tags?.join(", ") ?? "",
     address:          activity.address,
     date:             activity.date,
@@ -47,7 +39,7 @@ export default function EditActivityForm({ activity, locale }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.description || !form.category || !form.address || !form.date || !form.time) {
+    if (!form.title || !form.description || !form.curiosity || !form.address || !form.date || !form.time) {
       setError("Veuillez remplir tous les champs obligatoires.");
       return;
     }
@@ -80,7 +72,7 @@ export default function EditActivityForm({ activity, locale }: Props) {
         .update({
           title:            form.title,
           description:      form.description,
-          category:         form.category,
+          curiosity:         form.curiosity,
           tags:             form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
           address:          form.address,
           lat,
@@ -154,14 +146,14 @@ export default function EditActivityForm({ activity, locale }: Props) {
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Catégorie *</label>
         <select
-          value={form.category}
-          onChange={set("category") as ChangeEventHandler<HTMLSelectElement>}
+          value={form.curiosity}
+          onChange={set("curiosity") as ChangeEventHandler<HTMLSelectElement>}
           required
           className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
         >
           <option value="">--</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
+          {CURIOSITES.map((c) => (
+            <option key={c.key} value={c.key}>{c.emoji}  {c.label} — {c.tagline}</option>
           ))}
         </select>
       </div>

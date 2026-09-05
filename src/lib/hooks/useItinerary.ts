@@ -11,7 +11,7 @@ export interface ItineraryItem {
   time: string;
   address: string;
   price: number | null;
-  category: string;
+  curiosity: string;
 }
 
 export function useItinerary() {
@@ -26,11 +26,11 @@ export function useItinerary() {
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
   };
 
-  const add = useCallback((activity: Pick<Activity, "id" | "title" | "date" | "time" | "address" | "price" | "category">) => {
+  const add = useCallback((activity: Pick<Activity, "id" | "title" | "date" | "time" | "address" | "price" | "curiosity">) => {
     const item: ItineraryItem = {
       id: activity.id, title: activity.title, date: activity.date,
       time: activity.time, address: activity.address, price: activity.price,
-      category: activity.category,
+      curiosity: activity.curiosity,
     };
     setItems((prev) => {
       if (prev.find((i) => i.id === item.id)) return prev;

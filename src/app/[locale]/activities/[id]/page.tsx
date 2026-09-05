@@ -5,12 +5,8 @@ import { getSiteUrl } from "@/lib/utils/siteUrl";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import ActivityDetailClient from "./ActivityDetailClient";
 import type { Activity, ActivityRegistration } from "@/types";
+import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
-};
 
 export async function generateMetadata({
   params,
@@ -21,14 +17,14 @@ export async function generateMetadata({
   const supabase = await createClient();
   const { data: activity } = await supabase
     .from("activities")
-    .select("title, description, date, time, address, price, category, photos:activity_photos(url)")
+    .select("title, description, date, time, address, price, curiosity, photos:activity_photos(url)")
     .eq("id", id)
     .single();
 
   if (!activity) return { title: "Activité introuvable", robots: { index: false, follow: false } };
 
   const image = (activity.photos as { url: string }[] | null)?.[0]?.url;
-  const cat = CATEGORY_LABELS[activity.category] ?? activity.category;
+  const cat = curiosityOf(activity.curiosity).label;
   const when = `${formatDate(activity.date, "fr")} à ${formatTime(activity.time)}`;
   const price = formatPrice(activity.price, "Gratuit");
 
@@ -40,7 +36,7 @@ export async function generateMetadata({
   const siteUrl = getSiteUrl();
   const ogImageUrl = image
     ? image
-    : `${siteUrl}/api/og?title=${encodeURIComponent(activity.title)}&category=${activity.category}&date=${activity.date}${activity.price != null ? `&price=${activity.price === 0 ? "Gratuit" : activity.price + "€"}` : ""}`;
+    : `${siteUrl}/api/og?title=${encodeURIComponent(activity.title)}&curiosity=${activity.curiosity}&date=${activity.date}${activity.price != null ? `&price=${activity.price === 0 ? "Gratuit" : activity.price + "€"}` : ""}`;
 
   return {
     title: activity.title,
@@ -97,7 +93,7 @@ export default async function ActivityDetailPage({
     supabase
       .from("activities")
       .select("*, photos:activity_photos(id, url)")
-      .eq("category", activity.category)
+      .eq("curiosity", activity.curiosity)
       .eq("status", "approved")
       .neq("id", id)
       .gte("date", new Date().toISOString().slice(0, 10))

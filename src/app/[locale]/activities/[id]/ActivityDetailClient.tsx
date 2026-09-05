@@ -19,15 +19,10 @@ import ActivityCard from "@/components/activities/ActivityCard";
 import ActivityStories from "@/components/activities/ActivityStories";
 import Markdown from "@/components/ui/Markdown";
 import type { Activity, Review, Profile, ActivityRegistration } from "@/types";
+import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
 
 const MapView = dynamic(() => import("@/components/map/MapView"), { ssr: false });
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
-  salons: "Salons & Conventions",
-};
 
 interface Props {
   activity: Activity;
@@ -52,7 +47,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
     addRecentlyViewed({
       id: activity.id,
       title: activity.title,
-      category: activity.category,
+      curiosity: activity.curiosity,
       date: activity.date,
       address: activity.address,
       price: activity.price,
@@ -155,7 +150,7 @@ export default function ActivityDetailClient({ activity, reviews, userId, isFavo
 
           <div className="flex items-start justify-between gap-4">
             <div>
-              <Badge variant="navy" className="mb-2">{CATEGORY_LABELS[activity.category] || activity.category}</Badge>
+              <Badge variant="navy" className="mb-2">{curiosityOf(activity.curiosity).emoji} {curiosityOf(activity.curiosity).label}</Badge>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activity.title}</h1>
             </div>
             <div className="flex gap-2 shrink-0">

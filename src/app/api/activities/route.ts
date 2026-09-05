@@ -4,14 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { futureOrClause } from "@/lib/utils/parisTime";
 import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
+import { CURIOSITY_KEYS } from "@/lib/constants/curiosites";
 
-const CATEGORIES = [
-  "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs",
-] as const;
 
 const querySchema = z.object({
-  category: z.enum(CATEGORIES).optional(),
+  curiosity: z.enum(CURIOSITY_KEYS as [string, ...string[]]).optional(),
   search:   z.string().max(100).optional(),
   date:     z.enum(["today", "tomorrow", "week", "weekend"]).optional(),
   price:    z.enum(["free", "paid"]).optional(),
@@ -29,7 +26,7 @@ export async function GET(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Paramètres invalides", details: parsed.error.flatten() }, { status: 400 });
   }
-  const { category, search, date, price, limit, offset } = parsed.data;
+  const { curiosity, search, date, price, limit, offset } = parsed.data;
 
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -56,7 +53,7 @@ export async function GET(request: NextRequest) {
     .order("time", { ascending: true })
     .range(offset, offset + limit - 1);
 
-  if (category) query = query.eq("category", category);
+  if (curiosity) query = query.eq("curiosity", curiosity);
   if (search)   query = query.ilike("title", `%${search}%`);
   if (price === "free") query = query.or("price.eq.0,price.is.null");
   if (price === "paid") query = query.gt("price", 0);

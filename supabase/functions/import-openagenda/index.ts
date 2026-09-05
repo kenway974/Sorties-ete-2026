@@ -6,6 +6,7 @@
 // Required env var: OPENAGENDA_API_KEY (free key from https://openagenda.com/settings)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { inferCuriosity, type CuriosityKey } from "../_shared/curiosites.ts";
 
 const OA_BASE = "https://api.openagenda.com/v2/events";
 const PAGE = 100;
@@ -14,9 +15,6 @@ const MAX_RECORDS = 3000;
 // Paris + Île-de-France department codes
 const DEPARTMENT_CODES = ["75", "77", "78", "91", "92", "93", "94", "95"];
 
-type Category =
-  | "soirees" | "concerts" | "expositions" | "restaurants" | "bars"
-  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs" | "salons";
 
 interface OALocation {
   name: string | null;
@@ -71,22 +69,20 @@ function pickKeywords(obj: Record<string, string[]> | null): string[] {
   return arr.slice(0, 6);
 }
 
-// Infer vibe tags from category + keywords + text
-function inferVibeTags(category: Category, keywords: string[], title: string, desc: string): string[] {
+// Infer vibe tags from curiosity + keywords + text
+function inferVibeTags(curiosity: CuriosityKey, keywords: string[], title: string, desc: string): string[] {
   const vibes: string[] = [];
   const text = [...keywords, title, desc].join(" ").toLowerCase();
 
-  const categoryVibes: Partial<Record<Category, string[]>> = {
-    soirees: ["festif"],
-    concerts: ["live-music", "festif"],
-    expositions: ["art", "culture"],
-    restaurants: ["gastronomie"],
-    bars: ["festif"],
-    sport: ["sport"],
-    culture: ["culture"],
-    famille: ["famille"],
+  const curiosityVibes: Partial<Record<CuriosityKey, string[]>> = {
+    "frisson":       ["sensation"],
+    "secret":        ["confidentiel"],
+    "savoir-faire":  ["atelier"],
+    "mise-en-scene": ["immersif"],
+    "hors-du-temps": ["patrimoine"],
+    "bizarrerie":    ["insolite"],
   };
-  vibes.push(...(categoryVibes[category] ?? []));
+  vibes.push(...(curiosityVibes[curiosity] ?? []));
 
   if (/concert|live music|jazz|rock|électro|dj|musique live/.test(text)) vibes.push("live-music");
   if (/plein.air|outdoor|parc|jardin|extérieur|forêt|nature/.test(text)) vibes.push("plein-air");
@@ -100,23 +96,6 @@ function inferVibeTags(category: Category, keywords: string[], title: string, de
   return [...new Set(vibes)];
 }
 
-function mapCategory(keywords: string[], title: string, description: string): Category {
-  const text = [...keywords, title, description].join(" ").toLowerCase();
-  const has = (...k: string[]) => k.some((x) => text.includes(x));
-
-  if (has("concert", "musique", "live music", "festival music", "dj set")) return "concerts";
-  if (has("exposition", "expo", "vernissage", "galerie", "musée", "museum")) return "expositions";
-  if (has("soirée", "soiree", "clubbing", "nuit blanche", "after", "boîte de nuit")) return "soirees";
-  if (has("restaurant", "gastronomie", "dégustation", "cuisine", "repas")) return "restaurants";
-  if (has("bar", "apéro", "guinguette", "cocktail", "brasserie")) return "bars";
-  if (has("salon", "convention", "foire", "japan expo", "comic con", "games week", "maison & objet", "fashion week", "trade show")) return "salons";
-  if (has("sport", "running", "yoga", "fitness", "tennis", "football", "natation", "randonnée")) return "sport";
-  if (has("enfant", "famille", "jeune public", "kids", "bébé")) return "famille";
-  if (has("étudiant", "etudiant", "université", "campus", "bde", "jeune")) return "etudiants";
-  if (has("networking", "conférence", "meetup", "startup", "professionnel", "forum")) return "networking";
-  if (has("atelier", "loisir", "jeu", "escape", "quiz", "karaoké", "cinéma", "comédie")) return "loisirs";
-  return "culture";
-}
 
 // Parse price from conditions string: "Gratuit" -> null, "10€" -> 10
 function parsePrice(conditions: string | null): number | null {
@@ -222,8 +201,8 @@ Deno.serve(async () => {
         const coverUrl = buildImageUrl(e.image);
         const externalUrl = extractRegistrationUrl(e.registration);
 
-        const category = mapCategory(keywords, title, description);
-        const vibeTags = inferVibeTags(category, keywords, title, description);
+        const curiosity = inferCuriosity(title, description, keywords);
+        const vibeTags = inferVibeTags(curiosity, keywords, title, description);
         const tags = [...new Set([...keywords, ...vibeTags])].slice(0, 12);
 
         rows.push({
@@ -231,7 +210,7 @@ Deno.serve(async () => {
           external_id: externalId,
           title: title.slice(0, 300),
           description: description.slice(0, 4000),
-          category,
+          curiosity,
           tags,
           address: address.slice(0, 300),
           lat,

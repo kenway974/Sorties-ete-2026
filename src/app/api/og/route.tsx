@@ -4,44 +4,20 @@ import { type NextRequest } from "next/server";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  soirees:      "🎉",
-  concerts:     "🎵",
-  expositions:  "🎨",
-  restaurants:  "🍽️",
-  bars:         "🍻",
-  sport:        "⚽",
-  culture:      "🏛️",
-  famille:      "👨‍👩‍👧",
-  etudiants:    "🎓",
-  networking:   "🤝",
-  loisirs:      "🎮",
-};
+import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees:      "Soirées",
-  concerts:     "Concerts",
-  expositions:  "Expositions",
-  restaurants:  "Restaurants",
-  bars:         "Bars",
-  sport:        "Sport",
-  culture:      "Culture",
-  famille:      "Famille",
-  etudiants:    "Étudiants",
-  networking:   "Networking",
-  loisirs:      "Loisirs",
-};
+
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const title    = searchParams.get("title")    ?? "Une sortie à Paris";
-  const category = searchParams.get("category") ?? "";
+  const curiosity = searchParams.get("curiosity") ?? "";
   const date     = searchParams.get("date")     ?? "";
   const price    = searchParams.get("price")    ?? "";
-  const emoji    = searchParams.get("emoji")    ?? CATEGORY_EMOJI[category] ?? "📍";
+  const emoji    = searchParams.get("emoji")    ?? curiosityOf(curiosity).emoji;
 
-  const categoryLabel = CATEGORY_LABELS[category] ?? category;
+  const curiosityLabel = curiosity ? curiosityOf(curiosity).label : "";
 
   // Truncate title to 2 "lines" worth (approx 80 chars)
   const displayTitle = title.length > 80 ? title.slice(0, 80) + "…" : title;
@@ -96,7 +72,7 @@ export async function GET(request: NextRequest) {
           )}
         </div>
 
-        {/* Bottom: Paris label left, price + category right */}
+        {/* Bottom: Paris label left, price + curiosity right */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           {/* Bottom-left: Paris with "pin" */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -104,7 +80,7 @@ export async function GET(request: NextRequest) {
             <span style={{ fontSize: 22, color: "#D4AF37", fontWeight: 700 }}>Paris</span>
           </div>
 
-          {/* Bottom-right: price badge + category label */}
+          {/* Bottom-right: price badge + curiosity label */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {price && (
               <div
@@ -120,7 +96,7 @@ export async function GET(request: NextRequest) {
                 {price}
               </div>
             )}
-            {categoryLabel && (
+            {curiosityLabel && (
               <div
                 style={{
                   background: "rgba(212,175,55,0.15)",
@@ -132,7 +108,7 @@ export async function GET(request: NextRequest) {
                   border: "2px solid rgba(212,175,55,0.4)",
                 }}
               >
-                {categoryLabel}
+                {curiosityLabel}
               </div>
             )}
           </div>

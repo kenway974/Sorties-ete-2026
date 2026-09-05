@@ -1,3 +1,4 @@
+import { CURIOSITY_KEYS } from "@/lib/constants/curiosites";
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
@@ -5,10 +6,6 @@ import { QUARTIERS } from "@/lib/data/quartiers";
 
 export const revalidate = 3600;
 
-const CATEGORIES = [
-  "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs", "salons",
-];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
@@ -18,8 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/fr`,                                   lastModified: now, changeFrequency: "daily",   priority: 1.0 },
     { url: `${base}/fr/activities`,                        lastModified: now, changeFrequency: "hourly",  priority: 0.9 },
     { url: `${base}/fr/activites-gratuites-paris`,         lastModified: now, changeFrequency: "daily",   priority: 0.85 },
-    { url: `${base}/fr/concerts-paris-weekend`,            lastModified: now, changeFrequency: "daily",   priority: 0.85 },
-    { url: `${base}/fr/sorties-enfants-paris`,             lastModified: now, changeFrequency: "daily",   priority: 0.85 },
     { url: `${base}/fr/quartiers`,                         lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
     { url: `${base}/fr/propose`,                           lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/fr/collections`,                       lastModified: now, changeFrequency: "daily",   priority: 0.6 },
@@ -35,8 +30,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map((cat) => ({
-    url: `${base}/fr/activities?category=${cat}`,
+  const curiosityRoutes: MetadataRoute.Sitemap = CURIOSITY_KEYS.map((cat) => ({
+    url: `${base}/fr/activities?curiosity=${cat}`,
     lastModified: now,
     changeFrequency: "daily" as const,
     priority: 0.75,
@@ -81,5 +76,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Never block the build on sitemap errors.
   }
 
-  return [...staticRoutes, ...quartierRoutes, ...categoryRoutes, ...activityRoutes, ...collectionRoutes];
+  return [...staticRoutes, ...quartierRoutes, ...curiosityRoutes, ...activityRoutes, ...collectionRoutes];
 }

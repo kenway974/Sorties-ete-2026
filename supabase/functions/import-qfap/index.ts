@@ -4,6 +4,7 @@
 // (source='qfap', external_id). Deletes past imported events. Runs daily via cron.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { inferCuriosity, type CuriosityKey } from "../_shared/curiosites.ts";
 
 const QFAP_BASE =
   "https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records";
@@ -12,26 +13,21 @@ const SELECT =
 const PAGE = 100;
 const MAX_RECORDS = 4000;
 
-type Category =
-  | "soirees" | "concerts" | "expositions" | "restaurants" | "bars"
-  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs" | "salons";
 
-// Infer vibe tags from category + raw tags + text content
-function inferVibeTags(category: Category, rawTags: string[], title: string, desc: string): string[] {
+// Tags d'ambiance : curiosité + mots-clés de la source + texte
+function inferVibeTags(curiosity: CuriosityKey, rawTags: string[], title: string, desc: string): string[] {
   const vibes: string[] = [];
   const text = [...rawTags, title, desc].join(" ").toLowerCase();
 
-  const categoryVibes: Partial<Record<Category, string[]>> = {
-    soirees: ["festif"],
-    concerts: ["live-music", "festif"],
-    expositions: ["art", "culture"],
-    restaurants: ["gastronomie"],
-    bars: ["festif"],
-    sport: ["sport"],
-    culture: ["culture"],
-    famille: ["famille"],
+  const curiosityVibes: Partial<Record<CuriosityKey, string[]>> = {
+    "frisson":       ["sensation"],
+    "secret":        ["confidentiel"],
+    "savoir-faire":  ["atelier"],
+    "mise-en-scene": ["immersif"],
+    "hors-du-temps": ["patrimoine"],
+    "bizarrerie":    ["insolite"],
   };
-  vibes.push(...(categoryVibes[category] ?? []));
+  vibes.push(...(curiosityVibes[curiosity] ?? []));
 
   if (/concert|live music|jazz|rock|électro|dj|musique live/.test(text)) vibes.push("live-music");
   if (/plein.air|outdoor|parc|jardin|extérieur|forêt|nature/.test(text)) vibes.push("plein-air");
@@ -45,23 +41,6 @@ function inferVibeTags(category: Category, rawTags: string[], title: string, des
   return [...new Set(vibes)];
 }
 
-// Map QFAP tags (semicolon separated) to our categories. First match wins.
-function mapCategory(tags: string | null): Category {
-  const t = (tags ?? "").toLowerCase();
-  const has = (...k: string[]) => k.some((x) => t.includes(x));
-  if (has("concert", "musique", "spectacle musical")) return "concerts";
-  if (has("exposition", "expo")) return "expositions";
-  if (has("soirée", "soiree", "clubbing", "nuit", "dj")) return "soirees";
-  if (has("restaurant", "gastronomie", "food", "dégustation", "degustation")) return "restaurants";
-  if (has("bar", "apéro", "apero", "guinguette")) return "bars";
-  if (has("sport", "running", "yoga", "vélo", "velo", "randonnée", "randonnee")) return "sport";
-  if (has("famille", "enfant", "jeune public", "jeunesse")) return "famille";
-  if (has("salon", "convention", "foire", "japan expo", "comic con", "games week", "maison & objet", "fashion week")) return "salons";
-  if (has("atelier", "brocante", "marché", "marche", "loisir", "jeu")) return "loisirs";
-  if (has("networking", "rencontre pro", "conférence métier")) return "networking";
-  // theatre, danse, cinema, conférence, histoire, littérature, patrimoine, visite, balade…
-  return "culture";
-}
 
 function stripHtml(html: string | null): string {
   if (!html) return "";
@@ -150,8 +129,8 @@ Deno.serve(async (req) => {
         const address = [r.address_street, r.address_zipcode]
           .filter(Boolean).join(", ") || r.address_name || "Paris";
         const rawTags = (r.qfap_tags ?? "").split(";").map((s) => s.trim()).filter(Boolean).slice(0, 6);
-        const category = mapCategory(r.qfap_tags);
-        const vibeTags = inferVibeTags(category, rawTags, r.title ?? "", desc);
+        const curiosity = inferCuriosity(r.title ?? "", desc, rawTags);
+        const vibeTags = inferVibeTags(curiosity, rawTags, r.title ?? "", desc);
         const tags = [...new Set([...rawTags, ...vibeTags])].slice(0, 12);
 
         rows.push({
@@ -159,7 +138,7 @@ Deno.serve(async (req) => {
           external_id: r.id,
           title: (r.title ?? "Sans titre").slice(0, 300),
           description: desc.slice(0, 4000),
-          category,
+          curiosity,
           tags,
           address: address.slice(0, 300),
           lat,

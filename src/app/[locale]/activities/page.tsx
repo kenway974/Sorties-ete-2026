@@ -5,7 +5,7 @@ import { List, Map as MapIcon, Crosshair } from "lucide-react";
 import { useActivities } from "@/lib/hooks/useActivities";
 import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
-import CategoryFilter from "@/components/filters/CategoryFilter";
+import CuriosityFilter from "@/components/filters/CuriosityFilter";
 import SearchBar from "@/components/filters/SearchBar";
 import FilterPanel from "@/components/filters/FilterPanel";
 import ActivityCard from "@/components/activities/ActivityCard";
@@ -34,10 +34,10 @@ export default function ActivitiesPage() {
   const { activities, loading, loadingMore, hasMore, loadMore, refetch } = useActivities(filters);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Read ?category=, ?q=, ?date=, ?view= from URL on mount
+  // Read ?curiosity=, ?q=, ?date=, ?view= from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const cat = params.get("category");
+    const cat = params.get("curiosite");
     const q = params.get("q");
     const date = params.get("date") as ActivityFilters["dateFilter"] | null;
     const viewParam = params.get("view");
@@ -45,7 +45,7 @@ export default function ActivitiesPage() {
     if (cat || q || date) {
       setFilters((f) => ({
         ...f,
-        ...(cat ? { category: cat as ActivityFilters["category"] } : {}),
+        ...(cat ? { curiosity: cat as ActivityFilters["curiosity"] } : {}),
         ...(q ? { search: q } : {}),
         ...(date ? { dateFilter: date } : {}),
       }));
@@ -92,9 +92,9 @@ export default function ActivitiesPage() {
           </div>
         </div>
         <div className="overflow-x-auto scrollbar-none">
-          <CategoryFilter
-            selected={filters.category || null}
-            onChange={(cat) => setFilters((f) => ({ ...f, category: cat || undefined }))}
+          <CuriosityFilter
+            selected={filters.curiosity || null}
+            onChange={(cat) => setFilters((f) => ({ ...f, curiosity: cat || undefined }))}
           />
         </div>
       </div>

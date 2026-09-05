@@ -3,19 +3,10 @@ import { useState, type ChangeEventHandler } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import type { ActivityCategory } from "@/types";
+import { CURIOSITES, curiosity as curiosityOf } from "@/lib/constants/curiosites";
+import type { CuriosityKey } from "@/types";
 
-const CATEGORIES: ActivityCategory[] = [
-  "soirees", "concerts", "expositions", "restaurants", "bars",
-  "sport", "culture", "famille", "etudiants", "networking", "loisirs", "salons",
-];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking",
-  loisirs: "Loisirs", salons: "Salons & Conventions",
-};
 
 const VIBE_TAGS = [
   { key: "festif", emoji: "🎉", label: "Festif" },
@@ -28,17 +19,6 @@ const VIBE_TAGS = [
   { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
 ];
 
-// Suggest vibe tags based on selected category
-const CATEGORY_VIBES: Partial<Record<ActivityCategory, string[]>> = {
-  soirees: ["festif"],
-  concerts: ["live-music", "festif"],
-  expositions: ["art", "culture"],
-  restaurants: ["gastronomie"],
-  bars: ["festif"],
-  sport: ["sport"],
-  culture: ["culture"],
-  famille: ["famille"],
-};
 
 
 interface ProposeFormProps {
@@ -50,7 +30,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
-    title: "", description: "", category: "" as ActivityCategory | "",
+    title: "", description: "", curiosity: "" as CuriosityKey | "",
     tags: [] as string[], address: "", date: "", time: "",
     max_participants: "", price: "", external_url: "",
   });
@@ -59,13 +39,13 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const cat = e.target.value as ActivityCategory | "";
-    // Auto-suggest vibe tags when category changes (non-destructive: only adds)
-    const suggestedTags = cat ? (CATEGORY_VIBES[cat as ActivityCategory] ?? []) : [];
+  const handleCuriosityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const cat = e.target.value as CuriosityKey | "";
+    // Auto-suggest vibe tags when curiosity changes (non-destructive: only adds)
+    const suggestedTags: string[] = [];
     setForm((f) => ({
       ...f,
-      category: cat,
+      curiosity: cat,
       tags: [...new Set([...f.tags, ...suggestedTags])],
     }));
   };
@@ -80,7 +60,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.description || !form.category || !form.address || !form.date || !form.time) {
+    if (!form.title || !form.description || !form.curiosity || !form.address || !form.date || !form.time) {
       setError("Veuillez remplir tous les champs obligatoires.");
       return;
     }
@@ -130,7 +110,7 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       const { data: inserted, error: err } = await supabase.from("activities").insert({
         title: form.title,
         description: form.description,
-        category: form.category,
+        curiosity: form.curiosity,
         tags: form.tags,
         address: form.address,
         lat,
@@ -177,14 +157,14 @@ export default function ProposeForm({ userId, onSuccess }: ProposeFormProps) {
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Catégorie</label>
         <select
-          value={form.category}
-          onChange={handleCategoryChange}
+          value={form.curiosity}
+          onChange={handleCuriosityChange}
           required
           className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy dark:focus:ring-brand-gold"
         >
           <option value="">--</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
+          {CURIOSITES.map((c) => (
+            <option key={c.key} value={c.key}>{c.emoji}  {c.label} — {c.tagline}</option>
           ))}
         </select>
       </div>

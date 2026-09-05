@@ -142,9 +142,6 @@ export default async function ActivitesGratuitesPage({
             <Link href={`/${locale}/activities`} className="px-4 py-2 rounded-full text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy/90 transition-colors">
               Toutes les activités
             </Link>
-            <Link href={`/${locale}/sorties-enfants-paris`} className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-              Sorties enfants →
-            </Link>
             <Link href={`/${locale}/quartiers`} className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
               Par quartier →
             </Link>

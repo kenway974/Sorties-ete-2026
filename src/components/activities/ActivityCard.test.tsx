@@ -7,7 +7,7 @@ const base: Activity = {
   id: "abc-123",
   title: "Concert de Jazz au Caveau",
   description: "Un concert intime de jazz manouche",
-  category: "concerts",
+  curiosity: "mise-en-scene",
   tags: ["jazz", "manouche"],
   address: "12 rue de la Huchette, Paris",
   lat: 48.852,

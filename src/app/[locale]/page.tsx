@@ -12,21 +12,8 @@ import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import GlobalStoriesBar from "@/components/stories/GlobalStoriesBar";
 import { futureOrClause, parisNow } from "@/lib/utils/parisTime";
+import { CURIOSITES } from "@/lib/constants/curiosites";
 
-const CATEGORIES = [
-  { key: "soirees",    emoji: "🎉", label: "Soirées",    color: "hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300" },
-  { key: "concerts",  emoji: "🎵", label: "Concerts",   color: "hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-300" },
-  { key: "expositions", emoji: "🎨", label: "Expos",    color: "hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300" },
-  { key: "restaurants", emoji: "🍽️", label: "Restos",  color: "hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300" },
-  { key: "bars",      emoji: "🍻", label: "Bars",       color: "hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300" },
-  { key: "sport",     emoji: "⚽", label: "Sport",      color: "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-300" },
-  { key: "culture",   emoji: "🏛️", label: "Culture",   color: "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300" },
-  { key: "famille",   emoji: "👨‍👩‍👧", label: "Famille", color: "hover:bg-cyan-50 dark:hover:bg-cyan-900/20 hover:border-cyan-300" },
-  { key: "etudiants", emoji: "🎓", label: "Étudiants",  color: "hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-300" },
-  { key: "networking", emoji: "🤝", label: "Network",   color: "hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300" },
-  { key: "loisirs",   emoji: "🎮", label: "Loisirs",    color: "hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:border-teal-300" },
-  { key: "salons",    emoji: "🎪", label: "Salons",     color: "hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:border-pink-300" },
-];
 
 const HOW_IT_WORKS = [
   { icon: Search, step: "01", title: "Cherche", desc: "Explore par quartier, catégorie ou date. Filtre selon ton budget et tes envies du moment." },
@@ -99,7 +86,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         .from("activities")
         .select("*, photos:activity_photos(id, url)")
         .eq("status", "approved")
-        .in("category", userProfile.preferences)
+        .in("curiosity", userProfile.preferences)
         .or(futureOrClause())
         .order("date", { ascending: true })
         .limit(8);
@@ -227,23 +214,27 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
 
-      {/* ── CATEGORIES ── */}
+      {/* ── LES CURIOSITÉS ── */}
       <section className="bg-brand-cream dark:bg-[#0d111a] py-14">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Par catégorie</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Clique sur une catégorie pour filtrer</p>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Par curiosité</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Ce qu'il en reste le lendemain</p>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-3">
-            {CATEGORIES.map(({ key, emoji, label, color }) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {CURIOSITES.map(({ key, emoji, label, tagline, hex }) => (
               <Link
                 key={key}
-                href={`${base}/activities?category=${key}`}
-                className={`flex flex-col items-center gap-2 p-3 rounded-2xl border border-white dark:border-gray-700 bg-white dark:bg-gray-800/60 transition-all group hover:scale-105 hover:shadow-md ${color}`}
+                href={`${base}/activities?curiosite=${key}`}
+                style={{ borderColor: `${hex}33` }}
+                className="flex flex-col gap-1.5 p-4 rounded-2xl border bg-white dark:bg-gray-800/60 transition-all group hover:scale-[1.02] hover:shadow-lg"
               >
                 <span className="text-2xl group-hover:animate-bounce-gentle">{emoji}</span>
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-center leading-tight">
+                <span style={{ color: hex }} className="text-sm font-bold leading-tight">
                   {label}
+                </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500 leading-snug">
+                  {tagline}
                 </span>
               </Link>
             ))}

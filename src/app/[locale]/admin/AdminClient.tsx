@@ -57,7 +57,7 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="gray">{activity.category}</Badge>
+                    <Badge variant="gray">{activity.curiosity}</Badge>
                     <span className="text-xs text-gray-400">{formatDate(activity.created_at)}</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 truncate">{activity.title}</h3>

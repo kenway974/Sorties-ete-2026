@@ -44,7 +44,7 @@ export function useActivities(filters: ActivityFilters = {}) {
       void today;
       query = query.or(futureOrClause());
 
-      if (filters.category) query = query.eq("category", filters.category);
+      if (filters.curiosity) query = query.eq("curiosity", filters.curiosity);
 
       if (filters.search) {
         const term = filters.search.trim().replace(/'/g, "''");

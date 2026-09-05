@@ -1,16 +1,12 @@
 ﻿import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
+import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "MoodMap — sortie à Paris";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  soirees: "Soirées", concerts: "Concerts", expositions: "Expositions",
-  restaurants: "Restaurants", bars: "Bars", sport: "Sport", culture: "Culture",
-  famille: "Famille", etudiants: "Étudiants", networking: "Networking", loisirs: "Loisirs",
-};
 
 function fmtDate(d: string): string {
   try {
@@ -32,12 +28,12 @@ export default async function Image({ params }: { params: { locale: string; id: 
     const supabase = await createClient();
     const { data } = await supabase
       .from("activities")
-      .select("title, category, date, address, price")
+      .select("title, curiosity, date, address, price")
       .eq("id", id)
       .single();
     if (data) {
       title = data.title ?? title;
-      cat = CATEGORY_LABELS[data.category] ?? cat;
+      cat = curiosityOf(data.curiosity).label;
       date = data.date ? fmtDate(data.date) : "";
       address = data.address ?? address;
       price = data.price && data.price > 0

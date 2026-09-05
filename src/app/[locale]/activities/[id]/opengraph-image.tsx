@@ -5,7 +5,7 @@ import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "MoodMap — sortie à Paris";
+export const alt = "Hors-Piste — une sortie insolite à Paris";
 
 
 function fmtDate(d: string): string {
@@ -53,7 +53,7 @@ export default async function Image({ params }: { params: { locale: string; id: 
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div style={{ fontSize: 30, fontWeight: 800 }}>📍 MoodMap</div>
+          <div style={{ fontSize: 30, fontWeight: 800 }}>📍 Hors-Piste</div>
           <div style={{
             marginLeft: "auto", background: "rgba(212,160,23,0.2)", color: "#E8BC3C",
             padding: "8px 20px", borderRadius: "999px", fontSize: 26, fontWeight: 700,

@@ -931,7 +931,7 @@ const isDryRun = process.argv.includes("--dry-run");
 const isClear  = process.argv.includes("--clear");
 
 async function main() {
-  console.log(`\n🌟  MoodMap — Seed Script`);
+  console.log(`\n🌟  Hors-Piste — Seed Script`);
   console.log(`📋  ${ACTIVITIES.length} activités à importer\n`);
 
   if (isDryRun) {

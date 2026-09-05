@@ -7,7 +7,7 @@ import { formatDate, formatTime } from "@/lib/utils/formatters";
 import type { Activity } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Mes activités | MoodMap",
+  title: "Mes activités | Hors-Piste",
   robots: { index: false, follow: false },
 };
 

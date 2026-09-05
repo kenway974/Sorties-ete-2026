@@ -22,8 +22,8 @@ export async function generateMetadata({
   const quartier = QUARTIERS.find((q) => q.slug === slug);
   if (!quartier) return { title: "Quartier introuvable", robots: { index: false, follow: false } };
 
-  const title = `Activités ${quartier.name} Paris — Sorties & Événements | MoodMap`;
-  const description = `${quartier.desc} Concerts, soirées, expos et sorties à ${quartier.name} — toutes les activités à Paris sur MoodMap.`;
+  const title = `Activités ${quartier.name} Paris — Sorties & Événements | Hors-Piste`;
+  const description = `${quartier.desc} Concerts, soirées, expos et sorties à ${quartier.name} — toutes les activités à Paris sur Hors-Piste.`;
   const canonical = `${getSiteUrl()}/${locale}/quartiers/${slug}`;
 
   return {
@@ -35,7 +35,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "website",
-      siteName: "MoodMap",
+      siteName: "Hors-Piste",
       locale: "fr_FR",
     },
     twitter: { card: "summary_large_image", title, description },

@@ -48,7 +48,7 @@ export default function OnboardingPage() {
               <MapPin className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-              Bienvenue sur<br />MoodMap
+              Bienvenue sur<br />Hors-Piste
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
               En 30 secondes, dis-nous ce qui t&apos;intéresse et on personnalise ton expérience parisienne.

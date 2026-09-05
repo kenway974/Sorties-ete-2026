@@ -21,31 +21,32 @@ const SITE_URL = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "MoodMap — Toutes les sorties à Paris cet été",
-    template: "%s · MoodMap",
+    default: "Hors-Piste — sorties insolites à Paris",
+    template: "%s · Hors-Piste",
   },
   description:
-    "Trouvez quoi faire à Paris selon votre envie du moment : date romantique, entre amis, se ressourcer, sensations fortes… Concerts, expos, soirées, sport et restos filtrés par mood, sur carte interactive et en stories. Gratuit, sans inscription.",
+    "Le cabinet de curiosités de Paris. Uniquement des sorties qui sortent de l'ordinaire : lieux secrets, savoir-faire rares, expériences immersives, bizarreries assumées. Chacune notée sur 10 et triée avant d'arriver jusqu'à toi. Gratuit, sans inscription.",
   keywords: [
-    "sorties Paris", "que faire à Paris", "événements Paris", "concerts Paris",
-    "expositions Paris", "activités Paris", "agenda Paris", "soirées Paris",
+    "sorties insolites Paris", "que faire d'insolite à Paris", "lieux secrets Paris",
+    "activités insolites Paris", "Paris insolite", "visites insolites Paris",
+    "expériences immersives Paris", "ateliers insolites Paris",
   ],
-  applicationName: "MoodMap",
+  applicationName: "Hors-Piste",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "MoodMap" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Hors-Piste" },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "MoodMap — Toutes les sorties à Paris cet été",
-    description: "Sortez à Paris selon votre envie du moment : date, entre amis, se ressourcer, sensations… Filtré par mood, sur carte et en stories.",
+    title: "Hors-Piste — sorties insolites à Paris",
+    description: "Uniquement l'insolite : lieux secrets, savoir-faire rares, bizarreries assumées. Noté et trié avant d'arriver jusqu'à toi.",
     url: SITE_URL,
-    siteName: "MoodMap",
+    siteName: "Hors-Piste",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MoodMap — Toutes les sorties à Paris cet été",
-    description: "Sortez à Paris selon votre envie du moment : date, entre amis, se ressourcer, sensations… Filtré par mood, sur carte et en stories.",
+    title: "Hors-Piste — sorties insolites à Paris",
+    description: "Uniquement l'insolite : lieux secrets, savoir-faire rares, bizarreries assumées. Noté et trié avant d'arriver jusqu'à toi.",
   },
   robots: { index: true, follow: true },
 };
@@ -64,8 +65,8 @@ const websiteJsonLd = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: "MoodMap",
-      description: "Découvrez et filtrez toutes les activités et événements à Paris.",
+      name: "Hors-Piste",
+      description: "Uniquement l'insolite : lieux secrets, savoir-faire rares, bizarreries assumées. Noté et trié avant d'arriver jusqu'à toi.",
       inLanguage: "fr-FR",
       potentialAction: {
         "@type": "SearchAction",
@@ -76,7 +77,7 @@ const websiteJsonLd = {
     {
       "@type": "WebApplication",
       "@id": `${SITE_URL}/#webapp`,
-      name: "MoodMap",
+      name: "Hors-Piste",
       url: SITE_URL,
       applicationCategory: "LifestyleApplication",
       operatingSystem: "All",
@@ -85,7 +86,7 @@ const websiteJsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "MoodMap",
+      name: "Hors-Piste",
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: `${SITE_URL}/icons/icon-512.png` },
     },

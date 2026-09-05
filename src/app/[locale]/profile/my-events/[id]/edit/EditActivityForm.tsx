@@ -57,7 +57,7 @@ export default function EditActivityForm({ activity, locale }: Props) {
           const t = setTimeout(() => ctrl.abort(), 5000);
           const geo = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(form.address + ", Paris, France")}&format=json&limit=1`,
-            { headers: { "User-Agent": "MoodMap/1.0" }, signal: ctrl.signal }
+            { headers: { "User-Agent": "Hors-Piste/1.0" }, signal: ctrl.signal }
           );
           clearTimeout(t);
           if (geo.ok) {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Créer un compte",
-  description: "Rejoignez MoodMap pour sauvegarder vos activités favorites et rester informé des événements parisiens.",
+  description: "Rejoignez Hors-Piste pour sauvegarder vos activités favorites et rester informé des événements parisiens.",
   robots: { index: false, follow: false },
 };
 

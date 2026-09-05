@@ -24,14 +24,14 @@ export async function generateMetadata({
 
   const user = c.user as unknown as { username?: string } | null;
   const desc = c.description ||
-    `Une sélection de sorties à Paris${user?.username ? ` par ${user.username}` : ""} sur MoodMap.`;
+    `Une sélection de sorties à Paris${user?.username ? ` par ${user.username}` : ""} sur Hors-Piste.`;
   const canonical = `${getSiteUrl()}/${locale}/collections/${id}`;
 
   return {
     title: c.title,
     description: desc,
     alternates: { canonical },
-    openGraph: { title: c.title, description: desc, url: canonical, type: "article", siteName: "MoodMap", locale: "fr_FR" },
+    openGraph: { title: c.title, description: desc, url: canonical, type: "article", siteName: "Hors-Piste", locale: "fr_FR" },
     twitter: { card: "summary_large_image", title: c.title, description: desc },
   };
 }

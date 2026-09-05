@@ -70,9 +70,9 @@ export default function Header({ locale, user, onLogout }: HeaderProps) {
 
         {/* Logo */}
         <Link href={base} className="flex items-center gap-2 shrink-0">
-          <Image src="/logo.webp" alt="MoodMap" width={28} height={28} priority className="rounded-lg shadow-sm" />
-          <span className="font-extrabold text-[15px] tracking-tight text-gray-900 dark:text-white">
-            Mood<span className="text-brand-navy dark:text-brand-gold">Map</span>
+          <Image src="/logo.webp" alt="Hors-Piste" width={28} height={28} priority className="rounded-lg shadow-sm" />
+          <span className="font-display font-black text-[16px] tracking-tight text-ink dark:text-parchment">
+            Hors<span className="text-gold">-</span>Piste
           </span>
         </Link>
 

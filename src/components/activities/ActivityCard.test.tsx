@@ -32,26 +32,31 @@ describe("ActivityCard", () => {
     expect(screen.getByText("Concert de Jazz au Caveau")).toBeDefined();
   });
 
-  it("renders the address", () => {
+  it("n'affiche que le premier segment de l'adresse", () => {
     render(<ActivityCard activity={base} />);
-    expect(screen.getByText("12 rue de la Huchette, Paris")).toBeDefined();
+    expect(screen.getByText(/12 rue de la Huchette/)).toBeDefined();
+    expect(screen.queryByText(/12 rue de la Huchette, Paris/)).toBeNull();
   });
 
-  it("renders spots left (max - current)", () => {
+  it("affiche la curiosité avec son emoji", () => {
     render(<ActivityCard activity={base} />);
-    // 80 - 30 = 50 spots left; translation key includes the count
-    expect(screen.getByText(/50/)).toBeDefined();
+    expect(screen.getAllByText(/Ça se joue/).length).toBeGreaterThan(0);
+  });
+
+  it("affiche l'indice d'insolite et son palier", () => {
+    render(<ActivityCard activity={{ ...base, rarity: 8 }} />);
+    expect(screen.getByText(/8\/10 · Rare/)).toBeDefined();
+  });
+
+  it("n'affiche pas de pastille d'indice quand la note manque", () => {
+    render(<ActivityCard activity={{ ...base, rarity: null }} />);
+    expect(screen.queryByText(/\/10 ·/)).toBeNull();
   });
 
   it("shows full label when activity is full", () => {
     render(<ActivityCard activity={{ ...base, max_participants: 10, current_participants: 10 }} />);
     // "Complet" appears both as the image overlay badge and the spots line
     expect(screen.getAllByText("Complet").length).toBeGreaterThan(0);
-  });
-
-  it("shows unlimited label when max_participants is null", () => {
-    render(<ActivityCard activity={{ ...base, max_participants: null }} />);
-    expect(screen.getByText(/illimitées/)).toBeDefined();
   });
 
   it("shows free label when price is null", () => {
@@ -95,12 +100,12 @@ describe("ActivityCard", () => {
 
   it("renders filled heart icon when isFavorite=true", () => {
     const { container } = render(<ActivityCard activity={base} isFavorite onFavoriteToggle={vi.fn()} />);
-    expect(container.querySelector(".fill-brand-red")).not.toBeNull();
+    expect(container.querySelector(".fill-frisson")).not.toBeNull();
   });
 
   it("renders unfilled heart when isFavorite=false", () => {
     const { container } = render(<ActivityCard activity={base} isFavorite={false} onFavoriteToggle={vi.fn()} />);
-    expect(container.querySelector(".fill-brand-red")).toBeNull();
+    expect(container.querySelector(".fill-frisson")).toBeNull();
   });
 
   it("renders average rating when provided", () => {

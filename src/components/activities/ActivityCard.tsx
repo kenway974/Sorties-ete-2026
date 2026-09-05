@@ -45,11 +45,11 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
   return (
     <Link
       href={`/${locale}/activities/${activity.id}`}
-      className="group block bg-white dark:bg-[#1a1a1a] rounded-2xl overflow-hidden hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-shadow duration-300"
+      className="group block bg-parchment dark:bg-ink-soft rounded-2xl overflow-hidden shadow-card hover:shadow-vitrine hover:-translate-y-0.5 transition-all duration-300"
     >
       {/* Image — 16:9 */}
       {!compact && (
-        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div className="relative aspect-video overflow-hidden bg-parchment-dim dark:bg-ink">
           {hasPhoto && photoUrl ? (
             <Image
               src={photoUrl}
@@ -76,12 +76,12 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
               {cur.emoji} {cur.label}
             </span>
             {isHot && (
-              <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500 text-white text-[11px] font-semibold">
+              <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-metier text-white text-[11px] font-semibold">
                 <Flame className="w-2.5 h-2.5" /> Chaud
               </span>
             )}
             {isFull && (
-              <span className="px-2 py-1 rounded-full bg-red-500 text-white text-[11px] font-semibold">
+              <span className="px-2 py-1 rounded-full bg-frisson-deep text-white text-[11px] font-semibold">
                 Complet
               </span>
             )}
@@ -102,7 +102,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
 
           {/* Price */}
           <div className="absolute bottom-2.5 left-2.5">
-            <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold">
+            <span className="px-2.5 py-1 rounded-full bg-ink-deep/60 backdrop-blur-sm text-white text-[11px] font-bold">
               {formatPrice(activity.price, "Gratuit")}
             </span>
           </div>
@@ -112,11 +112,11 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
             <button
               onClick={handleFav}
               aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-              className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors"
+              className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-ink-deep/50 backdrop-blur-sm hover:bg-ink-deep/75 transition-colors"
             >
               <Heart
                 className={`w-4 h-4 transition-all duration-200 ${
-                  isFavorite ? "fill-red-400 text-red-400" : "text-white"
+                  isFavorite ? "fill-frisson text-frisson" : "text-white"
                 } ${favPulse ? "scale-125" : "scale-100"}`}
               />
             </button>
@@ -135,11 +135,11 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
           </span>
         )}
 
-        <h3 className="font-semibold text-[14px] text-gray-900 dark:text-white leading-snug line-clamp-2 mb-1.5">
+        <h3 className="font-semibold text-[14px] text-ink dark:text-parchment leading-snug line-clamp-2 mb-1.5">
           {activity.title}
         </h3>
 
-        <p className="text-[12px] text-gray-400 dark:text-gray-500 line-clamp-1">
+        <p className="text-[12px] text-ink/45 dark:text-parchment/40 line-clamp-1">
           {formatDate(activity.date, "fr")}
           {activity.time ? ` · ${formatTime(activity.time)}` : ""}
           {" · "}
@@ -149,7 +149,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
         {(activity.avg_rating ?? 0) > 0 && (
           <div className="flex items-center gap-1 mt-1.5">
             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-[11px] font-medium text-ink/50 dark:text-parchment/50">
               {activity.avg_rating?.toFixed(1)}
               {(activity.review_count ?? 0) > 0 && (
                 <span className="text-gray-400"> ({activity.review_count})</span>

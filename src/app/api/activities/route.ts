@@ -5,6 +5,7 @@ import { z } from "zod";
 import { futureOrClause } from "@/lib/utils/parisTime";
 import { rateLimit, getRateLimitKey } from "@/lib/utils/rateLimit";
 import { CURIOSITY_KEYS } from "@/lib/constants/curiosites";
+import { RARITY_FLOOR } from "@/lib/constants/rarity";
 
 
 const querySchema = z.object({
@@ -12,6 +13,7 @@ const querySchema = z.object({
   search:   z.string().max(100).optional(),
   date:     z.enum(["today", "tomorrow", "week", "weekend"]).optional(),
   price:    z.enum(["free", "paid"]).optional(),
+  rarity:   z.coerce.number().int().min(1).max(10).optional(),
   limit:    z.coerce.number().int().min(1).max(100).default(30),
   offset:   z.coerce.number().int().min(0).default(0),
 });
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Paramètres invalides", details: parsed.error.flatten() }, { status: 400 });
   }
-  const { curiosity, search, date, price, limit, offset } = parsed.data;
+  const { curiosity, search, date, price, rarity, limit, offset } = parsed.data;
 
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -53,6 +55,7 @@ export async function GET(request: NextRequest) {
     .order("time", { ascending: true })
     .range(offset, offset + limit - 1);
 
+  query = query.gte("rarity", rarity ?? RARITY_FLOOR);
   if (curiosity) query = query.eq("curiosity", curiosity);
   if (search)   query = query.ilike("title", `%${search}%`);
   if (price === "free") query = query.or("price.eq.0,price.is.null");

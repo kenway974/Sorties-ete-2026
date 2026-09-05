@@ -8,6 +8,7 @@ const base: Activity = {
   title: "Concert de Jazz au Caveau",
   description: "Un concert intime de jazz manouche",
   curiosity: "mise-en-scene",
+  rarity: 7,
   tags: ["jazz", "manouche"],
   address: "12 rue de la Huchette, Paris",
   lat: 48.852,

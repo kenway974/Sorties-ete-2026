@@ -24,6 +24,9 @@ export interface Activity {
   title: string;
   description: string;
   curiosity: CuriosityKey;
+  /** Indice d'insolite 1–10, attribué par le scoring. null = pas encore noté. */
+  rarity: number | null;
+  rarity_note?: string | null;
   tags: string[];
   address: string;
   lat: number;
@@ -105,9 +108,11 @@ export interface Notification {
 
 export interface ActivityFilters {
   curiosity?: CuriosityKey | null;
+  /** Ne garder que les sorties dont l'indice d'insolite atteint ce seuil. */
+  minRarity?: number | null;
   dateFilter?: "today" | "tomorrow" | "this_week" | "this_weekend" | "this_month" | null;
   priceFilter?: "free" | "paid" | null;
-  sortBy?: "distance" | "date" | "popularity" | "rating" | "price";
+  sortBy?: "distance" | "date" | "popularity" | "rating" | "price" | "rarity";
   search?: string;
   userLat?: number;
   userLng?: number;

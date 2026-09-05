@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Heart, MapPin, Flame, Star } from "lucide-react";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
 import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
+import { rarityBand } from "@/lib/constants/rarity";
 import type { Activity } from "@/types";
 
 
@@ -31,6 +32,7 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
   const isFull = spotsLeft !== null && spotsLeft <= 0;
   const isHot = activity.current_participants > 0 && spotsLeft !== null && spotsLeft < 5 && !isFull;
   const cur = curiosityOf(activity.curiosity);
+  const band = rarityBand(activity.rarity);
 
   const handleFav = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -84,6 +86,19 @@ export default function ActivityCard({ activity, isFavorite, onFavoriteToggle, c
               </span>
             )}
           </div>
+
+          {/* Indice d'insolite */}
+          {band && (
+            <div className="absolute bottom-2.5 right-2.5">
+              <span
+                style={{ backgroundColor: band.hex }}
+                title={`${band.label} — ${band.desc}`}
+                className="px-2 py-1 rounded-full text-white text-[11px] font-bold tabular-nums shadow-sm"
+              >
+                {activity.rarity}/10 · {band.label}
+              </span>
+            </div>
+          )}
 
           {/* Price */}
           <div className="absolute bottom-2.5 left-2.5">

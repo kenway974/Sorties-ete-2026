@@ -45,6 +45,7 @@ export function useActivities(filters: ActivityFilters = {}) {
       query = query.or(futureOrClause());
 
       if (filters.curiosity) query = query.eq("curiosity", filters.curiosity);
+      if (filters.minRarity) query = query.gte("rarity", filters.minRarity);
 
       if (filters.search) {
         const term = filters.search.trim().replace(/'/g, "''");
@@ -94,6 +95,10 @@ export function useActivities(filters: ActivityFilters = {}) {
         query = query.order("date", { ascending: true }).order("time", { ascending: true });
       } else if (sortBy === "price") {
         query = query.order("price", { ascending: true, nullsFirst: true });
+      } else if (sortBy === "rarity") {
+        query = query
+          .order("rarity", { ascending: false, nullsFirst: false })
+          .order("date", { ascending: true });
       } else if (sortBy === "popularity" || sortBy === "rating") {
         query = query
           .order("current_participants", { ascending: false })

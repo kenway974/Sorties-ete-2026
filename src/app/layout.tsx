@@ -1,11 +1,20 @@
 ﻿import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import { getSiteUrl } from "@/lib/utils/siteUrl";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
+
+// Fraunces porte les titres : un serif à contraste marqué, un peu bancal par
+// endroits — exactement le registre d'un cabinet de curiosités.
+const fraunces = Fraunces({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-fraunces",
+  axes: ["SOFT", "WONK", "opsz"],
+  display: "swap",
+});
 
 const SITE_URL = getSiteUrl();
 
@@ -42,7 +51,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1B3A6B",
+  themeColor: "#1B1425",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -104,7 +113,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
         {children}
         <Analytics />
         <SpeedInsights />

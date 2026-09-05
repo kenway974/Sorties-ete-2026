@@ -2,7 +2,7 @@
 
 export const metadata: Metadata = {
   title: "Conditions générales d'utilisation",
-  description: "Conditions générales d'utilisation de MoodMap.",
+  description: "Conditions générales d'utilisation de Hors-Piste.",
   robots: { index: true, follow: true },
 };
 
@@ -14,7 +14,7 @@ export default function CGUPage() {
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">1. Objet</h2>
       <p>
-        MoodMap est une plateforme gratuite de découverte d&apos;activités, événements et sorties à Paris
+        Hors-Piste est une plateforme gratuite de découverte de sorties insolites à Paris
         et en Île-de-France. Les présentes CGU régissent l&apos;utilisation du service.
       </p>
 
@@ -41,25 +41,25 @@ export default function CGUPage() {
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">5. Données des événements</h2>
       <p>
         Une partie des activités provient de sources publiques (open data Ville de Paris). Malgré nos efforts,
-        MoodMap ne garantit pas l&apos;exactitude, l&apos;exhaustivité ou la disponibilité des événements. Vérifiez
+        Hors-Piste ne garantit pas l&apos;exactitude, l&apos;exhaustivité ou la disponibilité des événements. Vérifiez
         toujours les informations (date, lieu, prix) auprès de l&apos;organisateur avant de vous déplacer.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">6. Responsabilité</h2>
       <p>
-        MoodMap agit en tant qu&apos;intermédiaire de découverte et ne saurait être tenu responsable du
+        Hors-Piste agit en tant qu&apos;intermédiaire de découverte et ne saurait être tenu responsable du
         déroulement des événements, ni des relations entre utilisateurs et organisateurs.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">7. Propriété intellectuelle</h2>
       <p>
-        En publiant un contenu, vous concédez à MoodMap une licence non exclusive d&apos;affichage de ce contenu
+        En publiant un contenu, vous concédez à Hors-Piste une licence non exclusive d&apos;affichage de ce contenu
         sur la plateforme, dans le seul but de fournir le service.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">8. Modification des CGU</h2>
       <p>
-        MoodMap peut modifier les présentes CGU à tout moment. La version applicable est celle en vigueur
+        Hors-Piste peut modifier les présentes CGU à tout moment. La version applicable est celle en vigueur
         lors de votre utilisation du service.
       </p>
 

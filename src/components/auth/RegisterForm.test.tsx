@@ -33,12 +33,12 @@ describe("RegisterForm", () => {
 
   it("renders submit button", () => {
     render(<RegisterForm locale="fr" onSuccess={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "auth.register.submit" })).toBeDefined();
+    expect(screen.getByRole("button", { name: /cr[ée]er/i })).toBeDefined();
   });
 
   it("renders link to login page", () => {
     render(<RegisterForm locale="fr" onSuccess={vi.fn()} />);
-    const link = screen.getByRole("link", { name: "auth.register.login_link" });
+    const link = screen.getByRole("link", { name: /se connecter/i });
     expect(link.getAttribute("href")).toBe("/fr/auth/login");
   });
 
@@ -47,7 +47,7 @@ describe("RegisterForm", () => {
     fillForm(container, { username: "john", email: "j@test.com", password: "abc12345", confirm: "different" });
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => {
-      expect(screen.getByText("auth.errors.passwords_dont_match")).toBeDefined();
+      expect(screen.getByText("Les mots de passe ne correspondent pas")).toBeDefined();
     });
   });
 
@@ -56,7 +56,7 @@ describe("RegisterForm", () => {
     fillForm(container, { username: "john", email: "j@test.com", password: "short", confirm: "short" });
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => {
-      expect(screen.getByText("auth.errors.weak_password")).toBeDefined();
+      expect(screen.getByText("Le mot de passe doit contenir au moins 8 caractères")).toBeDefined();
     });
   });
 
@@ -64,7 +64,7 @@ describe("RegisterForm", () => {
     const { container } = render(<RegisterForm locale="fr" onSuccess={vi.fn()} />);
     fillForm(container, { username: "john", email: "j@test.com", password: "abc12345", confirm: "xyz12345" });
     fireEvent.submit(container.querySelector("form")!);
-    await waitFor(() => expect(screen.getByText("auth.errors.passwords_dont_match")).toBeDefined());
+    await waitFor(() => expect(screen.getByText("Les mots de passe ne correspondent pas")).toBeDefined());
     expect(mockSignUp).not.toHaveBeenCalled();
   });
 
@@ -97,7 +97,7 @@ describe("RegisterForm", () => {
     fillForm(container, { username: "john", email: "dup@test.com", password: "password123", confirm: "password123" });
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => {
-      expect(screen.getByText("auth.errors.email_taken")).toBeDefined();
+      expect(screen.getByText("Cet email est déjà utilisé")).toBeDefined();
     });
   });
 });

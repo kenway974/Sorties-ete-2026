@@ -1,38 +1,38 @@
-﻿import Link from "next/link";
-import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
-  MapPin, Calendar, ArrowRight, Zap, Users, Star,
-  Search, Heart, Sparkles, ChevronRight,
+  MapPin, ArrowRight, Shuffle, Eye, Compass, ChevronRight, Sparkles,
 } from "lucide-react";
 import ActivityCard from "@/components/activities/ActivityCard";
 import ActivityRow from "@/components/home/ActivityRow";
-import QuickFilters from "@/components/home/QuickFilters";
 import DiscoverButton from "@/components/home/DiscoverButton";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import GlobalStoriesBar from "@/components/stories/GlobalStoriesBar";
-import { MOODS } from "@/lib/constants/moods";
+import { CURIOSITES } from "@/lib/constants/curiosites";
+import { RARITY_BANDS, RARITY_FLOOR } from "@/lib/constants/rarity";
 import { futureOrClause, parisNow } from "@/lib/utils/parisTime";
 
-const CATEGORIES = [
-  { key: "soirees",    emoji: "🎉", label: "Soirées",    color: "hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300" },
-  { key: "concerts",  emoji: "🎵", label: "Concerts",   color: "hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-300" },
-  { key: "expositions", emoji: "🎨", label: "Expos",    color: "hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300" },
-  { key: "restaurants", emoji: "🍽️", label: "Restos",  color: "hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300" },
-  { key: "bars",      emoji: "🍻", label: "Bars",       color: "hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300" },
-  { key: "sport",     emoji: "⚽", label: "Sport",      color: "hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-300" },
-  { key: "culture",   emoji: "🏛️", label: "Culture",   color: "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300" },
-  { key: "famille",   emoji: "👨‍👩‍👧", label: "Famille", color: "hover:bg-cyan-50 dark:hover:bg-cyan-900/20 hover:border-cyan-300" },
-  { key: "etudiants", emoji: "🎓", label: "Étudiants",  color: "hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-300" },
-  { key: "networking", emoji: "🤝", label: "Network",   color: "hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300" },
-  { key: "loisirs",   emoji: "🎮", label: "Loisirs",    color: "hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:border-teal-300" },
-  { key: "salons",    emoji: "🎪", label: "Salons",     color: "hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:border-pink-300" },
-];
+const SELECT = "*, photos:activity_photos(id, url)";
 
-const HOW_IT_WORKS = [
-  { icon: Search, step: "01", title: "Cherche", desc: "Explore par quartier, catégorie ou date. Filtre selon ton budget et tes envies du moment." },
-  { icon: MapPin, step: "02", title: "Localise", desc: "Visualise les activités sur la carte interactive. Toujours un spot sympa à portée de métro." },
-  { icon: Heart, step: "03", title: "Profite", desc: "Sauvegarde tes coups de cœur, inscris-toi et rejoins la communauté parisienne." },
+const DEMARCHE = [
+  {
+    icon: Shuffle,
+    titre: "On montre",
+    texte:
+      "Pas de formulaire, pas de questionnaire. On ne peut pas chercher ce dont on ignore l'existence — alors la Roulette montre, une sortie à la fois.",
+  },
+  {
+    icon: Eye,
+    titre: "On filtre à l'entrée",
+    texte:
+      "Chaque sortie reçoit un indice d'insolite de 1 à 10. Sous 5, elle n'entre pas au catalogue. Le tri se fait avant toi, pas après.",
+  },
+  {
+    icon: Compass,
+    titre: "Tu montes le curseur",
+    texte:
+      "Le seul réglage est le cadran d'insolite. On le monte comme on monte le son, jusqu'à ce que ça devienne déraisonnable.",
+  },
 ];
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -42,282 +42,283 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const { date: parisDate, time: parisTime } = parisNow();
 
-  const [featuredRes, tonightRes, lastMinuteRes, trendingRes, { data: { user } }] = await Promise.all([
-    supabase
-      .from("activities")
-      .select("*, photos:activity_photos(id, url)")
-      .eq("status", "approved")
-      .or(futureOrClause())
-      .order("date", { ascending: true })
-      .order("time", { ascending: true })
-      .limit(4),
+  const [raresRes, tonightRes, lastMinuteRes, trendingRes, countRes, { data: { user } }] =
+    await Promise.all([
+      // Les plus rares du moment : la vitrine du produit.
+      supabase
+        .from("activities")
+        .select(SELECT)
+        .eq("status", "approved")
+        .or(futureOrClause())
+        .gte("rarity", RARITY_FLOOR)
+        .order("rarity", { ascending: false, nullsFirst: false })
+        .order("date", { ascending: true })
+        .limit(4),
 
-    // Ce soir : aujourd'hui, encore à venir
-    supabase
-      .from("activities")
-      .select("*, photos:activity_photos(id, url)")
-      .eq("status", "approved")
-      .eq("date", parisDate)
-      .gte("time", parisTime)
-      .order("time", { ascending: true })
-      .limit(8),
+      supabase
+        .from("activities")
+        .select(SELECT)
+        .eq("status", "approved")
+        .eq("date", parisDate)
+        .gte("time", parisTime)
+        .gte("rarity", RARITY_FLOOR)
+        .order("rarity", { ascending: false, nullsFirst: false })
+        .limit(8),
 
-    // Dernière minute : créées ou mises à jour dans les 48h
-    supabase
-      .from("activities")
-      .select("*, photos:activity_photos(id, url)")
-      .eq("status", "approved")
-      .or(futureOrClause())
-      // eslint-disable-next-line react-hooks/purity -- server component, Date.now() is fine per request
-      .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
-      .order("created_at", { ascending: false })
-      .limit(8),
+      supabase
+        .from("activities")
+        .select(SELECT)
+        .eq("status", "approved")
+        .or(futureOrClause())
+        .gte("rarity", RARITY_FLOOR)
+        // eslint-disable-next-line react-hooks/purity -- composant serveur, une valeur par requête
+        .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
+        .order("created_at", { ascending: false })
+        .limit(8),
 
-    // Tendances : plus d'inscrits cette semaine
-    supabase
-      .from("activities")
-      .select("*, photos:activity_photos(id, url)")
-      .eq("status", "approved")
-      .or(futureOrClause())
-      .gt("current_participants", 0)
-      .order("current_participants", { ascending: false })
-      .limit(8),
+      supabase
+        .from("activities")
+        .select(SELECT)
+        .eq("status", "approved")
+        .or(futureOrClause())
+        .gte("rarity", RARITY_FLOOR)
+        .gt("current_participants", 0)
+        .order("current_participants", { ascending: false })
+        .limit(8),
 
-    supabase.auth.getUser(),
-  ]);
+      supabase
+        .from("activities")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "approved")
+        .or(futureOrClause())
+        .gte("rarity", RARITY_FLOOR),
 
-  const activities = featuredRes.data || [];
+      supabase.auth.getUser(),
+    ]);
+
+  const rares = raresRes.data || [];
   const tonight = tonightRes.data || [];
   const lastMinute = lastMinuteRes.data || [];
   const trending = trendingRes.data || [];
+  const total = countRes.count ?? 0;
 
-  // Personalized "Pour vous" section
-  let personalizedActivities: typeof activities = [];
+  // « Pour toi » : d'après les curiosités choisies à l'inscription.
+  let pourToi: typeof rares = [];
   if (user) {
-    const { data: userProfile } = await supabase.from("profiles").select("preferences").eq("id", user.id).single();
-    if (userProfile?.preferences && userProfile.preferences.length > 0) {
-      const { data: persoData } = await supabase
+    const { data: profil } = await supabase
+      .from("profiles").select("preferences").eq("id", user.id).single();
+    if (profil?.preferences?.length) {
+      const { data } = await supabase
         .from("activities")
-        .select("*, photos:activity_photos(id, url)")
+        .select(SELECT)
         .eq("status", "approved")
-        .in("category", userProfile.preferences)
+        .in("curiosity", profil.preferences)
         .or(futureOrClause())
-        .order("date", { ascending: true })
+        .gte("rarity", RARITY_FLOOR)
+        .order("rarity", { ascending: false, nullsFirst: false })
         .limit(8);
-      personalizedActivities = persoData || [];
+      pourToi = data || [];
     }
   }
 
   return (
-    <div className="dark:bg-[#0d111a]">
-      {/* ── HERO ── */}
-      <section className="relative bg-brand-navy overflow-hidden">
-        {/* Animated Paris illustration (Ken Burns) */}
+    <div className="bg-parchment dark:bg-ink-deep">
+      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+      <section className="relative bg-ink-deep overflow-hidden grain">
+        {/* Halos : les six teintes en fond, très diffusées. */}
         <div className="absolute inset-0 pointer-events-none select-none">
-          <Image
-            src="/hero-paris.webp"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-top opacity-50 animate-ken-burns"
-          />
-          {/* Gradient: light at top (show illustration), heavier in center (text), solid at bottom */}
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/15 via-brand-navy/70 to-brand-navy" />
-        </div>
-        {/* Floating blobs */}
-        <div className="absolute inset-0 pointer-events-none select-none">
-          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-brand-gold/8 rounded-full blur-3xl animate-float-slow" />
-          <div className="absolute -bottom-24 -right-16 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-3xl animate-float-slower" />
+          <div className="halo w-[620px] h-[620px] -top-56 -left-40 bg-bizarre animate-float-slow" />
+          <div className="halo w-[520px] h-[520px] top-10 -right-32 bg-scene animate-float-slower" />
+          <div className="halo w-[420px] h-[420px] -bottom-40 left-1/3 bg-secret" />
         </div>
 
-        <div className="relative w-full max-w-4xl mx-auto px-4 pt-16 pb-14 sm:pt-24 sm:pb-20 text-center">
-          <div className="inline-flex items-center gap-2 bg-brand-gold/15 text-brand-gold text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-brand-gold/30 animate-fade-in-up">
-            <Zap className="w-3.5 h-3.5" />
-            400+ activités à Paris cet été
+        <div className="relative w-full max-w-4xl mx-auto px-4 pt-20 pb-16 sm:pt-28 sm:pb-24 text-center">
+          <div className="inline-flex items-center gap-2 bg-gold/10 text-gold text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-gold/25 animate-fade-in-up">
+            <Sparkles className="w-3.5 h-3.5" />
+            {total > 0 ? `${total} sorties qui ne ressemblent à rien` : "Paris, hors des sentiers battus"}
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-[1.1] animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
-            Finis les soirs<br />
-            <span className="text-brand-gold">à rien faire</span>
+          <h1
+            className="text-5xl md:text-7xl text-parchment mb-6 leading-[1.05] animate-fade-in-up text-balance"
+            style={{ animationDelay: "0.05s" }}
+          >
+            Paris a des endroits<br />
+            <span className="text-gilded">dont personne ne parle</span>
           </h1>
 
-          <p className="text-white/60 text-xl mb-4 max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            Concerts, expos, soirées, sports, culture —<br className="hidden sm:block" />
-            tout ce qui se passe à Paris, au bon moment.
+          <p
+            className="text-parchment/55 text-lg sm:text-xl mb-9 max-w-lg mx-auto leading-relaxed animate-fade-in-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            Pas un agenda de plus. Un cabinet de curiosités : uniquement ce qui
+            sort de l&apos;ordinaire, noté et trié avant d&apos;arriver jusqu&apos;à toi.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8 text-white/40 text-sm animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-            {["Gratuit", "Sans inscription", "Mis à jour chaque jour"].map((t, i) => (
-              <span key={t} className="flex items-center gap-1.5">
-                {i > 0 && <span className="w-1 h-1 rounded-full bg-white/20" />}
-                <span className="flex items-center gap-1"><Sparkles className="w-3 h-3 text-brand-gold/50" />{t}</span>
-              </span>
-            ))}
-          </div>
-
-          {/* Buttons: Explorer full-width on mobile, Surprends-moi natural width centered */}
-          <div className="flex flex-col items-center sm:flex-row sm:justify-center gap-3 mb-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <div
+            className="flex flex-col items-center sm:flex-row sm:justify-center gap-3 animate-fade-in-up"
+            style={{ animationDelay: "0.15s" }}
+          >
+            <Link
+              href={`${base}/roulette`}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gold text-ink font-bold px-9 py-4 rounded-2xl hover:bg-gold-light hover:scale-105 active:scale-95 transition-all text-base shadow-glow-gold"
+            >
+              <Shuffle className="w-5 h-5" />
+              Fais tourner la Roulette
+            </Link>
             <Link
               href={`${base}/activities`}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 hover:scale-105 active:scale-95 transition-all text-base shadow-xl shadow-brand-gold/20"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-parchment/20 text-parchment/80 hover:bg-parchment/5 hover:border-parchment/40 transition-all"
             >
-              Explorer les activités
-              <ArrowRight className="w-5 h-5" />
+              Parcourir le catalogue
             </Link>
-            <DiscoverButton />
-          </div>
-
-          <div className="animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
-            <QuickFilters />
           </div>
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <div className="bg-brand-navy-dark dark:bg-[#0a0e16] border-b border-white/8">
-        <div className="max-w-4xl mx-auto px-4 py-5 grid grid-cols-3 divide-x divide-white/8 text-center">
-          {[
-            { icon: Calendar, value: "400+", label: "activités" },
-            { icon: MapPin, value: "20", label: "arrondissements" },
-            { icon: Users, value: "100%", label: "gratuit" },
-          ].map(({ icon: Icon, value, label }) => (
-            <div key={label} className="flex flex-col items-center gap-1 px-4">
-              <div className="flex items-center gap-1.5 text-white">
-                <Icon className="w-4 h-4 text-brand-gold" />
-                <span className="text-xl font-extrabold">{value}</span>
-              </div>
-              <span className="text-white/40 text-xs uppercase tracking-wider">{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── GLOBAL STORIES ── */}
       <GlobalStoriesBar userId={user?.id ?? null} />
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="bg-white dark:bg-gray-900/50 py-16">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">Comment ça marche ?</h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">En 30 secondes, trouve ton prochain plan parisien.</p>
+      {/* ══ LES CURIOSITÉS ════════════════════════════════════════════════ */}
+      <section className="bg-parchment dark:bg-ink py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-3">
+            <h2 className="text-3xl sm:text-4xl text-ink dark:text-parchment mb-3">
+              Six façons d&apos;être mémorable
+            </h2>
+            <p className="text-ink/50 dark:text-parchment/45 max-w-lg mx-auto leading-relaxed">
+              On ne classe pas par genre — on peut s&apos;ennuyer à un concert et
+              ne jamais oublier un atelier de reliure. On classe par ce qu&apos;il
+              en reste le lendemain.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {HOW_IT_WORKS.map(({ icon: Icon, step, title, desc }) => (
-              <div key={step} className="relative flex flex-col items-center text-center group">
-                <div className="relative mb-5">
-                  <div className="w-16 h-16 rounded-2xl bg-brand-navy/6 dark:bg-brand-navy/20 group-hover:bg-brand-navy/10 dark:group-hover:bg-brand-navy/30 transition-colors flex items-center justify-center">
-                    <Icon className="w-7 h-7 text-brand-navy dark:text-brand-gold" />
-                  </div>
-                  <span className="absolute -top-2 -right-2 bg-brand-gold text-brand-navy text-xs font-black w-6 h-6 rounded-full flex items-center justify-center">
-                    {step.slice(1)}
+
+          <div className="filet max-w-xs mx-auto my-8" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {CURIOSITES.map(({ key, emoji, label, tagline, desc, gradient }, i) => (
+              <Link
+                key={key}
+                href={`${base}/activities?curiosite=${key}`}
+                style={{ animationDelay: `${i * 0.05}s` }}
+                className="group relative overflow-hidden rounded-3xl p-6 min-h-[190px] flex flex-col justify-between animate-reveal shadow-card hover:shadow-vitrine hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+                <div className="absolute inset-0 bg-grain opacity-[0.16] mix-blend-overlay pointer-events-none" />
+
+                <div className="relative">
+                  <span className="text-3xl block mb-3 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 origin-left">
+                    {emoji}
                   </span>
+                  <h3 className="text-xl text-white leading-tight mb-1">{label}</h3>
+                  <p className="text-white/75 text-sm leading-snug">{tagline}</p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <Link href={`${base}/activities`} className="inline-flex items-center gap-2 text-brand-navy dark:text-brand-gold font-semibold hover:gap-3 transition-all text-sm">
-              Voir toutes les activités <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* ── MOODS / ENVIES ── */}
-      <section className="bg-white dark:bg-gray-900/30 py-14">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">C&apos;est quoi ton envie&nbsp;?</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Sortir selon ton mood du moment, pas juste par catégorie</p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {MOODS.map(({ key, emoji, label, desc }) => (
-              <Link
-                key={key}
-                href={`${base}/activities?mood=${key}`}
-                className="group flex items-center gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-brand-cream/40 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 hover:border-brand-navy/30 dark:hover:border-brand-gold/40 hover:shadow-md transition-all"
-              >
-                <span className="text-2xl shrink-0 group-hover:scale-110 transition-transform">{emoji}</span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{label}</span>
-                  <span className="block text-xs text-gray-400 dark:text-gray-500 truncate">{desc}</span>
-                </span>
+                <p className="relative text-white/55 text-xs leading-snug mt-4 pt-3 border-t border-white/20">
+                  {desc}
+                </p>
+
+                <ArrowRight
+                  className="absolute top-6 right-6 w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-1 transition-all"
+                  aria-hidden
+                />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CATEGORIES ── */}
-      <section className="bg-brand-cream dark:bg-[#0d111a] py-14">
+      {/* ══ LES PLUS RARES ════════════════════════════════════════════════ */}
+      <section className="bg-parchment-dim dark:bg-ink-deep py-16 sm:py-20">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Par catégorie</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Clique sur une catégorie pour filtrer</p>
-          </div>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-3">
-            {CATEGORIES.map(({ key, emoji, label, color }) => (
-              <Link
-                key={key}
-                href={`${base}/activities?category=${key}`}
-                className={`flex flex-col items-center gap-2 p-3 rounded-2xl border border-white dark:border-gray-700 bg-white dark:bg-gray-800/60 transition-all group hover:scale-105 hover:shadow-md ${color}`}
-              >
-                <span className="text-2xl group-hover:animate-bounce-gentle">{emoji}</span>
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-center leading-tight">
-                  {label}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FEATURED ACTIVITIES ── */}
-      <section className="bg-white dark:bg-gray-900/30 py-14">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex items-end justify-between mb-8 gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">À venir à Paris</h2>
-              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Les prochains événements approuvés par la communauté</p>
+              <h2 className="text-3xl sm:text-4xl text-ink dark:text-parchment">
+                Les plus rares du moment
+              </h2>
+              <p className="text-ink/45 dark:text-parchment/40 text-sm mt-1.5">
+                Ce que presque personne à Paris ne sait qu&apos;il peut faire
+              </p>
             </div>
-            <Link href={`${base}/activities`} className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-brand-navy dark:text-brand-gold hover:underline shrink-0">
+            <Link
+              href={`${base}/activities?sort=rarity`}
+              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-ink dark:text-gold hover:gap-2.5 transition-all shrink-0"
+            >
               Tout voir <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          {activities.length === 0 ? (
-            <div className="text-center py-16 bg-brand-cream dark:bg-gray-800/40 rounded-3xl text-gray-400">
-              <Calendar className="w-10 h-10 mx-auto mb-3 opacity-40" />
-              <p className="font-medium dark:text-gray-300">Aucun événement à venir pour le moment.</p>
-              <Link href={`${base}/propose`} className="mt-3 inline-block text-brand-navy dark:text-brand-gold font-semibold hover:underline text-sm">
-                Soyez le premier à en proposer un →
+          {rares.length === 0 ? (
+            <div className="text-center py-16 bg-parchment dark:bg-ink rounded-3xl">
+              <MapPin className="w-10 h-10 mx-auto mb-3 opacity-25" />
+              <p className="font-medium text-ink/70 dark:text-parchment/70">
+                Le cabinet est encore vide.
+              </p>
+              <p className="text-sm text-ink/40 dark:text-parchment/40 mt-1">
+                Les imports repassent au crible, ça se remplit tout seul.
+              </p>
+              <Link
+                href={`${base}/propose`}
+                className="mt-4 inline-block text-gold font-semibold hover:underline text-sm"
+              >
+                Tu connais un endroit ? Propose-le →
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {activities.map((a) => (
+              {rares.map((a) => (
                 <ActivityCard key={a.id} activity={a} />
               ))}
             </div>
           )}
-
-          <div className="mt-6 text-center sm:hidden">
-            <Link href={`${base}/activities`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-navy dark:text-brand-gold hover:underline">
-              Voir toutes les activités <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* ── CE SOIR ── */}
+      {/* ══ LE CADRAN ═════════════════════════════════════════════════════ */}
+      <section className="relative bg-ink dark:bg-ink py-16 sm:py-20 overflow-hidden grain">
+        <div className="halo w-[500px] h-[500px] -top-40 right-0 bg-metier" />
+        <div className="relative max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl text-parchment mb-3">
+            Jusqu&apos;où tu veux aller&nbsp;?
+          </h2>
+          <p className="text-parchment/45 mb-10 max-w-md mx-auto leading-relaxed">
+            Une seule question, posée à chaque sortie : combien de Parisiens
+            savent que ça existe&nbsp;?
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Les paliers sous le plancher ne mènent nulle part : la liste
+                borne le seuil, donc ils renverraient tous le même résultat. */}
+            {RARITY_BANDS.filter((b) => b.max >= RARITY_FLOOR).map(({ min, max, label, desc, hex }) => (
+              <Link
+                key={label}
+                href={`${base}/activities?insolite=${Math.max(min, RARITY_FLOOR)}`}
+                style={{ borderColor: `${hex}55` }}
+                className="group rounded-2xl border bg-ink-soft/60 p-4 text-left hover:bg-ink-soft transition-all hover:-translate-y-1"
+              >
+                <span
+                  className="text-xs font-black tabular-nums block mb-1.5"
+                  style={{ color: hex }}
+                >
+                  {min}–{max}
+                </span>
+                <span className="text-parchment font-semibold text-sm block leading-tight mb-1">
+                  {label}
+                </span>
+                <span className="text-parchment/40 text-xs leading-snug block">{desc}</span>
+              </Link>
+            ))}
+          </div>
+
+          <p className="text-parchment/30 text-xs mt-6">
+            En dessous de {RARITY_FLOOR}, ça n&apos;entre pas au catalogue.
+          </p>
+        </div>
+      </section>
+
+      {/* ══ LES RANGÉES ═══════════════════════════════════════════════════ */}
       {tonight.length > 0 && (
-        <div className="bg-brand-cream dark:bg-[#0d111a]">
+        <div className="bg-parchment dark:bg-ink-deep">
           <ActivityRow
-            title="Ce soir à Paris"
+            title="Ce soir, si tu bouges maintenant"
             emoji="🌙"
             activities={tonight}
             viewAllHref={`/activities?date=today`}
@@ -326,24 +327,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       )}
 
-      {/* ── POUR VOUS ── */}
-      {personalizedActivities.length > 0 && (
-        <div className="bg-white dark:bg-gray-900/30">
+      {pourToi.length > 0 && (
+        <div className="bg-parchment-dim dark:bg-ink">
           <ActivityRow
-            title="Pour vous"
+            title="Dans tes curiosités"
             emoji="🎯"
-            activities={personalizedActivities}
+            activities={pourToi}
             viewAllHref={`/activities`}
             locale={locale}
           />
         </div>
       )}
 
-      {/* ── TENDANCES ── */}
       {trending.length > 0 && (
-        <div className="bg-white dark:bg-gray-900/30">
+        <div className="bg-parchment dark:bg-ink-deep">
           <ActivityRow
-            title="Tendances cette semaine"
+            title="Ceux qui se remplissent"
             emoji="🔥"
             activities={trending}
             viewAllHref={`/activities?sort=popularity`}
@@ -352,11 +351,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       )}
 
-      {/* ── DERNIÈRE MINUTE ── */}
       {lastMinute.length > 0 && (
-        <div className="bg-brand-cream dark:bg-[#0d111a]">
+        <div className="bg-parchment-dim dark:bg-ink">
           <ActivityRow
-            title="Ajoutés récemment"
+            title="Entrés cette semaine"
             emoji="⚡"
             activities={lastMinute}
             viewAllHref={`/activities`}
@@ -365,37 +363,56 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       )}
 
-      {/* ── RECENTLY VIEWED ── */}
       <RecentlyViewed />
 
-      {/* ── CTA ORGANISER ── */}
-      <section className="bg-brand-navy dark:bg-[#0a0e16] py-16 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-gold/8 rounded-full blur-3xl" />
-          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-purple-600/10 rounded-full blur-3xl" />
+      {/* ══ LA DÉMARCHE ═══════════════════════════════════════════════════ */}
+      <section className="bg-parchment dark:bg-ink-deep py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-3xl sm:text-4xl text-center text-ink dark:text-parchment mb-12">
+            Comment on s&apos;y prend
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {DEMARCHE.map(({ icon: Icon, titre, texte }, i) => (
+              <div key={titre} className="text-center md:text-left">
+                <div className="w-12 h-12 rounded-2xl bg-gold/12 flex items-center justify-center mb-4 mx-auto md:mx-0">
+                  <Icon className="w-5 h-5 text-gold" />
+                </div>
+                <h3 className="text-lg text-ink dark:text-parchment mb-2">
+                  <span className="text-gold/50 tabular-nums mr-1.5">0{i + 1}</span>
+                  {titre}
+                </h3>
+                <p className="text-ink/55 dark:text-parchment/45 text-sm leading-relaxed">
+                  {texte}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <DiscoverButton />
+          </div>
         </div>
-        <div className="relative max-w-3xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-brand-gold/15 rounded-2xl mb-5 border border-brand-gold/20">
-            <Star className="w-7 h-7 text-brand-gold" />
-          </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Vous organisez un événement à Paris ?</h2>
-          <p className="text-white/50 text-lg mb-8 max-w-md mx-auto">
-            Proposez votre activité et touchez une communauté passionnée par la vie parisienne.
+      </section>
+
+      {/* ══ PROPOSER ══════════════════════════════════════════════════════ */}
+      <section className="relative bg-ink-deep py-16 sm:py-20 overflow-hidden grain">
+        <div className="halo w-[500px] h-[500px] -bottom-40 left-1/2 -translate-x-1/2 bg-gold" />
+        <div className="relative max-w-2xl mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl text-parchment mb-3">
+            Tu connais un endroit&nbsp;?
+          </h2>
+          <p className="text-parchment/50 mb-8 leading-relaxed">
+            Les meilleures adresses ne sont dans aucun agenda — elles se
+            transmettent. Propose la tienne, elle passera par le même crible que
+            les autres.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href={`${base}/propose`}
-              className="inline-flex items-center justify-center gap-2 bg-brand-gold text-brand-navy font-bold px-9 py-4 rounded-2xl hover:bg-yellow-300 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-gold/20"
-            >
-              Proposer un événement <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href={`${base}/activities`}
-              className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-medium px-9 py-4 rounded-2xl hover:bg-white/20 transition-colors border border-white/20"
-            >
-              Explorer d&apos;abord
-            </Link>
-          </div>
+          <Link
+            href={`${base}/propose`}
+            className="inline-flex items-center gap-2 bg-parchment text-ink font-bold px-8 py-4 rounded-2xl hover:bg-white hover:scale-105 active:scale-95 transition-all"
+          >
+            Proposer une sortie <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
     </div>

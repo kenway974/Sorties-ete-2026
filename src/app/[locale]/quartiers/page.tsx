@@ -10,7 +10,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = "Quartiers de Paris — Activités & Sorties | MoodMap";
+  const title = "Quartiers de Paris — Activités & Sorties | Hors-Piste";
   const description =
     "Explorez les meilleurs quartiers de Paris et découvrez les concerts, soirées, expos et activités près de chez vous. Le Marais, Montmartre, Bastille et bien plus.";
   const canonical = `${getSiteUrl()}/${locale}/quartiers`;
@@ -23,7 +23,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "website",
-      siteName: "MoodMap",
+      siteName: "Hors-Piste",
       locale: "fr_FR",
     },
     twitter: { card: "summary_large_image", title, description },

@@ -2,25 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, ChevronRight, X, Check } from "lucide-react";
+import { CURIOSITES } from "@/lib/constants/curiosites";
 
 const ARRONDISSEMENTS = [
   "1er", "2e", "3e", "4e", "5e", "6e", "7e", "8e", "9e", "10e",
   "11e", "12e", "13e", "14e", "15e", "16e", "17e", "18e", "19e", "20e",
 ];
 
-const CATEGORIES = [
-  { key: "soirees", emoji: "🎉", label: "Soirées" },
-  { key: "concerts", emoji: "🎵", label: "Concerts" },
-  { key: "expositions", emoji: "🎨", label: "Expositions" },
-  { key: "restaurants", emoji: "🍽️", label: "Restaurants" },
-  { key: "bars", emoji: "🍻", label: "Bars" },
-  { key: "sport", emoji: "⚽", label: "Sport" },
-  { key: "culture", emoji: "🏛️", label: "Culture" },
-  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
-  { key: "etudiants", emoji: "🎓", label: "Étudiants" },
-  { key: "networking", emoji: "🤝", label: "Networking" },
-  { key: "loisirs", emoji: "🎮", label: "Loisirs" },
-];
 
 const BUDGETS = [
   { key: "free", label: "Gratuit uniquement", desc: "Que du 0€" },
@@ -58,7 +46,7 @@ export default function OnboardingWizard({ locale }: { locale: string }) {
   const finish = () => {
     dismiss(true);
     const params = new URLSearchParams();
-    if (cats.length === 1) params.set("category", cats[0]);
+    if (cats.length === 1) params.set("curiosite", cats[0]);
     if (budget === "free") params.set("price", "free");
     router.push(`/${locale}/activities${params.toString() ? "?" + params.toString() : ""}`);
   };
@@ -92,7 +80,7 @@ export default function OnboardingWizard({ locale }: { locale: string }) {
       subtitle: "Sélectionne une ou plusieurs catégories.",
       content: (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {CATEGORIES.map(({ key, emoji, label }) => (
+          {CURIOSITES.map(({ key, emoji, label }) => (
             <button
               key={key}
               onClick={() => setCats((prev) => prev.includes(key) ? prev.filter((x) => x !== key) : [...prev, key])}

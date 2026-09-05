@@ -12,22 +12,11 @@ interface MapViewProps {
   selectedId?: string | null;
 }
 
+import { CURIOSITES, curiosity as curiosityOf } from "@/lib/constants/curiosites";
+
 const PARIS_CENTER: [number, number] = [48.8566, 2.3522];
 const CLUSTER_RADIUS_PX = 55;
 
-const CATEGORY_COLORS: Record<string, string> = {
-  soirees: "#9333ea",
-  concerts: "#e11d48",
-  expositions: "#0ea5e9",
-  restaurants: "#f97316",
-  bars: "#eab308",
-  sport: "#22c55e",
-  culture: "#6366f1",
-  famille: "#14b8a6",
-  etudiants: "#3b82f6",
-  networking: "#8b5cf6",
-  loisirs: "#ec4899",
-};
 
 interface Cluster {
   activities: Activity[];
@@ -129,7 +118,7 @@ export default function MapView({
 
         if (isSingle) {
           // Individual pill marker
-          const color = CATEGORY_COLORS[activity.category] || "#1B3A6B";
+          const color = curiosityOf(activity.curiosity).hex;
           const isSelected = activity.id === selectedId;
           const label = activity.title.length > 17 ? activity.title.slice(0, 17) + "…" : activity.title;
 

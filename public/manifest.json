@@ -1,11 +1,11 @@
 {
-  "name": "MoodMap",
-  "short_name": "MoodMap",
-  "description": "Trouvez quoi faire à Paris selon votre envie du moment — sorties filtrées par mood, sur carte et en stories.",
+  "name": "Hors-Piste",
+  "short_name": "Hors-Piste",
+  "description": "Le cabinet de curiosités de Paris : uniquement des sorties insolites, notées et triées avant d'arriver jusqu'à toi.",
   "start_url": "/fr",
   "display": "standalone",
-  "background_color": "#F8F7F4",
-  "theme_color": "#1B3A6B",
+  "background_color": "#FAF5EC",
+  "theme_color": "#1B1425",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -21,6 +21,10 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["lifestyle", "entertainment", "travel"],
+  "categories": [
+    "lifestyle",
+    "entertainment",
+    "travel"
+  ],
   "lang": "fr"
 }

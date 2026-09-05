@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
-import type { ActivityFilters, ActivityMood } from "@/types";
-import { MOODS } from "@/lib/constants/moods";
+import { CURIOSITES } from "@/lib/constants/curiosites";
+import { RARITY_FLOOR, rarityBand } from "@/lib/constants/rarity";
+import type { ActivityFilters, CuriosityKey } from "@/types";
 
 const DATE_CHIPS = [
   { key: "today", label: "Aujourd'hui" },
@@ -20,21 +21,21 @@ const TIME_SLOTS = [
   { key: "night", emoji: "🌙", label: "Nuit", from: "22:00", to: "23:59" },
 ] as const;
 
-const VIBE_TAGS = [
-  { key: "festif", emoji: "🎉", label: "Festif" },
-  { key: "live-music", emoji: "🎵", label: "Live Music" },
-  { key: "art", emoji: "🎨", label: "Art & Créatif" },
-  { key: "gastronomie", emoji: "🍽️", label: "Gastro" },
-  { key: "sport", emoji: "💪", label: "Sportif" },
-  { key: "plein-air", emoji: "🌿", label: "Plein air" },
-  { key: "culture", emoji: "🏛️", label: "Culture" },
-  { key: "famille", emoji: "👨‍👩‍👧", label: "Famille" },
+// Contexte, pas genre : ces étiquettes viennent de l'inférence des imports et
+// répondent à « dans quelles conditions », pas à « quel type de sortie ».
+const CONTEXTE_TAGS = [
+  { key: "plein-air", emoji: "🌿", label: "En plein air" },
+  { key: "famille", emoji: "👨‍👩‍👧", label: "Avec des enfants" },
+  { key: "gastronomie", emoji: "🍽️", label: "Ça se mange" },
+  { key: "live-music", emoji: "🎵", label: "Musique live" },
+  { key: "art", emoji: "🎨", label: "Arts visuels" },
+  { key: "sport", emoji: "💪", label: "Physique" },
 ];
 
 const SORT_OPTIONS = [
+  { key: "rarity", emoji: "🔮", label: "Insolite" },
   { key: "date", emoji: "📅", label: "Date" },
-  { key: "popularity", emoji: "🔥", label: "Popularité" },
-  { key: "rating", emoji: "⭐", label: "Note" },
+  { key: "popularity", emoji: "🔥", label: "Fréquentation" },
   { key: "price", emoji: "💰", label: "Prix" },
   { key: "distance", emoji: "📍", label: "Distance" },
 ] as const;
@@ -42,13 +43,14 @@ const SORT_OPTIONS = [
 const EMPTY: Partial<ActivityFilters> = {
   dateFilter: null,
   priceFilter: null,
-  sortBy: "date",
+  sortBy: "rarity",
   dateFrom: null,
   dateTo: null,
   timeFrom: null,
   timeTo: null,
   tags: null,
-  moods: null,
+  curiosity: null,
+  minRarity: RARITY_FLOOR,
 };
 
 interface FilterPanelProps {
@@ -57,11 +59,7 @@ interface FilterPanelProps {
 }
 
 function Section({
-  emoji,
-  title,
-  count,
-  defaultOpen = false,
-  children,
+  emoji, title, count, defaultOpen = false, children,
 }: {
   emoji: string;
   title: string;
@@ -71,22 +69,22 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+    <div className="border-b border-ink/8 dark:border-parchment/10 last:border-0">
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
-        <span className="flex items-center gap-3 font-medium text-gray-900 dark:text-white">
+        <span className="flex items-center gap-3 font-medium text-ink dark:text-parchment">
           <span className="text-lg">{emoji}</span>
           <span>{title}</span>
           {count != null && count > 0 && (
-            <span className="bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+            <span className="bg-gold text-ink text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
               {count}
             </span>
           )}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-ink/40 dark:text-parchment/40 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && <div className="px-5 pb-5">{children}</div>}
@@ -95,21 +93,29 @@ function Section({
 }
 
 function Chip({
-  active,
-  onClick,
-  children,
+  active, onClick, children, hex,
 }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  hex?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all active:scale-95 ${
-        active
-          ? "bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy shadow-sm"
-          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+      style={
+        active && hex
+          ? { backgroundColor: hex, borderColor: hex, color: "#fff" }
+          : hex
+            ? { borderColor: `${hex}55`, color: hex }
+            : undefined
+      }
+      className={`px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition-all active:scale-95 ${
+        hex
+          ? ""
+          : active
+            ? "bg-ink text-parchment border-ink dark:bg-parchment dark:text-ink dark:border-parchment shadow-sm"
+            : "bg-transparent border-ink/15 dark:border-parchment/20 text-ink/60 dark:text-parchment/60 hover:border-ink/40 dark:hover:border-parchment/40"
       }`}
     >
       {children}
@@ -124,40 +130,34 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   const activeTimeSlot =
     TIME_SLOTS.find((s) => s.from === local.timeFrom && s.to === local.timeTo)?.key ?? null;
 
+  // Le seuil par défaut n'est pas un filtre « posé » par l'utilisateur : il ne
+  // compte que s'il a été remonté au-dessus du plancher du catalogue.
   const countActive = (f: ActivityFilters) =>
     [
       f.dateFilter,
       f.priceFilter,
-      f.sortBy && f.sortBy !== "date" ? f.sortBy : null,
+      f.curiosity,
+      f.sortBy && f.sortBy !== "rarity" ? f.sortBy : null,
       f.dateFrom || f.dateTo ? "range" : null,
       f.timeFrom || f.timeTo ? "time" : null,
+      (f.minRarity ?? RARITY_FLOOR) > RARITY_FLOOR ? "rarity" : null,
       ...((f.tags ?? []) as string[]),
-      ...((f.moods ?? []) as string[]),
     ].filter(Boolean).length;
 
   const appliedCount = countActive(filters);
   const localCount = countActive(local);
 
-  const dateCount = [
-    local.dateFilter,
-    local.dateFrom || local.dateTo ? "range" : null,
-  ].filter(Boolean).length;
+  const seuil = local.minRarity ?? RARITY_FLOOR;
+  const band = rarityBand(seuil);
+
+  const dateCount = [local.dateFilter, local.dateFrom || local.dateTo ? "range" : null].filter(Boolean).length;
   const timeCount = local.timeFrom || local.timeTo ? 1 : 0;
   const priceCount = local.priceFilter ? 1 : 0;
   const tagsCount = (local.tags ?? []).length;
-  const moodsCount = (local.moods ?? []).length;
-  const sortCount = local.sortBy && local.sortBy !== "date" ? 1 : 0;
+  const sortCount = local.sortBy && local.sortBy !== "rarity" ? 1 : 0;
 
-  const openSheet = () => {
-    setLocal(filters);
-    setOpen(true);
-  };
-
-  const apply = () => {
-    onChange(local);
-    setOpen(false);
-  };
-
+  const openSheet = () => { setLocal(filters); setOpen(true); };
+  const apply = () => { onChange(local); setOpen(false); };
   const clear = () => {
     const cleared = { ...filters, ...EMPTY };
     setLocal(cleared);
@@ -166,10 +166,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   };
 
   const setTimeSlot = (key: string | null) => {
-    if (!key) {
-      setLocal((l) => ({ ...l, timeFrom: null, timeTo: null }));
-      return;
-    }
+    if (!key) { setLocal((l) => ({ ...l, timeFrom: null, timeTo: null })); return; }
     const slot = TIME_SLOTS.find((s) => s.key === key);
     if (slot) setLocal((l) => ({ ...l, timeFrom: slot.from, timeTo: slot.to }));
   };
@@ -182,92 +179,109 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
     });
   };
 
-  const toggleMood = (mood: ActivityMood) => {
-    setLocal((l) => {
-      const cur = l.moods ?? [];
-      const next = cur.includes(mood) ? cur.filter((m) => m !== mood) : [...cur, mood];
-      return { ...l, moods: next.length > 0 ? next : null };
-    });
-  };
-
   const inputCls =
-    "flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-navy/30 dark:focus:ring-brand-gold/30";
+    "flex-1 px-3 py-2 rounded-xl border border-ink/12 dark:border-parchment/15 bg-parchment-dim dark:bg-ink-soft text-sm text-ink dark:text-parchment focus:outline-none focus:ring-2 focus:ring-gold/40";
 
   return (
     <>
-      {/* Trigger */}
       <button
         onClick={openSheet}
         className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium border transition-all active:scale-95 ${
           appliedCount > 0
-            ? "bg-brand-navy text-white border-brand-navy shadow-md shadow-brand-navy/20 dark:bg-brand-gold dark:text-brand-navy dark:border-brand-gold"
-            : "bg-white dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 text-gray-600 hover:border-brand-navy dark:hover:border-brand-gold"
+            ? "bg-gold text-ink border-gold shadow-md shadow-gold/20"
+            : "bg-parchment dark:bg-ink-soft text-ink/70 dark:text-parchment/70 border-ink/12 dark:border-parchment/15 hover:border-gold"
         }`}
       >
         <SlidersHorizontal className="w-4 h-4" />
         Filtres
         {appliedCount > 0 && (
-          <span className="bg-white/30 text-current text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none">
+          <span className="bg-ink/20 text-current text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none">
             {appliedCount}
           </span>
         )}
       </button>
 
-      {/* Bottom sheet modal — rendered via portal to escape backdrop-filter stacking context */}
       {open && createPortal(
         <div className="fixed inset-0 z-[9999] flex flex-col justify-end md:justify-center md:items-center">
-          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-ink-deep/60 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
 
-          {/* Sheet */}
-          <div className="relative w-full md:w-[500px] bg-white dark:bg-gray-900 rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] md:max-h-[88dvh] animate-slide-up md:animate-scale-in">
-            {/* Drag handle (mobile only) */}
-            <div className="md:hidden pt-3 pb-0 flex justify-center shrink-0">
-              <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="relative w-full md:w-[500px] bg-parchment dark:bg-ink rounded-t-3xl md:rounded-3xl shadow-vitrine flex flex-col max-h-[92dvh] md:max-h-[88dvh] animate-slide-up md:animate-scale-in">
+            <div className="md:hidden pt-3 flex justify-center shrink-0">
+              <div className="w-10 h-1 bg-ink/15 dark:bg-parchment/20 rounded-full" />
             </div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
-              <h2 className="font-semibold text-lg text-gray-900 dark:text-white">
-                Filtres
+            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-ink/8 dark:border-parchment/10 shrink-0">
+              <h2 className="font-display text-xl text-ink dark:text-parchment">
+                Affiner
                 {localCount > 0 && (
-                  <span className="ml-2 text-sm font-normal text-gray-400">
+                  <span className="ml-2 text-sm font-sans font-normal text-ink/40 dark:text-parchment/40">
                     · {localCount} actif{localCount > 1 ? "s" : ""}
                   </span>
                 )}
               </h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-xl text-ink/40 dark:text-parchment/40 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto overscroll-contain">
-              {/* Mon envie */}
-              <Section emoji="💭" title="Mon envie" count={moodsCount} defaultOpen>
+              {/* Le réglage principal, en tête et ouvert par défaut. */}
+              <Section
+                emoji="🔮"
+                title="Indice d'insolite"
+                count={seuil > RARITY_FLOOR ? 1 : 0}
+                defaultOpen
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-ink/50 dark:text-parchment/50">
+                    À partir de
+                  </span>
+                  <span className="text-sm font-bold tabular-nums" style={{ color: band?.hex }}>
+                    {seuil}/10 · {band?.label}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={RARITY_FLOOR}
+                  max={10}
+                  step={1}
+                  value={seuil}
+                  onChange={(e) => setLocal((l) => ({ ...l, minRarity: Number(e.target.value) }))}
+                  aria-label="Indice d'insolite minimum"
+                  className="w-full accent-gold"
+                  style={{ accentColor: band?.hex }}
+                />
+                <p className="text-xs text-ink/40 dark:text-parchment/40 mt-2 leading-snug">
+                  {band?.desc}. Rien en dessous de {RARITY_FLOOR} n&apos;entre au catalogue.
+                </p>
+              </Section>
+
+              <Section emoji="🎭" title="Curiosité" count={local.curiosity ? 1 : 0}>
                 <div className="flex flex-wrap gap-2">
-                  {MOODS.map(({ key, emoji, label }) => (
+                  {CURIOSITES.map(({ key, emoji, label, hex }) => (
                     <Chip
                       key={key}
-                      active={(local.moods ?? []).includes(key as ActivityMood)}
-                      onClick={() => toggleMood(key as ActivityMood)}
+                      hex={hex}
+                      active={local.curiosity === key}
+                      onClick={() =>
+                        setLocal((l) => ({
+                          ...l,
+                          curiosity: l.curiosity === key ? null : (key as CuriosityKey),
+                        }))
+                      }
                     >
                       {emoji} {label}
                     </Chip>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-3">
-                  Dans quel état d&apos;esprit veux-tu sortir&nbsp;?
-                </p>
               </Section>
 
-              {/* Quand */}
               <Section emoji="📅" title="Quand" count={dateCount}>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {DATE_CHIPS.map(({ key, label }) => (
@@ -287,30 +301,22 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                     </Chip>
                   ))}
                 </div>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2">
                   <input
                     type="date"
                     value={local.dateFrom || ""}
                     onChange={(e) =>
-                      setLocal((l) => ({
-                        ...l,
-                        dateFrom: e.target.value || null,
-                        dateFilter: null,
-                      }))
+                      setLocal((l) => ({ ...l, dateFrom: e.target.value || null, dateFilter: null }))
                     }
                     className={inputCls}
                     aria-label="Date de début"
                   />
-                  <span className="text-gray-300 dark:text-gray-600 shrink-0">→</span>
+                  <span className="text-ink/25 dark:text-parchment/25 shrink-0">→</span>
                   <input
                     type="date"
                     value={local.dateTo || ""}
                     onChange={(e) =>
-                      setLocal((l) => ({
-                        ...l,
-                        dateTo: e.target.value || null,
-                        dateFilter: null,
-                      }))
+                      setLocal((l) => ({ ...l, dateTo: e.target.value || null, dateFilter: null }))
                     }
                     className={inputCls}
                     aria-label="Date de fin"
@@ -318,7 +324,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                 </div>
               </Section>
 
-              {/* Horaire */}
               <Section emoji="🕐" title="Horaire" count={timeCount}>
                 <div className="flex flex-wrap gap-2">
                   {TIME_SLOTS.map(({ key, emoji, label }) => (
@@ -331,21 +336,14 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                     </Chip>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-3">
-                  Filtre sur l&apos;heure de début de l&apos;activité.
-                </p>
               </Section>
 
-              {/* Prix */}
               <Section emoji="💰" title="Prix" count={priceCount}>
                 <div className="flex gap-2">
                   <Chip
                     active={local.priceFilter === "free"}
                     onClick={() =>
-                      setLocal((l) => ({
-                        ...l,
-                        priceFilter: l.priceFilter === "free" ? null : "free",
-                      }))
+                      setLocal((l) => ({ ...l, priceFilter: l.priceFilter === "free" ? null : "free" }))
                     }
                   >
                     🎟️ Gratuit
@@ -353,10 +351,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                   <Chip
                     active={local.priceFilter === "paid"}
                     onClick={() =>
-                      setLocal((l) => ({
-                        ...l,
-                        priceFilter: l.priceFilter === "paid" ? null : "paid",
-                      }))
+                      setLocal((l) => ({ ...l, priceFilter: l.priceFilter === "paid" ? null : "paid" }))
                     }
                   >
                     💳 Payant
@@ -364,10 +359,9 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                 </div>
               </Section>
 
-              {/* Ambiance */}
-              <Section emoji="✨" title="Ambiance" count={tagsCount}>
+              <Section emoji="🧭" title="Contexte" count={tagsCount}>
                 <div className="flex flex-wrap gap-2">
-                  {VIBE_TAGS.map(({ key, emoji, label }) => (
+                  {CONTEXTE_TAGS.map(({ key, emoji, label }) => (
                     <Chip
                       key={key}
                       active={(local.tags ?? []).includes(key)}
@@ -379,18 +373,14 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
                 </div>
               </Section>
 
-              {/* Trier par */}
               <Section emoji="↕️" title="Trier par" count={sortCount}>
                 <div className="flex flex-wrap gap-2">
                   {SORT_OPTIONS.map(({ key, emoji, label }) => (
                     <Chip
                       key={key}
-                      active={(local.sortBy ?? "date") === key}
+                      active={(local.sortBy ?? "rarity") === key}
                       onClick={() =>
-                        setLocal((l) => ({
-                          ...l,
-                          sortBy: key as ActivityFilters["sortBy"],
-                        }))
+                        setLocal((l) => ({ ...l, sortBy: key as ActivityFilters["sortBy"] }))
                       }
                     >
                       {emoji} {label}
@@ -400,17 +390,16 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </Section>
             </div>
 
-            {/* Footer */}
-            <div className="shrink-0 px-5 py-4 border-t border-gray-100 dark:border-gray-800 flex gap-3 bg-white dark:bg-gray-900 rounded-b-3xl md:rounded-b-2xl">
+            <div className="shrink-0 px-5 py-4 border-t border-ink/8 dark:border-parchment/10 flex gap-3 bg-parchment dark:bg-ink rounded-b-3xl">
               <button
                 onClick={clear}
-                className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="px-5 py-3 rounded-2xl border border-ink/12 dark:border-parchment/15 text-sm font-medium text-ink/60 dark:text-parchment/60 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
               >
                 Effacer
               </button>
               <button
                 onClick={apply}
-                className="flex-1 py-3 rounded-2xl bg-brand-navy text-white dark:bg-brand-gold dark:text-brand-navy text-sm font-semibold hover:opacity-90 transition-opacity shadow-md shadow-brand-navy/20 dark:shadow-brand-gold/20 active:scale-[0.98]"
+                className="flex-1 py-3 rounded-2xl bg-gold text-ink text-sm font-bold hover:bg-gold-light transition-colors shadow-glow-gold active:scale-[0.98]"
               >
                 Appliquer{localCount > 0 ? ` (${localCount})` : ""}
               </button>

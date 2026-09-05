@@ -5,6 +5,9 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   test: {
+    // Les specs e2e sont pilotées par Playwright : les collecter ici les fait
+    // échouer au chargement (test.describe hors runner Playwright).
+    exclude: ["node_modules/**", "e2e/**", ".next/**"],
     environment: "jsdom",
     setupFiles: [path.resolve(__dirname, "vitest.setup.ts")],
     globals: true,

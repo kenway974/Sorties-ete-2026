@@ -13,9 +13,9 @@ test.describe("Activities page", () => {
     await expect(page.getByRole("searchbox")).toBeVisible();
   });
 
-  test("category filter buttons are present", async ({ page }) => {
-    const allButton = page.getByRole("button", { name: /tout/i });
-    await expect(allButton).toBeVisible();
+  test("le bandeau des curiosités est présent", async ({ page }) => {
+    await expect(page.getByRole("group", { name: /Filtrer par curiosité/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tout" })).toBeVisible();
   });
 
   test("filter panel toggle button is present", async ({ page }) => {
@@ -55,13 +55,15 @@ test.describe("Activities page", () => {
     expect(hasSkeleton || hasCards).toBe(true);
   });
 
-  test("selecting a category filters the URL or state", async ({ page }) => {
-    const cultureBtn = page.getByRole("button", { name: /culture/i }).first();
-    if (await cultureBtn.isVisible()) {
-      await cultureBtn.click();
-      // Category should now be visually active
-      await expect(cultureBtn).toHaveClass(/bg-brand-navy|font-bold|active/);
-    }
+  test("sélectionner une curiosité la marque comme active", async ({ page }) => {
+    const btn = page.getByRole("button", { name: /Ça se mérite/ }).first();
+    await btn.click();
+    await expect(btn).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("le panneau s'ouvre sur le cadran d'insolite", async ({ page }) => {
+    await page.getByRole("button", { name: /Filtres/ }).click();
+    await expect(page.getByLabel("Indice d'insolite minimum")).toBeVisible();
   });
 
   test("free price filter can be toggled", async ({ page }) => {

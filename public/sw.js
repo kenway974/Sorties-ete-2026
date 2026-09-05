@@ -1,4 +1,4 @@
-const CACHE_NAME = 'moodmap-v4';
+const CACHE_NAME = 'hors-piste-v4';
 
 const STATIC_ASSETS = [
   '/manifest.json',

@@ -2,7 +2,7 @@
 
 export const metadata: Metadata = {
   title: "Mentions légales",
-  description: "Mentions légales de MoodMap.",
+  description: "Mentions légales de Hors-Piste.",
   robots: { index: true, follow: true },
 };
 
@@ -14,7 +14,7 @@ export default function MentionsLegalesPage() {
 
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 pt-4">1. Éditeur du site</h2>
       <p>
-        Le site <strong>MoodMap</strong> est édité par :<br />
+        Le site <strong>Hors-Piste</strong> est édité par :<br />
         <strong>Kenny Pignolet</strong><br />
         Entrepreneur individuel (micro-entreprise)<br />
         SIRET : 898 371 513 00034<br />

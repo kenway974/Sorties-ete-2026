@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = "Activités Gratuites à Paris — Sorties Gratuites | MoodMap";
+  const title = "Activités Gratuites à Paris — Sorties Gratuites | Hors-Piste";
   const description =
     "Découvrez les meilleures activités gratuites à Paris : concerts gratuits, expos gratuites, événements gratuits ce week-end. Sortez sans dépenser un euro.";
   const canonical = `${getSiteUrl()}/${locale}/activites-gratuites-paris`;
@@ -26,7 +26,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "website",
-      siteName: "MoodMap",
+      siteName: "Hors-Piste",
       locale: "fr_FR",
     },
     twitter: { card: "summary_large_image", title, description },
@@ -135,15 +135,12 @@ export default async function ActivitesGratuitesPage({
               Les parcs et jardins parisiens — Tuileries, Luxembourg, Buttes-Chaumont, Bois de Vincennes — organisent régulièrement des concerts, ateliers et animations gratuits, particulièrement pendant les mois d&apos;été. Le long des canaux et des quais de Seine, les guinguettes, concerts improvisés et projections cinématographiques se multiplient dès les premières chaleurs.
             </p>
             <p>
-              MoodMap recense en temps réel toutes les activités gratuites proposées par des organisateurs locaux : ateliers créatifs, sorties sportives, événements communautaires, visites guidées participatives. Notre sélection est mise à jour quotidiennement pour que vous ne manquiez jamais une occasion de sortir sans vous ruiner à Paris.
+              Hors-Piste recense en temps réel toutes les activités gratuites proposées par des organisateurs locaux : ateliers créatifs, sorties sportives, événements communautaires, visites guidées participatives. Notre sélection est mise à jour quotidiennement pour que vous ne manquiez jamais une occasion de sortir sans vous ruiner à Paris.
             </p>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href={`/${locale}/activities`} className="px-4 py-2 rounded-full text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy/90 transition-colors">
               Toutes les activités
-            </Link>
-            <Link href={`/${locale}/sorties-enfants-paris`} className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-              Sorties enfants →
             </Link>
             <Link href={`/${locale}/quartiers`} className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
               Par quartier →

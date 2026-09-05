@@ -44,7 +44,8 @@ export function useActivities(filters: ActivityFilters = {}) {
       void today;
       query = query.or(futureOrClause());
 
-      if (filters.category) query = query.eq("category", filters.category);
+      if (filters.curiosity) query = query.eq("curiosity", filters.curiosity);
+      if (filters.minRarity) query = query.gte("rarity", filters.minRarity);
 
       if (filters.search) {
         const term = filters.search.trim().replace(/'/g, "''");
@@ -54,7 +55,6 @@ export function useActivities(filters: ActivityFilters = {}) {
       if (filters.priceFilter === "free") query = query.is("price", null);
       if (filters.priceFilter === "paid") query = query.not("price", "is", null);
       if (filters.tags && filters.tags.length > 0) query = query.overlaps("tags", filters.tags);
-      if (filters.moods && filters.moods.length > 0) query = query.overlaps("moods", filters.moods);
 
       if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
       if (filters.dateTo) query = query.lte("date", filters.dateTo);
@@ -95,6 +95,10 @@ export function useActivities(filters: ActivityFilters = {}) {
         query = query.order("date", { ascending: true }).order("time", { ascending: true });
       } else if (sortBy === "price") {
         query = query.order("price", { ascending: true, nullsFirst: true });
+      } else if (sortBy === "rarity") {
+        query = query
+          .order("rarity", { ascending: false, nullsFirst: false })
+          .order("date", { ascending: true });
       } else if (sortBy === "popularity" || sortBy === "rating") {
         query = query
           .order("current_participants", { ascending: false })

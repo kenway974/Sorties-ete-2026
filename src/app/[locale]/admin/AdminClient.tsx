@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils/formatters";
 import type { Activity as ActivityType } from "@/types";
+import { curiosity as curiosityOf } from "@/lib/constants/curiosites";
+import { rarityLabel } from "@/lib/constants/rarity";
 
 interface Props {
   pendingActivities: ActivityType[];
@@ -57,7 +59,14 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="gray">{activity.category}</Badge>
+                    <Badge variant="gray">
+                      {curiosityOf(activity.curiosity).emoji} {curiosityOf(activity.curiosity).label}
+                    </Badge>
+                    {activity.rarity != null && (
+                      <Badge variant="gray">
+                        {activity.rarity}/10 · {rarityLabel(activity.rarity)}
+                      </Badge>
+                    )}
                     <span className="text-xs text-gray-400">{formatDate(activity.created_at)}</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 truncate">{activity.title}</h3>
@@ -72,6 +81,13 @@ export default function AdminClient({ pendingActivities: initial, stats }: Props
                     <p className="text-xs text-indigo-600 mt-1 flex items-center gap-1">
                       <Bot className="w-3 h-3 shrink-0" />
                       {activity.moderation_note}
+                    </p>
+                  )}
+                  {/* Le raisonnement derrière la note : c'est ce sur quoi le
+                      modérateur arbitre quand la sortie est jugée trop banale. */}
+                  {activity.rarity_note && (
+                    <p className="text-xs text-gray-500 mt-1 italic border-l-2 border-gray-200 pl-2">
+                      {activity.rarity_note}
                     </p>
                   )}
                 </div>

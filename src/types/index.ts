@@ -1,37 +1,6 @@
-export type ActivityCategory =
-  | "soirees"
-  | "concerts"
-  | "expositions"
-  | "restaurants"
-  | "bars"
-  | "sport"
-  | "culture"
-  | "famille"
-  | "etudiants"
-  | "networking"
-  | "loisirs"
-  | "salons";
+import type { CuriosityKey } from "@/lib/constants/curiosites";
+export type { CuriosityKey } from "@/lib/constants/curiosites";
 
-// Mood / "envie" — the emotional intent & context behind going out (see lib/constants/moods.ts)
-export type ActivityMood =
-  | "rencontrer"
-  | "entre-amis"
-  | "solo"
-  | "famille"
-  | "date-romantique"
-  | "date-fun"
-  | "date-chill"
-  | "ressourcer"
-  | "air"
-  | "decompresser"
-  | "sensations"
-  | "nocturne"
-  | "chic"
-  | "decouvrir"
-  | "insolite"
-  | "creatif"
-  | "gourmand"
-  | "esprit";
 
 export type ActivityStatus = "pending" | "approved" | "rejected";
 export type UserRole = "user" | "moderator" | "admin";
@@ -44,7 +13,7 @@ export interface Profile {
   avatar_url: string | null;
   bio: string | null;
   preferred_language: string;
-  preferences: ActivityCategory[];
+  preferences: CuriosityKey[];
   role: UserRole;
   created_at: string;
   updated_at: string;
@@ -54,9 +23,11 @@ export interface Activity {
   id: string;
   title: string;
   description: string;
-  category: ActivityCategory;
+  curiosity: CuriosityKey;
+  /** Indice d'insolite 1–10, attribué par le scoring. null = pas encore noté. */
+  rarity: number | null;
+  rarity_note?: string | null;
   tags: string[];
-  moods?: ActivityMood[] | null;
   address: string;
   lat: number;
   lng: number;
@@ -136,10 +107,12 @@ export interface Notification {
 }
 
 export interface ActivityFilters {
-  category?: ActivityCategory | null;
+  curiosity?: CuriosityKey | null;
+  /** Ne garder que les sorties dont l'indice d'insolite atteint ce seuil. */
+  minRarity?: number | null;
   dateFilter?: "today" | "tomorrow" | "this_week" | "this_weekend" | "this_month" | null;
   priceFilter?: "free" | "paid" | null;
-  sortBy?: "distance" | "date" | "popularity" | "rating" | "price";
+  sortBy?: "distance" | "date" | "popularity" | "rating" | "price" | "rarity";
   search?: string;
   userLat?: number;
   userLng?: number;
@@ -151,6 +124,4 @@ export interface ActivityFilters {
   timeTo?: string | null;
   /** Vibe/ambiance tags to filter by (overlaps with activity tags). */
   tags?: string[] | null;
-  /** Mood/envie to filter by (overlaps with activity moods). */
-  moods?: ActivityMood[] | null;
 }

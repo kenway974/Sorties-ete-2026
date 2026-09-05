@@ -1,9 +1,18 @@
 // Supabase Edge Function: moderate-activity
-// AI-powered moderation for newly submitted activities.
-// Called via a Supabase DB webhook (or directly from the propose API) with POST { activityId }.
-// Uses Anthropic Claude to classify the submission and auto-approve safe activities.
+//
+// Deux passages sur chaque proposition d'utilisateur :
+//   1. sûreté — le contenu est-il publiable ? (approuver / rejeter / relire)
+//   2. insolite — quelle curiosité, quel indice ? (même barème que les imports)
+//
+// Le second passage n'est pas cosmétique : une activité sans indice est
+// invisible côté public, puisque le catalogue filtre sur le seuil. Une
+// proposition trop banale n'est pas rejetée pour autant — elle part en
+// relecture humaine, le refus éditorial ne s'automatise pas.
+//
+// Appelée par webhook Supabase (ou par l'API propose) avec POST { activityId }.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { scoreEvents, RARITY_FLOOR } from "../_shared/scoring.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,28 +26,31 @@ interface ModerationResult {
   reason: string;
 }
 
-async function moderateWithClaude(title: string, description: string, category: string): Promise<ModerationResult> {
+async function moderateWithClaude(title: string, description: string, curiosity: string): Promise<ModerationResult> {
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) {
     // No API key – send to human review
     return { decision: "review", confidence: 0, reason: "ANTHROPIC_API_KEY not configured" };
   }
 
-  const prompt = `You are a content moderator for MoodMap, a Paris activities platform for a French audience.
+  const prompt = `Tu modères les propositions d'un guide parisien qui ne référence que des sorties insolites.
 
-Evaluate this activity submission and decide whether to APPROVE, REJECT, or flag for REVIEW.
+Décide s'il faut APPROUVER, REJETER, ou envoyer en RELECTURE humaine.
 
-Title: ${title}
-Category: ${category}
-Description: ${description ?? "(none)"}
+Titre : ${title}
+Curiosité : ${curiosity}
+Description : ${description ?? "(aucune)"}
 
-Rules:
-- APPROVE if it's a legitimate Paris activity (concert, restaurant, expo, sport, networking, etc.)
-- REJECT if it contains explicit sexual content, illegal activities, dangerous content, spam, or off-topic (not in or near Paris)
-- REVIEW if you are unsure or the content is borderline
+Règles :
+- APPROUVER si c'est une vraie sortie parisienne et qu'elle sort de l'ordinaire.
+- REJETER si le contenu est sexuellement explicite, illégal, dangereux, du spam,
+  ou hors périmètre (pas à Paris ni en proche banlieue).
+- RELECTURE si tu hésites, si le contenu est limite, ou si la sortie a l'air
+  parfaitement banale — la banalité n'est pas un motif de rejet automatique,
+  c'est un motif de relecture.
 
-Reply with ONLY a JSON object (no markdown):
-{"decision":"approve|reject|review","confidence":0.0-1.0,"reason":"one sentence"}`;
+Réponds UNIQUEMENT par un objet JSON, sans balises markdown :
+{"decision":"approve|reject|review","confidence":0.0-1.0,"reason":"une phrase en français"}`;
 
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -48,7 +60,7 @@ Reply with ONLY a JSON object (no markdown):
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-haiku-4-5",
       max_tokens: 256,
       messages: [{ role: "user", content: prompt }],
     }),
@@ -101,7 +113,7 @@ Deno.serve(async (req: Request) => {
 
   const { data: activity, error } = await supabase
     .from("activities")
-    .select("id, title, description, category, status")
+    .select("id, title, description, curiosity, status")
     .eq("id", activityId)
     .single();
 
@@ -121,26 +133,58 @@ Deno.serve(async (req: Request) => {
   const result = await moderateWithClaude(
     activity.title,
     activity.description ?? "",
-    activity.category,
+    activity.curiosity,
   );
 
   console.log(`[moderate-activity] ${activityId} → ${result.decision} (${result.confidence}) — ${result.reason}`);
 
-  const newStatus =
+  let newStatus =
     result.decision === "approve" ? "approved" :
     result.decision === "reject"  ? "rejected" :
-    "pending"; // keep pending for human review
+    "pending"; // relecture humaine
 
-  await supabase
-    .from("activities")
-    .update({
-      status: newStatus,
-      moderation_note: result.reason,
-    })
-    .eq("id", activityId);
+  const update: Record<string, unknown> = {
+    status: newStatus,
+    moderation_note: result.reason,
+  };
+
+  // Second passage : noter l'insolite. Inutile sur un contenu rejeté.
+  if (newStatus !== "rejected") {
+    const scores = await scoreEvents([{
+      ref: activityId,
+      title: activity.title,
+      description: activity.description ?? "",
+    }]);
+    const score = scores.get(activityId);
+
+    if (score) {
+      update.curiosity = score.curiosity;
+      update.rarity = score.rarity;
+      update.rarity_note = score.note;
+
+      // Sans note (repli hors ligne) ou sous le seuil : un humain tranche.
+      // La banalité est un avis éditorial, pas une infraction.
+      if (score.rarity === null || score.rarity < RARITY_FLOOR) {
+        newStatus = "pending";
+        update.status = "pending";
+        update.moderation_note = score.rarity === null
+          ? `${result.reason} · indice d'insolite non calculé`
+          : `${result.reason} · indice ${score.rarity}/10, sous le seuil de ${RARITY_FLOOR}`;
+      }
+    }
+  }
+
+  await supabase.from("activities").update(update).eq("id", activityId);
 
   return new Response(
-    JSON.stringify({ ok: true, decision: result.decision, newStatus, reason: result.reason }),
+    JSON.stringify({
+      ok: true,
+      decision: result.decision,
+      newStatus,
+      reason: update.moderation_note,
+      rarity: update.rarity ?? null,
+      curiosity: update.curiosity ?? null,
+    }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 });

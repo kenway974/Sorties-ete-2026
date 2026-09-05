@@ -15,7 +15,7 @@ describe("LoginForm", () => {
 
   it("renders email input", () => {
     render(<LoginForm locale="fr" />);
-    const emailInput = screen.getByLabelText("auth.login.email");
+    const emailInput = screen.getByLabelText("Email");
     expect(emailInput).toBeDefined();
   });
 
@@ -26,12 +26,12 @@ describe("LoginForm", () => {
 
   it("renders submit button", () => {
     render(<LoginForm locale="fr" />);
-    expect(screen.getByRole("button", { name: "auth.login.submit" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Se connecter" })).toBeDefined();
   });
 
   it("renders link to register page", () => {
     render(<LoginForm locale="fr" />);
-    const link = screen.getByRole("link", { name: "auth.login.register_link" });
+    const link = screen.getByRole("link", { name: "S'inscrire" });
     expect(link).toBeDefined();
     expect(link.getAttribute("href")).toBe("/fr/auth/register");
   });
@@ -40,7 +40,7 @@ describe("LoginForm", () => {
     mockSignIn.mockResolvedValue({ error: null });
     render(<LoginForm locale="fr" />);
 
-    fireEvent.change(screen.getByLabelText("auth.login.email"), { target: { value: "user@test.com" } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "user@test.com" } });
     const { container } = render(<LoginForm locale="fr" />);
     fireEvent.change(container.querySelector("input[type='password']"  )!, { target: { value: "secret123" } });
     fireEvent.change(container.querySelector("input[type='email']"  )!, { target: { value: "user@test.com" } });
@@ -57,7 +57,7 @@ describe("LoginForm", () => {
     fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(screen.getByText("auth.errors.invalid_credentials")).toBeDefined();
+      expect(screen.getByText("Email ou mot de passe incorrect")).toBeDefined();
     });
   });
 

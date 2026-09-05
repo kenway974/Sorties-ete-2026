@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const limited = rateLimit(getRateLimitKey(request, "random"), { limit: 20, windowSecs: 60 });
   if (limited) return limited;
   const { searchParams } = new URL(request.url);
-  const category = searchParams.get("category");
+  const curiosity = searchParams.get("curiosity");
 
   const supabase = await createClient();
   let query = supabase
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     .eq("status", "approved")
     .gte("date", new Date().toISOString().split("T")[0]);
 
-  if (category) query = query.eq("category", category);
+  if (curiosity) query = query.eq("curiosity", curiosity);
 
   const { data } = await query;
   if (!data || data.length === 0) {

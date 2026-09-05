@@ -6,17 +6,25 @@
 // Required env var: OPENAGENDA_API_KEY (free key from https://openagenda.com/settings)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { inferCuriosity, type CuriosityKey } from "../_shared/curiosites.ts";
+import { scoreEvents, passesFloor } from "../_shared/scoring.ts";
 
 const OA_BASE = "https://api.openagenda.com/v2/events";
 const PAGE = 100;
+/**
+ * Budget de temps de l'import. Le scoring appelle Claude, donc un passage
+ * complet peut dépasser la limite d'exécution de la fonction. On s'arrête
+ * proprement avant : mieux vaut importer une partie du catalogue et exécuter
+ * le nettoyage final que se faire couper au milieu et ne rien conclure. Le
+ * cron suivant reprend là où on s'est arrêté (l'upsert est idempotent).
+ */
+const BUDGET_MS = 9 * 60 * 1000;
+
 const MAX_RECORDS = 3000;
 
 // Paris + Île-de-France department codes
 const DEPARTMENT_CODES = ["75", "77", "78", "91", "92", "93", "94", "95"];
 
-type Category =
-  | "soirees" | "concerts" | "expositions" | "restaurants" | "bars"
-  | "sport" | "culture" | "famille" | "etudiants" | "networking" | "loisirs" | "salons";
 
 interface OALocation {
   name: string | null;
@@ -71,22 +79,20 @@ function pickKeywords(obj: Record<string, string[]> | null): string[] {
   return arr.slice(0, 6);
 }
 
-// Infer vibe tags from category + keywords + text
-function inferVibeTags(category: Category, keywords: string[], title: string, desc: string): string[] {
+// Infer vibe tags from curiosity + keywords + text
+function inferVibeTags(curiosity: CuriosityKey, keywords: string[], title: string, desc: string): string[] {
   const vibes: string[] = [];
   const text = [...keywords, title, desc].join(" ").toLowerCase();
 
-  const categoryVibes: Partial<Record<Category, string[]>> = {
-    soirees: ["festif"],
-    concerts: ["live-music", "festif"],
-    expositions: ["art", "culture"],
-    restaurants: ["gastronomie"],
-    bars: ["festif"],
-    sport: ["sport"],
-    culture: ["culture"],
-    famille: ["famille"],
+  const curiosityVibes: Partial<Record<CuriosityKey, string[]>> = {
+    "frisson":       ["sensation"],
+    "secret":        ["confidentiel"],
+    "savoir-faire":  ["atelier"],
+    "mise-en-scene": ["immersif"],
+    "hors-du-temps": ["patrimoine"],
+    "bizarrerie":    ["insolite"],
   };
-  vibes.push(...(categoryVibes[category] ?? []));
+  vibes.push(...(curiosityVibes[curiosity] ?? []));
 
   if (/concert|live music|jazz|rock|électro|dj|musique live/.test(text)) vibes.push("live-music");
   if (/plein.air|outdoor|parc|jardin|extérieur|forêt|nature/.test(text)) vibes.push("plein-air");
@@ -100,74 +106,6 @@ function inferVibeTags(category: Category, keywords: string[], title: string, de
   return [...new Set(vibes)];
 }
 
-type Mood =
-  | "rencontrer" | "entre-amis" | "solo" | "famille"
-  | "date-romantique" | "date-fun" | "date-chill"
-  | "ressourcer" | "air" | "decompresser" | "sensations" | "nocturne" | "chic"
-  | "decouvrir" | "insolite" | "creatif" | "gourmand" | "esprit";
-
-// Infer "envie/mood" — intent & context an event suits. Category defaults + keyword refinements.
-function inferMoods(category: Category, keywords: string[], title: string, desc: string): Mood[] {
-  const moods = new Set<Mood>();
-  const text = [...keywords, title, desc].join(" ").toLowerCase();
-
-  const byCategory: Partial<Record<Category, Mood[]>> = {
-    soirees:     ["rencontrer", "entre-amis", "decompresser", "nocturne"],
-    concerts:    ["decompresser", "decouvrir", "entre-amis", "nocturne"],
-    expositions: ["solo", "esprit", "decouvrir", "date-chill"],
-    restaurants: ["gourmand", "date-romantique", "entre-amis"],
-    bars:        ["entre-amis", "decompresser", "nocturne", "rencontrer"],
-    sport:       ["air", "sensations", "decompresser"],
-    culture:     ["esprit", "decouvrir", "solo", "date-chill"],
-    famille:     ["famille", "air", "creatif"],
-    etudiants:   ["rencontrer", "entre-amis", "decompresser"],
-    networking:  ["rencontrer", "esprit"],
-    loisirs:     ["date-fun", "entre-amis", "decompresser", "creatif"],
-    salons:      ["decouvrir", "insolite", "entre-amis"],
-  };
-  for (const m of byCategory[category] ?? []) moods.add(m);
-
-  const add = (re: RegExp, m: Mood) => { if (re.test(text)) moods.add(m); };
-  add(/rencontre|speed.dating|afterwork|after.work|c[ée]libataire|blind.test|mixer|networking|[ée]change|\bmeet\b/, "rencontrer");
-  add(/entre amis|groupe|[ée]quipe|\bteam\b|bowling|billard|quiz|jeux? de soci[ée]t[ée]/, "entre-amis");
-  add(/romantique|amoureux|en couple|aux chandelles|d[îi]ner|cro[îi]si[èe]re|p[ée]niche|rooftop|coucher de soleil|cabaret|tango|s[ée]r[ée]nade|saint.valentin/, "date-romantique");
-  add(/bowling|mini.?golf|karaok[ée]|escape.game|laser.game|arcade|accrobranche|patinoire|r[ée]alit[ée] virtuelle|fl[ée]chettes/, "date-fun");
-  add(/caf[ée]|brunch|salon de th[ée]|balade|promenade|pique.nique|cin[ée]ma|cin[ée]/, "date-chill");
-  add(/famille|enfant|\bkids\b|jeune public|b[ée]b[ée]|parent/, "famille");
-  add(/yoga|m[ée]ditation|spa|bien.[êe]tre|wellness|massage|relaxation|d[ée]tente|sophrologie|sieste|\bzen\b|bain sonore|th[ée]rapie/, "ressourcer");
-  add(/plein.air|outdoor|parc|jardin|nature|for[êe]t|terrasse|balade|promenade|ext[ée]rieur|rivi[èe]re|quai|bois|p[ée]niche|randonn[ée]e/, "air");
-  add(/festi|f[êe]te|party|\bdj\b|club|dancefloor|danse|\bdance\b|\bbal\b|guinguette|ap[ée]ro|open.bar/, "decompresser");
-  add(/sensation|adr[ée]naline|karting|paintball|accrobranche|escalade|\bsaut\b|trampoline|man[èe]ge|frisson|vertige|tyrolienne/, "sensations");
-  add(/\bnuit\b|nocturne|\bclub\b|\bafter\b|soir[ée]e|minuit|nightlife/, "nocturne");
-  add(/rooftop|champagne|\bgala\b|vernissage|[ée]l[ée]gant|cocktail|palace|op[ée]ra|prestige|\bluxe\b|raffin[ée]/, "chic");
-  add(/d[ée]couverte|nouveaut[ée]|initiation|exp[ée]rience|immersi|surprise|premi[èe]re/, "decouvrir");
-  add(/insolite|secret|cach[ée]|dans le noir|\bunique\b|[ée]trange|myst[èe]re/, "insolite");
-  add(/atelier|\bdiy\b|workshop|poterie|c[ée]ramique|peinture|dessin|fabrication|cr[ée]ation|couture|cours de|sculpture/, "creatif");
-  add(/d[ée]gustation|gastronomie|\bfood\b|brunch|chocolat|\bvin\b|fromage|street food|march[ée]|cuisine|\brepas\b|bi[èe]re|cocktail|[œo]enologie/, "gourmand");
-  add(/conf[ée]rence|conference|d[ée]bat|philo|histoire|mus[ée]e|museum|exposition|litt[ée]rature|lecture|sciences|table ronde|masterclass|\btalk\b/, "esprit");
-  add(/visite libre|[àa] votre rythme|sans inscription|en autonomie|individuel|self.guided/, "solo");
-
-  if (moods.size === 0) moods.add("decouvrir");
-  return [...moods];
-}
-
-function mapCategory(keywords: string[], title: string, description: string): Category {
-  const text = [...keywords, title, description].join(" ").toLowerCase();
-  const has = (...k: string[]) => k.some((x) => text.includes(x));
-
-  if (has("concert", "musique", "live music", "festival music", "dj set")) return "concerts";
-  if (has("exposition", "expo", "vernissage", "galerie", "musée", "museum")) return "expositions";
-  if (has("soirée", "soiree", "clubbing", "nuit blanche", "after", "boîte de nuit")) return "soirees";
-  if (has("restaurant", "gastronomie", "dégustation", "cuisine", "repas")) return "restaurants";
-  if (has("bar", "apéro", "guinguette", "cocktail", "brasserie")) return "bars";
-  if (has("salon", "convention", "foire", "japan expo", "comic con", "games week", "maison & objet", "fashion week", "trade show")) return "salons";
-  if (has("sport", "running", "yoga", "fitness", "tennis", "football", "natation", "randonnée")) return "sport";
-  if (has("enfant", "famille", "jeune public", "kids", "bébé")) return "famille";
-  if (has("étudiant", "etudiant", "université", "campus", "bde", "jeune")) return "etudiants";
-  if (has("networking", "conférence", "meetup", "startup", "professionnel", "forum")) return "networking";
-  if (has("atelier", "loisir", "jeu", "escape", "quiz", "karaoké", "cinéma", "comédie")) return "loisirs";
-  return "culture";
-}
 
 // Parse price from conditions string: "Gratuit" -> null, "10€" -> 10
 function parsePrice(conditions: string | null): number | null {
@@ -218,11 +156,16 @@ Deno.serve(async () => {
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
+  let tooTame = 0, unscored = 0, aCourtDeTemps = false;
   let imported = 0, skipped = 0, photos = 0, after: string | null = null;
   let pages = 0;
 
   try {
     while (pages * PAGE < MAX_RECORDS) {
+      if (Date.now() - startedAt > BUDGET_MS) {
+        aCourtDeTemps = true;
+        break;
+      }
       const params = new URLSearchParams({
         key: apiKey,
         size: String(PAGE),
@@ -245,7 +188,7 @@ Deno.serve(async () => {
 
       after = json.after ?? null;
 
-      const rows: Record<string, unknown>[] = [];
+      let rows: Record<string, unknown>[] = [];
       const photoMap: Record<string, string> = {};
 
       for (const e of events) {
@@ -273,19 +216,17 @@ Deno.serve(async () => {
         const coverUrl = buildImageUrl(e.image);
         const externalUrl = extractRegistrationUrl(e.registration);
 
-        const category = mapCategory(keywords, title, description);
-        const vibeTags = inferVibeTags(category, keywords, title, description);
+        const curiosity = inferCuriosity(title, description, keywords);
+        const vibeTags = inferVibeTags(curiosity, keywords, title, description);
         const tags = [...new Set([...keywords, ...vibeTags])].slice(0, 12);
-        const moods = inferMoods(category, keywords, title, description);
 
         rows.push({
           source: "openagenda",
           external_id: externalId,
           title: title.slice(0, 300),
           description: description.slice(0, 4000),
-          category,
+          curiosity,
           tags,
-          moods,
           address: address.slice(0, 300),
           lat,
           lng,
@@ -301,6 +242,41 @@ Deno.serve(async () => {
         });
 
         if (coverUrl) photoMap[externalId] = coverUrl;
+      }
+
+
+      // ── Scoring d'insolite ────────────────────────────────────────────────
+      // Chaque lot passe par Claude avant l'insertion : c'est ce qui empêche
+      // l'agenda municipal de reconstituer l'annuaire généraliste.
+      if (rows.length > 0) {
+        const scores = await scoreEvents(
+          rows.map((r) => ({
+            ref: String(r.external_id),
+            title: String(r.title),
+            description: String(r.description),
+            tags: r.tags as string[],
+            price: r.price as number | null,
+          })),
+        );
+
+        rows = rows.filter((r) => {
+          const score = scores.get(String(r.external_id));
+          if (!score) return false;
+
+          // Sans note (panne d'API, pas de clé), on n'écrit pas : l'upsert
+          // écraserait une ligne déjà publiée et correctement notée en la
+          // repassant en attente. Une panne de scoring doit faire sauter le
+          // tour, pas dépublier le catalogue. Le prochain cron réessaiera.
+          if (score.rarity === null) { unscored++; return false; }
+
+          if (!passesFloor(score)) { tooTame++; return false; }
+
+          r.curiosity = score.curiosity;
+          r.rarity = score.rarity;
+          r.rarity_note = score.note;
+          r.status = "approved";
+          return true;
+        });
       }
 
       if (rows.length > 0) {
@@ -341,7 +317,7 @@ Deno.serve(async () => {
 
     return new Response(
       JSON.stringify({
-        ok: true, imported, photos, skipped, deleted: deleted ?? 0,
+        ok: true, imported, tooTame, unscored, aCourtDeTemps, photos, skipped, deleted: deleted ?? 0,
         pages, ms: Date.now() - startedAt,
       }),
       { headers: { "Content-Type": "application/json" } },

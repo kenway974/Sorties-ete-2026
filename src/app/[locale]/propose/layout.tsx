@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Proposer une activité",
   description:
-    "Vous organisez un événement à Paris ? Proposez-le gratuitement sur MoodMap et touchez des milliers de Parisiens.",
+    "Tu connais un endroit que personne ne connaît ? Propose-le : il passera par le même crible d'insolite que les autres.",
   alternates: { canonical: "/fr/propose" },
   openGraph: {
-    title: "Proposer une activité · MoodMap",
-    description: "Partagez votre événement avec la communauté MoodMap. Soumission gratuite, visible après validation.",
+    title: "Proposer une sortie · Hors-Piste",
+    description: "Les meilleures adresses ne sont dans aucun agenda — elles se transmettent. Propose la tienne.",
     type: "website",
   },
 };

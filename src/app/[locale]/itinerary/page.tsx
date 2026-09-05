@@ -5,20 +5,9 @@ import { useParams } from "next/navigation";
 import { MapPin, Calendar, Clock, Trash2, Share2, Check, Route, Plus } from "lucide-react";
 import { useItinerary } from "@/lib/hooks/useItinerary";
 import { formatDate, formatTime, formatPrice } from "@/lib/utils/formatters";
+import { CURIOSITES, curiosity as curiosityOf } from "@/lib/constants/curiosites";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  soirees: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-  concerts: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
-  expositions: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  restaurants: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  bars: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  sport: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  culture: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  famille: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
-  etudiants: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
-  networking: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300",
-  loisirs: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
-};
+
 
 export default function ItineraryPage() {
   const params = useParams();
@@ -107,8 +96,11 @@ export default function ItineraryPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[item.category] ?? "bg-gray-100 text-gray-600"}`}>
-                            {item.category}
+                          <span
+                            style={{ backgroundColor: `${curiosityOf(item.curiosity).hex}1A`, color: curiosityOf(item.curiosity).hex }}
+                            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          >
+                            {curiosityOf(item.curiosity).emoji} {curiosityOf(item.curiosity).label}
                           </span>
                           <span className="text-xs font-bold text-brand-navy dark:text-brand-gold">
                             {formatPrice(item.price, "Gratuit")}

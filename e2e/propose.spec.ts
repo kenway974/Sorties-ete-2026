@@ -50,9 +50,9 @@ test.describe("Propose form (authenticated)", () => {
     await expect(page.getByRole("textbox", { name: /adresse|address/i })).toBeVisible();
   });
 
-  test.skip("form has category selector", async ({ page }) => {
+  test.skip("le formulaire propose un sélecteur de curiosité", async ({ page }) => {
     await page.goto("/fr/propose");
-    await expect(page.getByRole("combobox", { name: /catégorie|category/i })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: /curiosit/i })).toBeVisible();
   });
 
   test.skip("form has date input", async ({ page }) => {
